@@ -28,7 +28,7 @@ class UserRepository
 
     public function check($email)
     {
-        return User::where('email', $email)->get();
+        return User::where('email', $email)->first();
     }
     // public function getDemoData()
     // {

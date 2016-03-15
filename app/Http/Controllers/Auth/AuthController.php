@@ -75,7 +75,7 @@ class AuthController extends Controller
     public function checkEmail(CheckEmailRequest $request)
     {
         $data = $this->users->check($request->email);
-        if (is_null($data)) {
+        if ($data) {
             return response()->json(['message' => 'has_user'], 403);
         }
         return response()->json(['message' => 'GoodJob']);
