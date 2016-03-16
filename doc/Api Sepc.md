@@ -166,10 +166,13 @@ status code:401
 ```
 status code:200
 {
-  "message": "has_user"
-}
--or-
-{
  	"message": "GoodJob"
+}
+```
+####Error
+```
+status code:403
+{
+  "message": "has_user"
 }
 ```

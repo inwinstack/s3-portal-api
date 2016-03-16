@@ -15,7 +15,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::group(['prefix' => 'api'], function () {
+Route::group(['prefix' => 'api', 'middleware' => 'cors'], function () {
     Route::group(['prefix' => 'v1'], function () {
         Route::group(['prefix' => 'auth', 'namespace' => 'Auth'], function(){
             Route::post('register', 'AuthController@register');
