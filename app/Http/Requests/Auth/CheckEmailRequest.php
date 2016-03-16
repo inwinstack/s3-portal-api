@@ -16,7 +16,7 @@ class CheckEmailRequest extends Request
     public function rules()
     {
         return [
-            'email' => 'required|email|max:255',
+            'email' => 'required|email|max:255|unique:users',
         ];
     }
 }

@@ -171,8 +171,13 @@ status code:200
 ```
 ####Error
 ```
-status code:403
+status code:422
 {
-  "message": "has_user"
+  "message": "validator_error",
+  "errors": {
+    "email": [
+      "The email has already been taken."
+    ]
+  }
 }
 ```
