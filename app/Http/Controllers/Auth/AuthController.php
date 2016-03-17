@@ -45,10 +45,10 @@ class AuthController extends Controller
     {
         $data['uid'] = bcrypt($request->email.time());
         $data = array_merge($data, $request->all());
-
+        $data['name'] = $data['email'];
         $httpQuery = http_build_query([
             'uid' => $data['uid'],
-            'display-name' => $data['name'],
+            'display-name' => $data['email'],
             'email' => $data['email']
         ]);
         $result = json_decode($requestApiService->request('PUT', 'user', "?format=json&$httpQuery"));
