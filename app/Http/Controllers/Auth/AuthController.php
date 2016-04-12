@@ -20,7 +20,6 @@ class AuthController extends Controller
     use AuthenticatesAndRegistersUsers, ThrottlesLogins;
 
 
-
     /**
      * @var UserRepository
      */
@@ -43,12 +42,12 @@ class AuthController extends Controller
      */
     public function register(RegisterRequest $request, RequestApiService $requestApiService)
     {
-        $data['uid'] = bcrypt($request->email.time());
-        $data = array_merge($data, $request->all());
-
+        $data = $request->all();
+        $data['uid'] = $data['email'];
+        $data['name'] = $data['email'];
         $httpQuery = http_build_query([
             'uid' => $data['uid'],
-            'display-name' => $data['name'],
+            'display-name' => $data['email'],
             'email' => $data['email']
         ]);
         $result = json_decode($requestApiService->request('PUT', 'user', "?format=json&$httpQuery"));
@@ -59,7 +58,8 @@ class AuthController extends Controller
             $resultData = $this->users->createUser($data);
             return response()->json($resultData);
         }
-        return response()->json(['message' => 'curl_has_errot'], 401);
+
+        return response()->json(['message' => 'curl_has_error'], 401);
     }
 
     public function login(LoginRequest $request)
@@ -78,6 +78,16 @@ class AuthController extends Controller
         if ($data) {
             return response()->json(['message' => 'has_user'], 403);
         }
-        return response()->json(['message' => 'GoodJob']);
+        return response()->json(['message' => 'You can use the email']);
+    }
+
+    public function logout()
+    {
+        $token = JWTAuth::getToken();
+        $invalidateResult = JWTAuth::setToken($token)->invalidate();
+        if ($invalidateResult) {
+            return response()->json(['message' => 'Invalidate Token Success']);
+        }
+        return response()->json(['message' => 'Invalidate Token Error'], 401);
     }
 }

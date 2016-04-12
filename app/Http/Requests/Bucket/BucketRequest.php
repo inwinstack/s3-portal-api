@@ -1,12 +1,12 @@
 <?php
-namespace App\Http\Requests\Demo;
+namespace App\Http\Requests\Bucket;
 
 use App\Http\Requests\Request;
 
 /**
  *
  */
-class CreateDemoRequest extends Request
+class BucketRequest extends Request
 {
     public function authorize()
     {
@@ -16,7 +16,7 @@ class CreateDemoRequest extends Request
     public function rules()
     {
         return [
-            'demo' => 'required'
+            'bucket' => 'required|max:255',
         ];
     }
 }
