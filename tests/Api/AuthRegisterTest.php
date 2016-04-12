@@ -31,7 +31,7 @@ class AuthRegisterTest extends TestCase
     {
         $this->post('api/v1/auth/checkEmail', $this->postData, $this->headers)
             ->seeStatusCode(200)
-            ->seeJsonContains(['message' => 'GoodJob']);
+            ->seeJsonContains(['message' => 'You can use the email']);
     }
 
     /**
