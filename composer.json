@@ -10,7 +10,8 @@
         "aws/aws-sdk-php": "^3.15",
         "tymon/jwt-auth": "^0.5.9",
         "php-curl-class/php-curl-class": "^4.10",
-        "guzzlehttp/guzzle": "^6.1"
+        "guzzlehttp/guzzle": "^6.1",
+        "barryvdh/laravel-cors": "^0.8.0"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

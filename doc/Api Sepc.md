@@ -34,15 +34,15 @@
         <td style="width:50px">✔︎</td>
         <td style="width:100px"></td>
     </tr>
-        <tr>
+    <tr>
         <td style="width:50px">String</td>
-        <td style="width:150px">name</td>
+        <td style="width:150px">password</td>
         <td style="width:50px">✔︎</td>
         <td style="width:100px"></td>
     </tr>
-        <tr>
+    <tr>
         <td style="width:50px">String</td>
-        <td style="width:150px">password</td>
+        <td style="width:150px">password_confirmation</td>
         <td style="width:50px">✔︎</td>
         <td style="width:100px"></td>
     </tr>
