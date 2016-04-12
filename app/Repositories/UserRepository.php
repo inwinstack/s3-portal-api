@@ -19,7 +19,7 @@ class UserRepository
     public function verify($userData)
     {
         $data = Auth::attempt(['email' => $userData['email'], 'password' => $userData['password']]);
-        if ($userData) {
+        if ($data) {
             $userData = Auth::User();
             return $userData;
         }
