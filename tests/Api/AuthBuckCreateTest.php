@@ -50,6 +50,41 @@ class AuthBucketCreateTest extends TestCase
         }
         $this->assertTrue($hasName);
     }
-    
+
+    public function testCheckBucketNotExist()
+    {
+        $token = \JWTAuth::fromUser($this->createUser($this->postData['email'], $this->postData['password'], true));
+
+        $headers = $this->headers;
+        $headers['HTTP_Authorization'] = "Bearer $token";
+
+        $bucket = [
+            'bucket' => str_random(14)
+        ];
+        $this->post('/api/v1/bucket/check', $bucket, $headers)
+            ->seeStatusCode(200)
+            ->seeJsonContains([
+                'message' => 'You can use the bucket'
+            ]);
+    }
+
+    public function testCheckBucketIsExist()
+    {
+        $token = \JWTAuth::fromUser($this->createUser($this->postData['email'], $this->postData['password'], true));
+
+        $headers = $this->headers;
+        $headers['HTTP_Authorization'] = "Bearer $token";
+
+        $bucket = [
+            'bucket' => str_random(14)
+        ];
+        $this->post('/api/v1/bucket/create', $bucket, $headers);
+        $this->post('/api/v1/bucket/check', $bucket, $headers)
+            ->seeStatusCode(401)
+            ->seeJsonContains([
+                "message" => "Has Bucket"
+            ]);
+    }
+
 
 }
