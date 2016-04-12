@@ -42,8 +42,8 @@ class AuthController extends Controller
      */
     public function register(RegisterRequest $request, RequestApiService $requestApiService)
     {
+        $data = $request->all();
         $data['uid'] = $data['email'];
-        $data = array_merge($data, $request->all());
         $data['name'] = $data['email'];
         $httpQuery = http_build_query([
             'uid' => $data['uid'],

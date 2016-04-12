@@ -19,10 +19,11 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
      */
     public function createApplication()
     {
+
         $app = require __DIR__ . '/../bootstrap/app.php';
 
         $app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();
-
+        $this->initDatabase();
         return $app;
     }
 
@@ -78,18 +79,40 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
      *
      * @param $email
      * @param $password
+     * @param bool $hasBucket
+     * @return static
+     * @internal param bool $hasBucket
      */
-    public function createUser($email, $password)
+    public function createUser($email, $password, $hasBucket = false)
     {
+        $httpQuery = http_build_query([
+            'uid' => $email,
+            'display-name' => $email,
+            'email' => $email
+        ]);
+        $accessKey = str_random(10);
+        $secretKey = str_random(10);
+        if ($hasBucket) {
+            $apiService = new  \App\Services\RequestApiService;
+            $result = json_decode($apiService->request('PUT', 'user', "?format=json&$httpQuery"));
+            $accessKey = $result->keys[0]->access_key;
+            $secretKey = $result->keys[0]->secret_key;
+        }
+
         $userData = [
-            'uid' => random_int(1, 100),
+            'uid' => $email,
             'email' => $email,
             'name' => str_random(4),
             'password' => bcrypt($password),
-            'access_key' => str_random(10),
-            'secret_key' => str_random(10)
+            'access_key' => $accessKey,
+            'secret_key' => $secretKey
         ];
 
-        User::create($userData);
+        return User::create($userData);
+    }
+
+    public function testNoWarning()
+    {
+
     }
 }
