@@ -26,6 +26,24 @@ class UserRepository
         return null;
     }
 
+    public function check($email)
+    {
+        return User::where('email', $email)->first();
+    }
+    // public function getDemoData()
+    // {
+    //     return Demo::all();
+    // }
+    //
+    // public function updateByDemo($demo)
+    // {
+    //     return Demo::find($demo['id'])->update(['demo' => $demo['demo']]);
+    // }
+    //
+    // public function deleteByDemo($id)
+    // {
+    //     return Demo::destroy($id);
+    // }
 }
 
 ?>
