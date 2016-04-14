@@ -59,7 +59,7 @@ class AuthController extends Controller
             $resultData = $this->users->createUser($data);
             return response()->json($resultData);
         }
-        return response()->json(['message' => 'curl_has_errot'], 401);
+        return response()->json(['message' => 'curl_has_error'], 401);
     }
 
     public function login(LoginRequest $request)
@@ -78,7 +78,7 @@ class AuthController extends Controller
         if ($data) {
             return response()->json(['message' => 'has_user'], 403);
         }
-        return response()->json(['message' => 'GoodJob']);
+        return response()->json(['message' => 'You can use the email']);
     }
 
     public function logout()
