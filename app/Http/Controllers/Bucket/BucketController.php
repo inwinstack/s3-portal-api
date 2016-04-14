@@ -26,6 +26,17 @@ class BucketController extends Controller
         return $listResponse->get('Buckets');
     }
 
+    public function checkBucket(BucketRequest $request)
+    {
+        $buckets = $this->responseBucketName();
+        foreach ($buckets as $key => $value) {
+            if ($value['Name'] == $request->bucket) {
+                return response()->json(['message' => 'Has Bucket'], 401);
+            }
+        }
+        return response()->json(['message' => 'You can use the bucket'], 200);
+    }
+    
     public function index()
     {
         return response()->json(['Buckets' => $this->responseBucketName()], 200);
