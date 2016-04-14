@@ -20,7 +20,6 @@ class AuthController extends Controller
     use AuthenticatesAndRegistersUsers, ThrottlesLogins;
 
 
-
     /**
      * @var UserRepository
      */
@@ -75,8 +74,13 @@ class AuthController extends Controller
 
     public function checkEmail(CheckEmailRequest $request)
     {
+        $data = $this->users->check($request->email);
+        if ($data) {
+            return response()->json(['message' => 'has_user'], 403);
+        }
         return response()->json(['message' => 'You can use the email']);
     }
+
     public function logout()
     {
         $token = JWTAuth::getToken();
