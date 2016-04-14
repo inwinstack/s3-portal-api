@@ -20,6 +20,7 @@ Route::group(['prefix' => 'api', 'middleware' => ['cors', 'api']], function () {
         Route::group(['prefix' => 'auth', 'namespace' => 'Auth'], function(){
             Route::post('register', 'AuthController@register');
             Route::post('login', 'AuthController@login');
+            Route::post('logout', 'AuthController@logout');
             Route::post('checkEmail', 'AuthController@checkEmail');
         });
         Route::group(['middleware' => ['jwt.auth']], function () {
