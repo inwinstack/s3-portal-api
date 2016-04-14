@@ -195,7 +195,7 @@ status code:422
     </tr>
     <tr>
         <td style="width:50px">POST</td>
-        <td style="width:400px">/api/v1/bucket/logout</td>
+        <td style="width:400px">/api/v1/logout</td>
     </tr>
 </table>
 
