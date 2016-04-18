@@ -27,6 +27,7 @@ Route::group(['prefix' => 'api', 'middleware' => ['cors', 'api']], function () {
             Route::group(['prefix' => 'bucket', 'namespace' => 'Bucket'], function(){
                 Route::post('create', 'BucketController@store');
                 Route::post('list', 'BucketController@index');
+                Route::post('check', 'BucketController@checkBucket');
             });
         });
     });
