@@ -24,25 +24,12 @@ Route::group(['prefix' => 'api', 'middleware' => ['cors', 'api']], function () {
             Route::post('checkEmail', 'AuthController@checkEmail');
         });
         Route::group(['middleware' => ['jwt.auth']], function () {
-            Route::post('aaa', function(){
-                return JWTAuth::parseToken()->authenticate();
+            Route::group(['prefix' => 'bucket', 'namespace' => 'Bucket'], function(){
+                Route::post('create', 'BucketController@store');
             });
         });
     });
 });
-
-
-Route::group(['prefix' => 'demo', 'as' => 'demo.'], function () {
-    // Demo
-    Route::post('create', ['as' => 'create', 'uses' => 'Demo\DemoController@store']);
-    Route::get('read', ['as' => 'read', 'uses' => 'Demo\DemoController@index']);
-    Route::post('update', ['as' => 'update', 'uses' => 'Demo\DemoController@update']);
-    Route::get('delete/{id}', ['as' => 'delete', 'uses' => 'Demo\DemoController@destroy']);
-
-});
-Route::post('/test', 'Test\TestController@index');
-// Route::post('/test', ['as' => 'test.index', 'uses' => 'uses' => 'Test\TestController@index']);
-// Route::resource('demo', 'Demo\DemoController');
 
 
 /*
