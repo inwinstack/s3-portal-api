@@ -21,7 +21,7 @@ Route::group(['prefix' => 'api', 'middleware' => ['cors', 'api']], function () {
             Route::post('register', 'AuthController@register');
             Route::post('login', 'AuthController@login');
             Route::post('logout', 'AuthController@logout');
-            Route::post('checkEmail', 'AuthController@checkEmail');
+            Route::get('checkEmail/{email}', 'AuthController@checkEmail');
         });
         Route::group(['middleware' => ['jwt.auth']], function () {
             Route::group(['prefix' => 'bucket', 'namespace' => 'Bucket'], function(){
