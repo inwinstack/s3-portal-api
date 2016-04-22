@@ -29,7 +29,8 @@ class AuthRegisterTest extends TestCase
      */
     public function testEmailCheckSuccess()
     {
-        $this->post('api/v1/auth/checkEmail', $this->postData, $this->headers)
+        $query = '?email=' . $this->postData['email'];
+        $this->get('api/v1/auth/checkEmail' . $query, $this->headers)
             ->seeStatusCode(200)
             ->seeJsonContains(['message' => 'You can use the email']);
     }
@@ -59,7 +60,8 @@ class AuthRegisterTest extends TestCase
         $toValidateData = [
             'message' => 'has_user'
         ];
-        $this->post('api/v1/auth/checkEmail', $this->postData, $this->headers)
+        $query = '?email=' . $this->postData['email'];
+        $this->get('api/v1/auth/checkEmail' . $query, $this->headers)
             ->seeStatusCode(403)
             ->seeJsonContains($toValidateData);
     }
