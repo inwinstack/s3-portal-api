@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use Aws\S3\S3Client;
+use Aws\S3\Exception\S3Exception as S3Exception;
 class S3Service
 {
     public function connect($accessKey, $secretKey)
@@ -28,13 +29,28 @@ class S3Service
     public function createBucket($accessKey, $secretKey, $Bucket)
     {
         $s3 = $this->connect($accessKey, $secretKey);
+
         try {
             $bucketResponse = $s3->createBucket([
                 'Bucket' => $Bucket,
             ]);
             return true;
-        } catch (Exception $e) {
-            return $e->getMessage();
+        } catch (S3Exception $e) {
+            return false;
+        }
+    }
+
+    public function listFile($accessKey, $secretKey, $bucket, $prefix)
+    {
+        $s3 = $this->connect($accessKey, $secretKey);
+        try {
+            $objects = $s3->listObjects([
+                'Bucket' => $bucket,
+                'Prefix' => $prefix,
+            ]);
+            return $objects;
+        } catch (S3Exception $e) {
+            return $e->getMessage() . "\n";
         }
 
     }
