@@ -40,12 +40,13 @@ class S3Service
         }
     }
 
-    public function listFile($accessKey, $secretKey, $bucket)
+    public function listFile($accessKey, $secretKey, $bucket, $prefix)
     {
         $s3 = $this->connect($accessKey, $secretKey);
         try {
             $objects = $s3->listObjects([
                 'Bucket' => $bucket,
+                'Prefix' => $prefix,
             ]);
             return $objects;
         } catch (S3Exception $e) {

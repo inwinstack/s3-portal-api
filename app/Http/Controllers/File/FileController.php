@@ -5,6 +5,7 @@ namespace App\Http\Controllers\File;
 use App\Services\S3Service;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 
 use JWTAuth;
 
@@ -20,11 +21,10 @@ class FileController extends Controller
         $this->user = JWTAuth::parseToken()->authenticate();
     }
 
-    public function index($bucket)
+    public function index(Request $request, $bucket)
     {
-        $listResponse = $this->s3Service->listFile($this->user['access_key'], $this->user['secret_key'], $bucket);
-        return $listResponse;
-        //  var_dump($listResponse) ;
+        $listResponse = $this->s3Service->listFile($this->user['access_key'], $this->user['secret_key'], $bucket, $request->input('prefix', ''));
+        return $listResponse->get('Contents');
     }
 
 }
