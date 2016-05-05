@@ -28,6 +28,10 @@ Route::group(['prefix' => 'api', 'middleware' => ['cors', 'api']], function () {
                 Route::post('create', 'BucketController@store');
                 Route::post('list', 'BucketController@index');
             });
+            Route::group(['prefix' => 'file', 'namespace' => 'File'], function(){
+                Route::get('list/{bucket}', 'FileController@index');
+            });
+
         });
     });
 });

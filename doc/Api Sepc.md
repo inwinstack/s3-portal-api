@@ -6,7 +6,7 @@
 4. [Logout](#Logout)
 5. [CreateBucket](#CreateBucket)
 6. [ListBuckets](#ListBuckets)
-
+7. [ListFiles](#ListFiles)
 
 
 ## 1.<a name="CreateAccount">Create a Account</a>
@@ -291,5 +291,28 @@ status code:200
       "CreationDate": "2016-04-08T14:46:28.000Z"
     }
   ]
+}
+```
+
+## 7.<a name="ListFiles">ListFiles</a>
+
+<table>
+    <tr>
+        <td style="width:50px">Method</td>
+        <td style="width:400px">URI</td>
+    </tr>
+    <tr>
+        <td style="width:50px">GET</td>
+        <td style="width:400px">/api/v1/list/{bucket}</td>
+    </tr>
+</table>
+
+
+###Json Response
+####Success
+```
+status code:200
+{
+
 }
 ```

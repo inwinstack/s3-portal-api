@@ -38,6 +38,19 @@ class S3Service
         } catch (S3Exception $e) {
             return false;
         }
+    }
+
+    public function listFile($accessKey, $secretKey, $bucket)
+    {
+        $s3 = $this->connect($accessKey, $secretKey);
+        try {
+            $objects = $s3->listObjects([
+                'Bucket' => $bucket,
+            ]);
+            return $objects;
+        } catch (S3Exception $e) {
+            return $e->getMessage() . "\n";
+        }
 
     }
 }
