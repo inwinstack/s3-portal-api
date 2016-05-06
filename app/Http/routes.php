@@ -21,13 +21,16 @@ Route::group(['prefix' => 'api', 'middleware' => ['cors', 'api']], function () {
             Route::post('register', 'AuthController@register');
             Route::post('login', 'AuthController@login');
             Route::post('logout', 'AuthController@logout');
-            Route::post('checkEmail', 'AuthController@checkEmail');
+            Route::get('checkEmail/{email}', 'AuthController@checkEmail');
         });
         Route::group(['middleware' => ['jwt.auth']], function () {
             Route::group(['prefix' => 'bucket', 'namespace' => 'Bucket'], function(){
                 Route::post('create', 'BucketController@store');
                 Route::post('list', 'BucketController@index');
-                Route::post('check', 'BucketController@checkBucket');
+            });
+            Route::group(['prefix' => 'file', 'namespace' => 'File'], function(){
+                Route::get('list/{bucket}', 'FileController@index');
+                Route::post('create', 'FileController@store');
             });
         });
     });
