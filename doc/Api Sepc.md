@@ -7,7 +7,7 @@
 5. [CreateBucket](#CreateBucket)
 6. [ListBuckets](#ListBuckets)
 7. [ListFiles](#ListFiles)
-
+8. [UploadFile](#UploadFile)
 
 ## 1.<a name="CreateAccount">Create a Account</a>
 
@@ -303,7 +303,7 @@ status code:200
     </tr>
     <tr>
         <td style="width:50px">GET</td>
-        <td style="width:400px">/api/v1/list/{bucket}</td>
+        <td style="width:400px">/api/v1/file/list/{bucket}?prefix={prefix}</td>
     </tr>
 </table>
 
@@ -313,6 +313,95 @@ status code:200
 ```
 status code:200
 {
+  "files": [
+    {
+      "Key": "test/test.jpg",
+      "LastModified": "2016-05-05T11:37:29.000Z",
+      "ETag": "*etag*",
+      "Size": "323844",
+      "StorageClass": "STANDARD",
+      "Owner": {
+        "ID": "*account*",
+        "DisplayName": "*displayname*"
+      }
+    }
+  ]
+}
+```
+####Error
+```
+status code:403
+{
+  "message": "Bucket Error"
+}
+```
 
+## 8.<a name="UploadFile">UploadFile</a>
+
+<table>
+    <tr>
+        <td style="width:50px">Method</td>
+        <td style="width:400px">URI</td>
+    </tr>
+    <tr>
+        <td style="width:50px">POST</td>
+        <td style="width:400px">/api/v1/file/create</td>
+    </tr>
+</table>
+
+###Input Parameter
+
+<table>
+    <tr>
+        <td style="width:50px">Type</td>
+        <td style="width:150px">Name</td>
+        <td style="width:50px">Require</td>
+        <td style="width:100px">Remark</td>
+    </tr>
+    <tr>
+        <td style="width:50px">String</td>
+        <td style="width:150px">bucket</td>
+        <td style="width:50px">✔︎</td>
+        <td style="width:100px"></td>
+    </tr>
+    <tr>
+        <td style="width:50px">File</td>
+        <td style="width:150px">file</td>
+        <td style="width:50px">✔︎</td>
+        <td style="width:100px"></td>
+    </tr>
+    <tr>
+        <td style="width:50px">String</td>
+        <td style="width:150px">prefix</td>
+        <td style="width:50px"></td>
+        <td style="width:100px"></td>
+    </tr>
+</table>
+
+###Json Response
+####Success
+```
+status code:200
+{
+  "files": [
+    {
+      "Key": "test/test.jpg",
+      "LastModified": "2016-05-05T11:37:29.000Z",
+      "ETag": "*etag*",
+      "Size": "323844",
+      "StorageClass": "STANDARD",
+      "Owner": {
+        "ID": "*account*",
+        "DisplayName": "*displayname*"
+      }
+    }
+  ]
+}
+```
+####Error
+```
+status code:403
+{
+  "message": "Bucket Error"
 }
 ```

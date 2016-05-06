@@ -30,8 +30,8 @@ Route::group(['prefix' => 'api', 'middleware' => ['cors', 'api']], function () {
             });
             Route::group(['prefix' => 'file', 'namespace' => 'File'], function(){
                 Route::get('list/{bucket}', 'FileController@index');
+                Route::post('create', 'FileController@store');
             });
-
         });
     });
 });

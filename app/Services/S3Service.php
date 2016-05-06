@@ -50,8 +50,23 @@ class S3Service
             ]);
             return $objects;
         } catch (S3Exception $e) {
-            return $e->getMessage() . "\n";
+            return false;
         }
+    }
 
+    public function uploadFile($accessKey, $secretKey, $bucket, $file, $fileName, $prefix)
+    {
+        $s3 = $this->connect($accessKey, $secretKey);
+
+        try {
+            $result = $s3->putObject([
+                'Bucket'     => $bucket,
+                'Key'        => "$prefix$fileName",
+                'SourceFile' => $file,
+            ]);
+            return $result;
+        } catch (S3Exception $e) {
+            return false;
+        }
     }
 }
