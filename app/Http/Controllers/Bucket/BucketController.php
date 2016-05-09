@@ -20,27 +20,16 @@ class BucketController extends Controller
         $this->user = JWTAuth::parseToken()->authenticate();
     }
 
-    public function responseBucketName()
-    {
-        $listResponse = $this->s3Service->listBucket($this->user['access_key'], $this->user['secret_key']);
-        return $listResponse->get('Buckets');
-    }
-
     public function checkBucket($userBucket)
     {
-        $buckets = $this->responseBucketName();
 
-        foreach ($buckets as $key => $value) {
-            if ($value['Name'] == $userBucket) {
-                return true;
-            }
-        }
-        return false;
+        return $this->s3Service->checkBucket($this->user['access_key'], $this->user['secret_key'], $userBucket);
     }
 
     public function index()
     {
-        return response()->json(['Buckets' => $this->responseBucketName()], 200);
+        $listResponse = $this->s3Service->listBucket($this->user['access_key'], $this->user['secret_key']);
+        return response()->json(['Buckets' => $listResponse->get('Buckets')], 200);
     }
 
     public function store(BucketRequest $request)
@@ -52,7 +41,7 @@ class BucketController extends Controller
         }
 
         $bucketResponse = $this->s3Service->createBucket($this->user['access_key'], $this->user['secret_key'], $request->bucket);
-        
+
         if ($bucketResponse) {
             return $this->index();
         }

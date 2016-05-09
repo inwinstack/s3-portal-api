@@ -40,6 +40,11 @@ class S3Service
         }
     }
 
+    public function checkBucket($accessKey, $secretKey, $bucket)
+    {
+        $s3 = $this->connect($accessKey, $secretKey);
+        return $s3->doesBucketExist($bucket);
+    }
     public function listFile($accessKey, $secretKey, $bucket, $prefix)
     {
         $s3 = $this->connect($accessKey, $secretKey);
