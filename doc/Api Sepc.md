@@ -383,25 +383,23 @@ status code:403
 ```
 status code:200
 {
-  "files": [
-    {
-      "Key": "test/test.jpg",
-      "LastModified": "2016-05-05T11:37:29.000Z",
-      "ETag": "*etag*",
-      "Size": "323844",
-      "StorageClass": "STANDARD",
-      "Owner": {
-        "ID": "*account*",
-        "DisplayName": "*displayname*"
-      }
-    }
-  ]
+  "message": "Upload File Success"
 }
 ```
 ####Error
 ```
 status code:403
 {
-  "message": "Bucket Error"
+  "message": "Upload File Exist"
+}
+- or -
+status code:403
+{
+  "message": "Bucket not Exist"
+}
+- or -
+status code:403
+{
+  "message": "Upload File Error"
 }
 ```

@@ -28,16 +28,26 @@ class FileService extends S3Service
 
     public function uploadFile($bucket, $file, $fileName, $prefix)
     {
-        dd($this->s3->doesObjectExist($bucket, $prefix$fileName));
+
+        try {
+            $this->s3->headBucket(['Bucket' => $bucket]);
+            if ($this->s3->doesObjectExist($bucket, $prefix.$fileName)) {
+                return 'Upload File Exist';
+            }
+        } catch (S3Exception $e) {
+            return 'Bucket not Exist';
+        }
+
         try {
             $result = $this->s3->putObject([
                 'Bucket'     => $bucket,
                 'Key'        => "$prefix$fileName",
                 'SourceFile' => $file,
             ]);
-            return $result;
-        } catch (S3Exception $e) {
             return false;
+        } catch (S3Exception $e) {
+            return 'Upload File Error';
         }
+
     }
 }

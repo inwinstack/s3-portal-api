@@ -34,8 +34,8 @@ class FileController extends Controller
     public function store(UploadFileRequest $request)
     {
         $uploadResponse = $this->s3Service->uploadFile($request->bucket, $request->file('file')->getPathName(), $request->file('file')->getClientOriginalName(), $request->prefix);
-        if (!$uploadResponse) {
-            return response()->json(['message' => 'Bucket Error'], 403);
+        if ($uploadResponse) {
+            return response()->json(['message' => $uploadResponse], 403);
         }
         return response()->json(['message' => 'Upload File Success'], 200);
     }
