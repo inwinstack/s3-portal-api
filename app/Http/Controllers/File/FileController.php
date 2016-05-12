@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\File;
 
-use App\Services\S3Service;
+use App\Services\FileService;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -16,15 +16,15 @@ class FileController extends Controller
     protected $s3Service;
     protected $user;
 
-    public function __construct(S3Service $s3Service)
+    public function __construct()
     {
-        $this->s3Service = $s3Service;
         $this->user = JWTAuth::parseToken()->authenticate();
+        $this->s3Service = new FileService($this->user['access_key'], $this->user['secret_key']);
     }
 
     public function index(Request $request, $bucket)
     {
-        $listResponse = $this->s3Service->listFile($this->user['access_key'], $this->user['secret_key'], $bucket, $request->input('prefix', ''));
+        $listResponse = $this->s3Service->listFile($bucket, $request->input('prefix', ''));
         if (!$listResponse) {
             return response()->json(['message' => 'Bucket Error'], 403);
         }
@@ -33,7 +33,7 @@ class FileController extends Controller
 
     public function store(UploadFileRequest $request)
     {
-        $uploadResponse = $this->s3Service->uploadFile($this->user['access_key'], $this->user['secret_key'], $request->bucket, $request->file('file')->getPathName(), $request->file('file')->getClientOriginalName(), $request->prefix);
+        $uploadResponse = $this->s3Service->uploadFile($request->bucket, $request->file('file')->getPathName(), $request->file('file')->getClientOriginalName(), $request->prefix);
         if (!$uploadResponse) {
             return response()->json(['message' => 'Bucket Error'], 403);
         }
