@@ -26,17 +26,18 @@ class BucketController extends Controller
         return $listResponse->get('Buckets');
     }
 
-    public function checkBucket(BucketRequest $request)
+    public function checkBucket($userBucket)
     {
         $buckets = $this->responseBucketName();
+
         foreach ($buckets as $key => $value) {
-            if ($value['Name'] == $request->bucket) {
-                return response()->json(['message' => 'Has Bucket'], 401);
+            if ($value['Name'] == $userBucket) {
+                return true;
             }
         }
-        return response()->json(['message' => 'You can use the bucket'], 200);
+        return false;
     }
-    
+
     public function index()
     {
         return response()->json(['Buckets' => $this->responseBucketName()], 200);
@@ -44,10 +45,18 @@ class BucketController extends Controller
 
     public function store(BucketRequest $request)
     {
+        $checkBucket = $this->checkBucket($request->bucket);
+
+        if ($checkBucket) {
+            return response()->json(['message' => 'Has Bucket'], 403);
+        }
+
         $bucketResponse = $this->s3Service->createBucket($this->user['access_key'], $this->user['secret_key'], $request->bucket);
+        
         if ($bucketResponse) {
             return $this->index();
         }
-        return response()->json(['message' => 'Create Bucket Error'], 401);
+
+        return response()->json(['message' => 'Create Bucket Error'], 403);
     }
 }
