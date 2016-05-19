@@ -28,7 +28,6 @@ class FileService extends S3Service
 
     public function uploadFile($bucket, $file, $fileName, $prefix)
     {
-
         try {
             $this->s3->headBucket(['Bucket' => $bucket]);
             if ($this->s3->doesObjectExist($bucket, $prefix.$fileName)) {
@@ -48,6 +47,21 @@ class FileService extends S3Service
         } catch (S3Exception $e) {
             return 'Upload File Error';
         }
+    }
 
+    public function getFile($bucket, $key)
+    {
+        $file = explode('/', $key);
+        $fileCount = count($file);
+        try {
+            $result = $this->s3->getObject([
+                'Bucket' => $bucket,
+                'Key' => $key,
+                'SaveAs' => __DIR__ . '/../../public/tmpfile/' . $file[$fileCount - 1]
+            ]);
+            return '/tmpfile/' . $file[$fileCount - 1];
+        } catch (S3Exception $e) {
+            return false;
+        }
     }
 }

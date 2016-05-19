@@ -1,4 +1,4 @@
-#API Spac
+#API Spec
 
 1. [Create a Account](#CreateAccount)
 2. [Auth Login](#AuthLogin)
@@ -8,6 +8,7 @@
 6. [ListBuckets](#ListBuckets)
 7. [ListFiles](#ListFiles)
 8. [UploadFile](#UploadFile)
+9. [DownloadFile](#DownloadFile)
 
 ## 1.<a name="CreateAccount">Create a Account</a>
 
@@ -142,8 +143,8 @@ status code:401
         <td style="width:400px">URI</td>
     </tr>
     <tr>
-        <td style="width:50px">POST</td>
-        <td style="width:400px">/api/v1/auth/checkEmail</td>
+        <td style="width:50px">GET</td>
+        <td style="width:400px">/api/v1/auth/checkEmail/{email}</td>
     </tr>
 </table>
 
@@ -401,5 +402,34 @@ status code:403
 status code:403
 {
   "message": "Upload File Error"
+}
+```
+
+## 9.<a name="DownloadFile">DownloadFile</a>
+
+<table>
+    <tr>
+        <td style="width:50px">Method</td>
+        <td style="width:400px">URI</td>
+    </tr>
+    <tr>
+        <td style="width:50px">GET</td>
+        <td style="width:400px">/api/v1/file/get/{bucket}/{key}</td>
+    </tr>
+</table>
+
+###Json Response
+####Success
+```
+status code:200
+{
+  "uri": "/tmpfile/filename"
+}
+```
+####Error
+```
+status code:403
+{
+  "message": "Has Error"
 }
 ```

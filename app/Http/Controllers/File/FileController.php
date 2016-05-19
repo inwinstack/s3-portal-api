@@ -39,4 +39,13 @@ class FileController extends Controller
         }
         return response()->json(['message' => 'Upload File Success'], 200);
     }
+
+    public function getFile($bucket, $key)
+    {
+        $downloadURL = $this->s3Service->getFile($bucket, $key);
+        if ($downloadURL) {
+            return response()->json(['uri' => $downloadURL], 200);
+        }
+        return response()->json(['message' => 'Has Error'], 403);
+    }
 }
