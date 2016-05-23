@@ -72,9 +72,9 @@ class AuthController extends Controller
         return response()->json(['message' => 'verify_error'], 401);
     }
 
-    public function checkEmail(CheckEmailRequest $request)
+    public function checkEmail($email)
     {
-        $data = $this->users->check($request->email);
+        $data = $this->users->check($email);
         if ($data) {
             return response()->json(['message' => 'has_user'], 403);
         }
