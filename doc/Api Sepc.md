@@ -9,6 +9,7 @@
 7. [ListFiles](#ListFiles)
 8. [UploadFile](#UploadFile)
 9. [DownloadFile](#DownloadFile)
+10. [CreateFolder](#CreateFolder)
 
 ## 1.<a name="CreateAccount">Create a Account</a>
 
@@ -389,11 +390,6 @@ status code:200
 ```
 ####Error
 ```
-status code:403
-{
-  "message": "Upload File Exist"
-}
-- or -
 status code:403
 {
   "message": "Bucket not Exist"

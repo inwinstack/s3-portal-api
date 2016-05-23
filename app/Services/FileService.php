@@ -28,25 +28,20 @@ class FileService extends S3Service
 
     public function uploadFile($bucket, $file, $fileName, $prefix)
     {
-        try {
-            $this->s3->headBucket(['Bucket' => $bucket]);
-            if ($this->s3->doesObjectExist($bucket, $prefix.$fileName)) {
-                return 'Upload File Exist';
+        $checkBucket = $this->checkHeadBucket($bucket);
+        if (!$checkBucket) {
+            try {
+                $result = $this->s3->putObject([
+                    'Bucket'     => $bucket,
+                    'Key'        => "$prefix$fileName",
+                    'SourceFile' => $file,
+                ]);
+                return false;
+            } catch (S3Exception $e) {
+                return 'Upload File Error';
             }
-        } catch (S3Exception $e) {
-            return 'Bucket not Exist';
         }
-
-        try {
-            $result = $this->s3->putObject([
-                'Bucket'     => $bucket,
-                'Key'        => "$prefix$fileName",
-                'SourceFile' => $file,
-            ]);
-            return false;
-        } catch (S3Exception $e) {
-            return 'Upload File Error';
-        }
+        return $checkBucket;
     }
 
     public function getFile($bucket, $key)
@@ -67,21 +62,30 @@ class FileService extends S3Service
 
     public function storeFolder($bucket, $prefix)
     {
+        $checkBucket = $this->checkHeadBucket($bucket);
+        if (!$checkBucket) {
+            try {
+                $result = $this->s3->putObject([
+                    'Bucket'     => $bucket,
+                    'Key'        => "$prefix",
+                    'Body'       => "",
+                ]);
+                return false;
+            } catch (S3Exception $e) {
+                return 'Create Folder Error';
+            }
+        }
+        return $checkBucket;
+
+    }
+
+    public function checkHeadBucket($bucket)
+    {
         try {
             $this->s3->headBucket(['Bucket' => $bucket]);
-        } catch (S3Exception $e) {
-            return 'Bucket not Exist';
-        }
-
-        try {
-            $result = $this->s3->putObject([
-                'Bucket'     => $bucket,
-                'Key'        => "$prefix",
-                'Body'       => "",
-            ]);
             return false;
         } catch (S3Exception $e) {
-            return 'Create Folder Error';
+            return 'Bucket not Exist';
         }
     }
 }
