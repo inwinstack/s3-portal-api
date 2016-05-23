@@ -46,15 +46,14 @@ class FileService extends S3Service
 
     public function getFile($bucket, $key)
     {
-        $file = explode('/', $key);
-        $fileCount = count($file);
+        $randomString = sha1($key . str_random(32));
         try {
             $result = $this->s3->getObject([
                 'Bucket' => $bucket,
                 'Key' => $key,
-                'SaveAs' => __DIR__ . '/../../public/tmpfile/' . $file[$fileCount - 1]
+                'SaveAs' => storage_path('tmpfile/' . $randomString)
             ]);
-            return '/tmpfile/' . $file[$fileCount - 1];
+            return $randomString;
         } catch (S3Exception $e) {
             return false;
         }

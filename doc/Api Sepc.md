@@ -417,10 +417,7 @@ status code:403
 ###Json Response
 ####Success
 ```
-status code:200
-{
-  "uri": "/tmpfile/filename"
-}
+    Download file
 ```
 ####Error
 ```

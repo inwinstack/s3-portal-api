@@ -43,9 +43,11 @@ class FileController extends Controller
 
     public function getFile($bucket, $key)
     {
+        $explodeString = explode('/', $key);
+        $explodeStringCount = count($explodeString);
         $downloadURL = $this->s3Service->getFile($bucket, $key);
         if ($downloadURL) {
-            return response()->json(['uri' => $downloadURL], 200);
+            return response()->download(storage_path('tmpfile/' . $downloadURL), $explodeString[$explodeStringCount - 1])->deleteFileAfterSend(true);;
         }
         return response()->json(['message' => 'Has Error'], 403);
     }
