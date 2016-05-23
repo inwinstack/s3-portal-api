@@ -7,6 +7,7 @@ use App\Services\FileService;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Requests\File\UploadFileRequest;
+use App\Http\Requests\File\StoreFolderRequest;
 
 use JWTAuth;
 
@@ -47,5 +48,14 @@ class FileController extends Controller
             return response()->json(['uri' => $downloadURL], 200);
         }
         return response()->json(['message' => 'Has Error'], 403);
+    }
+
+    public function storeFolder(StoreFolderRequest $request)
+    {
+        $storeResponse = $this->s3Service->storeFolder($request->bucket, $request->prefix);
+        if ($storeResponse) {
+            return response()->json(['message' => $storeResponse], 403);
+        }
+        return response()->json(['message' => 'Create Folder Success'], 200);
     }
 }

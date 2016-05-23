@@ -64,4 +64,24 @@ class FileService extends S3Service
             return false;
         }
     }
+
+    public function storeFolder($bucket, $prefix)
+    {
+        try {
+            $this->s3->headBucket(['Bucket' => $bucket]);
+        } catch (S3Exception $e) {
+            return 'Bucket not Exist';
+        }
+
+        try {
+            $result = $this->s3->putObject([
+                'Bucket'     => $bucket,
+                'Key'        => "$prefix",
+                'Body'       => "",
+            ]);
+            return false;
+        } catch (S3Exception $e) {
+            return 'Create Folder Error';
+        }
+    }
 }

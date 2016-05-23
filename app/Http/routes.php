@@ -31,6 +31,7 @@ Route::group(['prefix' => 'api', 'middleware' => ['cors', 'api']], function () {
             Route::group(['prefix' => 'file', 'namespace' => 'File'], function(){
                 Route::get('list/{bucket}', 'FileController@index');
                 Route::post('create', 'FileController@store');
+                Route::post('create/folder', 'FileController@storeFolder');
                 Route::get('get/{bucket}/{key}', 'FileController@getFile')->where('key', '(.*)');
             });
         });
