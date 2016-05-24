@@ -10,6 +10,7 @@
 8. [UploadFile](#UploadFile)
 9. [DownloadFile](#DownloadFile)
 10. [CreateFolder](#CreateFolder)
+11. [DeleteBucket](#DeleteBucket)
 
 ## 1.<a name="CreateAccount">Create a Account</a>
 
@@ -481,5 +482,51 @@ status code:403
 status code:403
 {
   "message": "Create Folder Error"
+}
+```
+
+## 11.<a name="DelteBucket">DelteBucket</a>
+
+<table>
+    <tr>
+        <td style="width:50px">Method</td>
+        <td style="width:400px">URI</td>
+    </tr>
+    <tr>
+        <td style="width:50px">DELETE</td>
+        <td style="width:400px">/api/v1/bucket/delete</td>
+    </tr>
+</table>
+
+###Input Parameter
+
+<table>
+    <tr>
+        <td style="width:50px">Type</td>
+        <td style="width:150px">Name</td>
+        <td style="width:50px">Require</td>
+        <td style="width:100px">Remark</td>
+    </tr>
+    <tr>
+        <td style="width:50px">String</td>
+        <td style="width:150px">bucket</td>
+        <td style="width:50px">✔︎</td>
+        <td style="width:100px"></td>
+    </tr>
+</table>
+
+###Json Response
+####Success
+```
+status code:200
+{
+  "message": "Delete Bucket Success"
+}
+```
+####Error
+```
+status code:403
+{
+  "message": "Delete Bucket Error"
 }
 ```
