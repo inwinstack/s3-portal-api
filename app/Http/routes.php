@@ -34,6 +34,7 @@ Route::group(['prefix' => 'api', 'middleware' => ['cors', 'api']], function () {
                 Route::post('create', 'FileController@store');
                 Route::post('create/folder', 'FileController@storeFolder');
                 Route::get('get/{bucket}/{key}', 'FileController@getFile')->where('key', '(.*)');
+                Route::delete('delete', 'FileController@destroy');
             });
         });
     });

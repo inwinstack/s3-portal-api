@@ -11,6 +11,7 @@
 9. [DownloadFile](#DownloadFile)
 10. [CreateFolder](#CreateFolder)
 11. [DeleteBucket](#DeleteBucket)
+12. [DeleteFile](#DeleteFile)
 
 ## 1.<a name="CreateAccount">Create a Account</a>
 
@@ -528,5 +529,62 @@ status code:200
 status code:403
 {
   "message": "Delete Bucket Error"
+}
+```
+
+## 12.<a name="DeleteFile">DeleteFile</a>
+
+<table>
+    <tr>
+        <td style="width:50px">Method</td>
+        <td style="width:400px">URI</td>
+    </tr>
+    <tr>
+        <td style="width:50px">DELETE</td>
+        <td style="width:400px">/api/v1/file/delete</td>
+    </tr>
+</table>
+
+###Input Parameter
+
+<table>
+    <tr>
+        <td style="width:50px">Type</td>
+        <td style="width:150px">Name</td>
+        <td style="width:50px">Require</td>
+        <td style="width:100px">Remark</td>
+    </tr>
+    <tr>
+        <td style="width:50px">String</td>
+        <td style="width:150px">bucket</td>
+        <td style="width:50px">✔︎</td>
+        <td style="width:100px"></td>
+    </tr>
+    <tr>
+        <td style="width:50px">String</td>
+        <td style="width:150px">key</td>
+        <td style="width:50px">✔︎</td>
+        <td style="width:100px"></td>
+    </tr>
+</table>
+
+###Json Response
+####Success
+```
+status code:200
+{
+  "message": "Delete File Success"
+}
+```
+####Error
+```
+status code:403
+{
+  "message": "Delete File Error"
+}
+- or -
+status code:403
+{
+  "message": "File Non-exist"
 }
 ```

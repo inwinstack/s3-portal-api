@@ -87,4 +87,21 @@ class FileService extends S3Service
             return 'Bucket not Exist';
         }
     }
+
+    public function deleteFile($bucket, $key)
+    {
+        $checkObject = $this->s3->doesObjectExist($bucket, $key);
+        if (!$checkObject) {
+            return 'File Non-exist';
+        }
+        try {
+            $this->s3->deleteObject([
+                'Bucket' => $bucket,
+                'Key' => $key
+            ]);
+            return false;
+        } catch (S3Exception $e) {
+            return 'Delete File Error';
+        }
+    }
 }
