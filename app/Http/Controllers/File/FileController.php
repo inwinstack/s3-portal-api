@@ -8,7 +8,6 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Requests\File\UploadFileRequest;
 use App\Http\Requests\File\StoreFolderRequest;
-use App\Http\Requests\File\RemoveFileRequest;
 
 use JWTAuth;
 
@@ -62,9 +61,9 @@ class FileController extends Controller
         return response()->json(['message' => 'Create Folder Success'], 200);
     }
 
-    public function destroy(RemoveFileRequest $request)
+    public function destroy($bucket, $key)
     {
-        $deleteFile = $this->s3Service->deleteFile($request->bucket, $request->key);
+        $deleteFile = $this->s3Service->deleteFile($bucket, $key);
         if ($deleteFile) {
             return response()->json(['message' => $deleteFile], 403);
         }
