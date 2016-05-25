@@ -12,6 +12,7 @@
 10. [CreateFolder](#CreateFolder)
 11. [DeleteBucket](#DeleteBucket)
 12. [DeleteFile](#DeleteFile)
+13. [DeleteFolder](#DeleteFolder)
 
 ## 1.<a name="CreateAccount">Create a Account</a>
 
@@ -438,7 +439,7 @@ status code:403
     </tr>
     <tr>
         <td style="width:50px">POST</td>
-        <td style="width:400px">/api/v1/file/create/folder</td>
+        <td style="width:400px">/api/v1/folder/create</td>
     </tr>
 </table>
 
@@ -563,5 +564,39 @@ status code:403
 status code:403
 {
   "message": "File Non-exist"
+}
+```
+
+## 13.<a name="DeleteFile">DeleteFolder</a>
+
+<table>
+    <tr>
+        <td style="width:50px">Method</td>
+        <td style="width:400px">URI</td>
+    </tr>
+    <tr>
+        <td style="width:50px">DELETE</td>
+        <td style="width:400px">/api/v1/folder/delete/{bucket}/{key}</td>
+    </tr>
+</table>
+
+###Json Response
+####Success
+```
+status code:200
+{
+  "message": "Delete File Success"
+}
+```
+####Error
+```
+status code:403
+{
+  "message": "Delete Folder Error"
+}
+- or -
+status code:403
+{
+  "message": "Folder Non-exist"
 }
 ```

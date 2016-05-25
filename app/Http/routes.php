@@ -32,10 +32,14 @@ Route::group(['prefix' => 'api', 'middleware' => ['cors', 'api']], function () {
             Route::group(['prefix' => 'file', 'namespace' => 'File'], function(){
                 Route::get('list/{bucket}', 'FileController@index');
                 Route::post('create', 'FileController@store');
-                Route::post('create/folder', 'FileController@storeFolder');
                 Route::get('get/{bucket}/{key}', 'FileController@getFile')->where('key', '(.*)');
-                Route::delete('delete/{bucket}/{key}', 'FileController@destroy');
+                Route::delete('delete/{bucket}/{key}', 'FileController@destroy')->where('key', '(.*)');;
             });
+            Route::group(['prefix' => 'folder', 'namespace' => 'Folder'], function(){
+                Route::post('create', 'FolderController@store');
+                Route::delete('delete/{bucket}/{key}', 'FolderController@destroy')->where('key', '(.*)');;
+            });
+
         });
     });
 });

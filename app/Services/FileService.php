@@ -104,4 +104,25 @@ class FileService extends S3Service
             return 'Delete File Error';
         }
     }
+
+    public function deleteFolder($bucket, $key)
+    {
+        $checkObject = $this->s3->doesObjectExist($bucket, $key . '/');
+        if (!$checkObject) {
+            return 'Folder Non-exist';
+        }
+        $files = $this->listFile($bucket, $key)->get('Contents');
+
+        foreach ($files as $key => $value) {
+            try {
+                $this->s3->deleteObject([
+                    'Bucket' => $bucket,
+                    'Key' => $value['Key']
+                ]);
+            } catch (S3Exception $e) {
+                return 'Delete Folder Error';
+            }
+        }
+        return false;
+    }
 }
