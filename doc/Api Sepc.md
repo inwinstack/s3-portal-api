@@ -495,7 +495,7 @@ status code:403
     </tr>
     <tr>
         <td style="width:50px">DELETE</td>
-        <td style="width:400px">/api/v1/bucket/delete</td>
+        <td style="width:400px">/api/v1/bucket/delete/{bucket}</td>
     </tr>
 </table>
 
@@ -541,30 +541,7 @@ status code:403
     </tr>
     <tr>
         <td style="width:50px">DELETE</td>
-        <td style="width:400px">/api/v1/file/delete</td>
-    </tr>
-</table>
-
-###Input Parameter
-
-<table>
-    <tr>
-        <td style="width:50px">Type</td>
-        <td style="width:150px">Name</td>
-        <td style="width:50px">Require</td>
-        <td style="width:100px">Remark</td>
-    </tr>
-    <tr>
-        <td style="width:50px">String</td>
-        <td style="width:150px">bucket</td>
-        <td style="width:50px">✔︎</td>
-        <td style="width:100px"></td>
-    </tr>
-    <tr>
-        <td style="width:50px">String</td>
-        <td style="width:150px">key</td>
-        <td style="width:50px">✔︎</td>
-        <td style="width:100px"></td>
+        <td style="width:400px">/api/v1/file/delete/{bucket}/{key}</td>
     </tr>
 </table>
 

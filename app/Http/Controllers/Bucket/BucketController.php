@@ -49,15 +49,15 @@ class BucketController extends Controller
         return response()->json(['message' => 'Create Bucket Error'], 403);
     }
 
-    public function destroy(BucketRequest $request)
+    public function destroy($bucket)
     {
-        $checkBucket = $this->checkBucket($request->bucket);
+        $checkBucket = $this->checkBucket($bucket);
 
         if (!$checkBucket) {
             return response()->json(['message' => 'Bucket Non-exist'], 403);
         }
 
-        $bucketResponse = $this->s3Service->deleteBucket($request->bucket);
+        $bucketResponse = $this->s3Service->deleteBucket($bucket);
         if ($bucketResponse) {
             return response()->json(['message' => 'Delete Bucket Success'], 200);
         }
