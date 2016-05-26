@@ -18,7 +18,7 @@ class UploadFileRequest extends Request
         return [
             'bucket' => 'required|max:255',
             'prefix' => 'max:255',
-            'file' => 'required|max:10000'
+            'file' => 'required'
         ];
     }
 }
