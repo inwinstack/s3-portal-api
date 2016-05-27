@@ -485,6 +485,11 @@ status code:403
 {
   "message": "Create Folder Error"
 }
+- or -
+status code:403
+{
+  "message": "Folder exist"
+}
 ```
 
 ## 11.<a name="DelteBucket">DelteBucket</a>
@@ -531,6 +536,11 @@ status code:403
 {
   "message": "Delete Bucket Error"
 }
+- or -
+status code:403
+{
+  "message": "Bucket Non-exist"
+}
 ```
 
 ## 12.<a name="DeleteFile">DeleteFile</a>
@@ -567,7 +577,7 @@ status code:403
 }
 ```
 
-## 13.<a name="DeleteFile">DeleteFolder</a>
+## 13.<a name="DeleteFolder">DeleteFolder</a>
 
 <table>
     <tr>

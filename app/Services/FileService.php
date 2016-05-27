@@ -61,6 +61,10 @@ class FileService extends S3Service
 
     public function storeFolder($bucket, $prefix)
     {
+        $checkObject = $this->s3->doesObjectExist($bucket, $prefix);
+        if ($checkObject) {
+            return 'Folder exist';
+        }
         $checkBucket = $this->checkHeadBucket($bucket);
         if (!$checkBucket) {
             try {
