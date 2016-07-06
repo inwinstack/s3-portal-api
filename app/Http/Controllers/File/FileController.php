@@ -70,4 +70,13 @@ class FileController extends Controller
         }
         return response()->json(['message' => 'Delete File Success'], 200);
     }
+
+    public function rename(Request $request)
+    {
+        $renameRespones = $this->s3Service->renameFile($request->bucket, $request->old, $request->new);
+        if ($renameRespones) {
+            return response()->json(['message' => $renameRespones], 403);
+        }
+        return response()->json(['message' => 'Rename File Success'], 200);
+    }
 }
