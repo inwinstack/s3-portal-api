@@ -13,6 +13,7 @@
 11. [DeleteBucket](#DeleteBucket)
 12. [DeleteFile](#DeleteFile)
 13. [DeleteFolder](#DeleteFolder)
+14. [RenameFile](#RenameFile)
 
 ## 1.<a name="CreateAccount">Create a Account</a>
 
@@ -608,5 +609,73 @@ status code:403
 status code:403
 {
   "message": "Folder Non-exist"
+}
+```
+
+## 14.<a name="RenameFile">RenameFile</a>
+
+<table>
+    <tr>
+        <td style="width:50px">Method</td>
+        <td style="width:400px">URI</td>
+    </tr>
+    <tr>
+        <td style="width:50px">POST</td>
+        <td style="width:400px">/api/v1/file/rename</td>
+    </tr>
+</table>
+
+###Input Parameter
+
+<table>
+    <tr>
+        <td style="width:50px">Type</td>
+        <td style="width:150px">Name</td>
+        <td style="width:50px">Require</td>
+        <td style="width:100px">Remark</td>
+    </tr>
+    <tr>
+        <td style="width:50px">String</td>
+        <td style="width:150px">bucket</td>
+        <td style="width:50px">✔︎</td>
+        <td style="width:100px"></td>
+    </tr>
+    <tr>
+        <td style="width:50px">String</td>
+        <td style="width:150px">old</td>
+        <td style="width:50px">✔︎</td>
+        <td style="width:100px"></td>
+    </tr>
+    <tr>
+        <td style="width:50px">String</td>
+        <td style="width:150px">new</td>
+        <td style="width:50px">✔︎</td>
+        <td style="width:100px"></td>
+    </tr>
+</table>
+
+###Json Response
+####Success
+```
+status code:200
+{
+  "message": "Rename File Success"
+}
+```
+####Error
+```
+status code:403
+{
+  "message": "Rename File Error"
+}
+- or -
+status code:403
+{
+  "message": "File Non-exist"
+}
+- or -
+status code:403
+{
+  "message": "File name has exist"
 }
 ```

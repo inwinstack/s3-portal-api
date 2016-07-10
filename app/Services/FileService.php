@@ -129,4 +129,32 @@ class FileService extends S3Service
         }
         return false;
     }
+
+    public function renameFile($bucket, $old, $new)
+    {
+        $key = $old;
+        $checkOldObject = $this->s3->doesObjectExist($bucket, $key);
+        if (!$checkOldObject) {
+            return 'File Non-exist';
+        }
+        $key = $new;
+        $checkNewObject = $this->s3->doesObjectExist($bucket, $key);
+        if ($checkNewObject) {
+            return 'File name has exist';
+        }
+        try {
+            $this->s3->copyObject([
+                'Bucket' => $bucket,
+                'CopySource' => $bucket . '/' . $old,
+                'Key' => $new
+            ]);
+            $this->s3->deleteObject([
+                'Bucket' => $bucket,
+                'Key' => $old
+            ]);
+            return false;
+        } catch (S3Exception $e) {
+            return 'Rename File Error';
+        }
+    }
 }
