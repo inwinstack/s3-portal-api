@@ -13,6 +13,7 @@ class UserRepository
     public function createUser($userData)
     {
         $userData['password'] = bcrypt($userData['password']);
+        $userData['role'] = 'user';
         return User::create($userData);
     }
 
@@ -30,20 +31,6 @@ class UserRepository
     {
         return User::where('email', $email)->first();
     }
-    // public function getDemoData()
-    // {
-    //     return Demo::all();
-    // }
-    //
-    // public function updateByDemo($demo)
-    // {
-    //     return Demo::find($demo['id'])->update(['demo' => $demo['demo']]);
-    // }
-    //
-    // public function deleteByDemo($id)
-    // {
-    //     return Demo::destroy($id);
-    // }
 }
 
 ?>
