@@ -14,6 +14,7 @@
 12. [DeleteFile](#DeleteFile)
 13. [DeleteFolder](#DeleteFolder)
 14. [RenameFile](#RenameFile)
+15. [CreateUser](#CreateUser)
 
 ## 1.<a name="CreateAccount">Create a Account</a>
 
@@ -679,3 +680,61 @@ status code:403
   "message": "File name has exist"
 }
 ```
+
+## 14.<a name="CreateUser">CreateUser</a>
+
+<table>
+    <tr>
+        <td style="width:50px">Method</td>
+        <td style="width:400px">URI</td>
+    </tr>
+    <tr>
+        <td style="width:50px">POST</td>
+        <td style="width:400px">/api/v1/admin/create</td>
+    </tr>
+</table>
+
+###Input Parameter
+
+<table>
+    <tr>
+        <td style="width:50px">Type</td>
+        <td style="width:150px">Name</td>
+        <td style="width:50px">Require</td>
+        <td style="width:100px">Remark</td>
+    </tr>
+    <tr>
+        <td style="width:50px">String</td>
+        <td style="width:150px">email</td>
+        <td style="width:50px">✔︎</td>
+        <td style="width:100px"></td>
+    </tr>
+    <tr>
+        <td style="width:50px">String</td>
+        <td style="width:150px">password</td>
+        <td style="width:50px">✔︎</td>
+        <td style="width:100px"></td>
+    </tr>
+</table>
+
+###Json Response
+####Success
+```
+status code:200
+{
+  "id": *id*,
+  "uid": *uid*,
+  "email": *email*,
+  "name": *name*,
+  "created_at": *createTime*,
+  "updated_at": *updateTime*
+}
+```
+####Error
+```
+status code:403
+{
+  "message": "The email has already been taken"
+}
+```
+
