@@ -1,10 +1,11 @@
-# S3 Portal
+# Ceph S3 Portal API
+S3 Portal is an open source system for ceph radosgw S3-like applications.
 
 > Constructing...
 
 ## Requirement
 
-`php >= 5.5.9`
+* `php >= 5.5.9`
 
 ## Usage
 Copy `.env.example`
