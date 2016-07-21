@@ -42,6 +42,7 @@ Route::group(['prefix' => 'api', 'middleware' => ['cors', 'api']], function () {
             });
             Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
                 Route::post('create', 'AdminController@create');
+                Route::get('list', 'AdminController@index');
             });
         });
     });
