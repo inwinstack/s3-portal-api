@@ -19,8 +19,6 @@ class AuthController extends Controller
 
     use AuthenticatesAndRegistersUsers, ThrottlesLogins;
 
-
-
     /**
      * @var UserRepository
      */
@@ -31,7 +29,6 @@ class AuthController extends Controller
         $this->users = $users;
         $this->middleware('guest', ['except' => 'logout']);
     }
-
 
     /**
      * register a user.
