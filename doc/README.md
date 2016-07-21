@@ -15,6 +15,7 @@
 13. [DeleteFolder](#DeleteFolder)
 14. [RenameFile](#RenameFile)
 15. [CreateUser](#CreateUser)
+16. [ListUsers](#ListUsers)
 
 ## 1.<a name="CreateAccount">Create a Account</a>
 
@@ -681,7 +682,7 @@ status code:403
 }
 ```
 
-## 14.<a name="CreateUser">CreateUser</a>
+## 15.<a name="CreateUser">CreateUser</a>
 
 <table>
     <tr>
@@ -736,5 +737,52 @@ status code:403
 {
   "message": "The email has already been taken"
 }
+- or -
+status code:403
+{
+  "message": "Permission denied"
+}
 ```
 
+## 16.<a name="ListUsers">ListUsers</a>
+<table>
+    <tr>
+        <td style="width:50px">Method</td>
+        <td style="width:400px">URI</td>
+    </tr>
+    <tr>
+        <td style="width:50px">GET</td>
+        <td style="width:400px">/api/v1/admin/list</td>
+    </tr>
+</table>
+
+###Json Response
+####Success
+```
+status code:200
+{
+  "Users": [
+    {
+    	"id": *id*,
+		"uid": *uid*,
+		"email": *email*,
+		"name": *name*,
+		"role": *role*,
+		"created_at": *createTime*,
+		"updated_at": *updateTime*
+    }
+  ]
+}
+```
+####Error
+```
+status code:403
+{
+  "message": "The email has already been taken"
+}
+- or -
+status code:403
+{
+  "message": "Permission denied"
+}
+```

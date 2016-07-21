@@ -20,10 +20,20 @@ class AdminController extends Controller
         $this->user = JWTAuth::parseToken()->authenticate();
     }
 
+    public function index()
+    {
+        $user = $this->user;
+        if($user['role'] != 'admin') {
+            return response()->json(['message' => 'Permission denied'], 403);
+        }
+        $resultData = $this->users->getUsers();
+        return response()->json(['Users' => $resultData], 200);
+    }
+
     public function create(AdminRequest $request, RequestApiService $requestApiService)
     {
         $user = $this->user;
-        if($user['role'] != 'user') {
+        if($user['role'] != 'admin') {
             return response()->json(['message' => 'Permission denied'], 403);
         }
         $data = $request->all();

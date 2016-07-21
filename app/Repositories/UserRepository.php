@@ -10,6 +10,11 @@ use App\User;
  */
 class UserRepository
 {
+    public function getUsers()
+    {
+      return User::all();
+    }
+
     public function createUser($userData)
     {
         $userData['password'] = bcrypt($userData['password']);
