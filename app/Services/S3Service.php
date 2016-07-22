@@ -13,8 +13,7 @@ class S3Service
                 'key'    => $accessKey,
                 'secret' => $secretKey,
             ],
-            'endpoint' => 'http://ceph-s3.imaclouds.com/',
-
+            'endpoint' => 'http://'. env('ServerURL') .'/',
         ]);
         return $s3;
     }
