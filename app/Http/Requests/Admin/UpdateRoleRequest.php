@@ -6,7 +6,7 @@ use App\Http\Requests\Request;
 /**
  *
  */
-class AdminRequest extends Request
+class UpdateRoleRequest extends Request
 {
     public function authorize()
     {
@@ -17,7 +17,7 @@ class AdminRequest extends Request
     {
         return [
             'email' => 'required|email|max:255',
-            'password' => 'required|min:6'
+            'role' => 'required|in:admin,user'
         ];
     }
 }
