@@ -12,7 +12,7 @@ class UserRepository
 {
     public function getUsers()
     {
-      return User::all();
+        return User::all();
     }
 
     public function createUser($userData)
@@ -35,6 +35,28 @@ class UserRepository
     public function check($email)
     {
         return User::where('email', $email)->first();
+    }
+
+    public function resetPassword($userData)
+    {
+        User::where('email', $userData['email'])->update(['password' => bcrypt($userData['password'])]);
+        return User::where('email', $userData['email'])->first();
+    }
+
+    public function updateRole($userData)
+    {
+        User::where('email', $userData['email'])->update(['role' => $userData['role']]);
+        return User::where('email', $userData['email'])->first();
+    }
+
+    public function removeUser($email)
+    {
+        User::where('email', '=', $email)->delete();
+        $data = User::where('email', $email)->first();
+        if ($data) {
+            return false;
+        }
+        return true;
     }
 }
 
