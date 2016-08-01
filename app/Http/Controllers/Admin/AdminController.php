@@ -45,14 +45,14 @@ class AdminController extends Controller
             'display-name' => $data['email'],
             'email' => $data['email']
         ]);
+        if($this->users->check($data['email'])){
+                return response()->json(['message' => 'The email has already been taken.'], 403);
+        }
         $result = json_decode($requestApiService->request('PUT', 'user', "?format=json&$httpQuery"));
 
         if ($result) {
             $data['access_key'] = $result->keys[0]->access_key;
             $data['secret_key'] = $result->keys[0]->secret_key;
-            if($this->users->check($data['email'])){
-                return response()->json(['message' => 'The email has already been taken.'], 403);
-            }
             $resultData = $this->users->createUser($data);
             return response()->json($resultData);
         }
