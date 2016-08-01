@@ -105,7 +105,36 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
             'name' => str_random(4),
             'password' => bcrypt($password),
             'access_key' => $accessKey,
-            'secret_key' => $secretKey
+            'secret_key' => $secretKey,
+            'role' => 'user'
+        ];
+
+        return User::create($userData);
+    }
+    public function createAdminUser($email, $password, $hasBucket = false)
+    {
+        $httpQuery = http_build_query([
+            'uid' => $email,
+            'display-name' => $email,
+            'email' => $email
+        ]);
+        $accessKey = str_random(10);
+        $secretKey = str_random(10);
+        if ($hasBucket) {
+            $apiService = new  \App\Services\RequestApiService;
+            $result = json_decode($apiService->request('PUT', 'user', "?format=json&$httpQuery"));
+            $accessKey = $result->keys[0]->access_key;
+            $secretKey = $result->keys[0]->secret_key;
+        }
+
+        $userData = [
+            'uid' => $email,
+            'email' => $email,
+            'name' => str_random(4),
+            'password' => bcrypt($password),
+            'access_key' => $accessKey,
+            'secret_key' => $secretKey,
+            'role' => 'admin'
         ];
 
         return User::create($userData);
