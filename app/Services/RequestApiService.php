@@ -6,12 +6,6 @@ use Curl\Curl;
 
 class RequestApiService
 {
-    // protected $demos;
-    //
-    // public function __construct(DemoRepository $demos) {
-    //     $this->demos = $demos;
-    // }
-
     public function request($apiMethod, $path, $query, $requestData = [])
     {
         $accessKey = env('AccessKey');
@@ -26,18 +20,16 @@ class RequestApiService
 
         $signature = base64_encode(hash_hmac('sha1', $canonical, $secretKey, true));
 
-        $curl = new Curl();
-
-        $curl->setHeader('Host', $host);
-        $curl->setHeader('Date', $dateLong);
-        $curl->setHeader('Authorization', "AWS $accessKey:$signature");
-        $curl->$apiMethod($requestUrl, $requestData);
-
-        if ($curl->error) {
-            return null;
-        } else {
-           return  $curl->response;
-        }
-
+        $header[] = "Host: $host";
+        $header[] = "Date: $dateLong" ;
+        $header[] = "Authorization: AWS $accessKey:$signature";
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $requestUrl);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $apiMethod);
+        $result = curl_exec($ch);
+        curl_close($ch);
+        return $result;
     }
 }
