@@ -80,6 +80,9 @@ class AdminController extends Controller
             return response()->json(['message' => 'Permission denied'], 403);
         }
         $data = $request->all();
+        if($data['email'] == 'root@inwinstack.com'){
+            return response()->json(['message' => 'Root is not allowed to be operated.'], 405);
+        }
         if(!$this->users->check($data['email'])){
             return response()->json(['message' => 'The email does not exist.'], 403);
         }
@@ -92,6 +95,9 @@ class AdminController extends Controller
         $user = $this->user;
         if ($user['role'] != 'admin') {
             return response()->json(['message' => 'Permission denied'], 403);
+        }
+        if($email == 'root@inwinstack.com') {
+            return response()->json(['message' => 'Root is not allowed to be operated.'], 405);
         }
         $httpQuery = http_build_query([
             'uid' => $email,
