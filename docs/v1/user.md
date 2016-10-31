@@ -137,6 +137,13 @@ status code:200
 
 #### Error
 ```
+status code:403
+{
+  "message": "Connection to Ceph failed"
+}
+```
+
+```
 status code:401
 {
   "message": "verify_error"
@@ -275,6 +282,11 @@ status code:403
 status code:403
 {
   "message": "Create Bucket Error"
+}
+- or -
+status code:403
+{
+  "message": "Invalid Name"
 }
 ```
 
