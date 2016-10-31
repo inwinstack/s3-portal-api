@@ -34,6 +34,7 @@ class BucketController extends Controller
 
     public function store(BucketRequest $request)
     {
+        $listResponse = $this->s3Service->listBucket();
         $checkBucket = $this->checkBucket($request->bucket);
 
         if ($checkBucket) {
