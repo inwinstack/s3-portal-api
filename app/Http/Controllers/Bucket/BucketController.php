@@ -34,8 +34,11 @@ class BucketController extends Controller
 
     public function store(BucketRequest $request)
     {
-        $listResponse = $this->s3Service->listBucket();
-        $checkBucket = $this->checkBucket($request->bucket);
+        if (!preg_match("/[A-Z]/", $request->bucket)) {
+            return response()->json(['message' => 'Invalid Name'], 403);
+        }
+	
+	$checkBucket = $this->checkBucket($request->bucket);
 
         if ($checkBucket) {
             return response()->json(['message' => 'Has Bucket'], 403);

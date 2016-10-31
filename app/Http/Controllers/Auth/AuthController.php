@@ -59,8 +59,12 @@ class AuthController extends Controller
         return response()->json(['message' => 'curl_has_error'], 401);
     }
 
-    public function login(LoginRequest $request)
+     public function login(LoginRequest $request, RequestApiService $requestApiService)
     {
+        $result = json_decode($requestApiService->request('GET', 'bucket', "?format=json"));
+        if (is_object($result) || empty($result)) {
+          return response()->json(['message' => 'Connection to Ceph failed'], 403);
+        }
         $data = $this->users->verify($request->all());
         if ($data) {
             $data['token'] = JWTAuth::fromUser($data);
