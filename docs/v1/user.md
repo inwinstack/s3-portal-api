@@ -15,6 +15,7 @@
 13. [Delete Folder](#DeleteFolder)
 14. [Rename File](#RenameFile)
 15. [Check Ceph Connected](#CheckCephConnected)
+16. [Get User Quota](#GetUserQuota)
 
 ## 1.<a name="CreateAccount">Create a Account</a>
 
@@ -735,4 +736,41 @@ status code:403
   "message": "Connection to Ceph failed"
 }
 ```
+
+## 16.<a name="GetUserQuota">Get User Quota</a>
+
+<table>
+    <tr>
+        <td style="width:50px">Method</td>
+        <td style="width:400px">URI</td>
+    </tr>
+    <tr>
+        <td style="width:50px">GET</td>
+        <td style="width:400px">/api/v1/auth/getUserQuota/{email}</td>
+    </tr>
+</table>
+
+### JSON Response
+#### Success
+```
+status code:200
+{
+  "message": {
+    "enabled": true,
+    "max_size_kb": 2930,
+    "max_objects": -1
+  }
+}
+
+note: if value is -1, there is no limit
+```
+
+#### Error
+```
+status code:403
+{
+  "message": "User is not exist"
+}
+```
+
 
