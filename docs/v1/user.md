@@ -14,6 +14,7 @@
 12. [Delete File](#DeleteFile)
 13. [Delete Folder](#DeleteFolder)
 14. [Rename File](#RenameFile)
+15. [Check Ceph Connected](#CheckCephConnected)
 
 ## 1.<a name="CreateAccount">Create a Account</a>
 
@@ -704,3 +705,34 @@ status code:403
   "message": "File name has exist"
 }
 ```
+
+## 15.<a name="CheckCephConnected">Check Ceph Connected</a>
+
+<table>
+    <tr>
+        <td style="width:50px">Method</td>
+        <td style="width:400px">URI</td>
+    </tr>
+    <tr>
+        <td style="width:50px">GET</td>
+        <td style="width:400px">/api/v1/auth/checkCephConneted</td>
+    </tr>
+</table>
+
+### JSON Response
+#### Success
+```
+status code:200
+{
+  "message": "Connected to Ceph success"
+}
+```
+
+#### Error
+```
+status code:403
+{
+  "message": "Connection to Ceph failed"
+}
+```
+

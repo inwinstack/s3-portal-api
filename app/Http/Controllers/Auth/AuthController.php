@@ -91,4 +91,14 @@ class AuthController extends Controller
         }
         return response()->json(['message' => 'Invalidate Token Error'], 401);
     }
+
+    public function checkCephConnected(RequestApiService $requestApiService)
+    {
+        $result = json_decode($requestApiService->request('GET', 'bucket', "?format=json"));
+        if (is_object($result) || empty($result)) {
+            return response()->json(['message' => 'Connection to Ceph failed'], 403);
+        } else {
+            return  response()->json(['message' => 'Connected to Ceph success'], 200);
+        }
+    }
 }

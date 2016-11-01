@@ -22,6 +22,7 @@ Route::group(['prefix' => 'api', 'middleware' => ['cors', 'api']], function () {
             Route::post('login', 'AuthController@login');
             Route::post('logout', 'AuthController@logout');
             Route::get('checkEmail/{email}', 'AuthController@checkEmail');
+            Route::get('checkCephConnected', 'AuthController@checkCephConnected');
         });
         Route::group(['middleware' => ['jwt.auth']], function () {
             Route::group(['prefix' => 'bucket', 'namespace' => 'Bucket'], function(){
