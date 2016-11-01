@@ -101,4 +101,15 @@ class AuthController extends Controller
             return  response()->json(['message' => 'Connected to Ceph success'], 200);
         }
     }
+
+    public function getUserQuota($user, RequestApiService $requestApiService)
+    {
+        $data = $this->users->check($user);
+        if ($data) {
+            $result = json_decode($requestApiService->request('GET', 'user', "?quota&uid=" . $user . "&quota-type=user"));
+            return response()->json(['message' => $result], 200);
+        } else {
+            return response()->json(['message' => 'User is not exist'], 403);
+        }
+    }
 }
