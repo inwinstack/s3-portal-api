@@ -17,6 +17,7 @@
 15. [Check Ceph Connected](#CheckCephConnected)
 16. [Get User Quota](#GetUserQuota)
 17. [Set User Quota](#SetUserQuota)
+18. [Get Bucket Quota](#GetBucketQuota)
 
 ## 1.<a name="CreateAccount">Create a Account</a>
 
@@ -757,9 +758,9 @@ status code:403
 status code:200
 {
   "message": {
-    "enabled": true,
-    "max_size_kb": 2930,
-    "max_objects": -1
+    "enabled": *true | false*,
+    "max_size_kb": *maxSize | -1*,
+    "max_objects": *maxObjectCount | -1*
   }
 }
 
@@ -831,5 +832,42 @@ status code:200
   "message": "Setting is successful"
 }
 ```
+
+## 18.<a name="GetBucketQuota">Get Bucket Quota</a>
+
+<table>
+    <tr>
+        <td style="width:50px">Method</td>
+        <td style="width:400px">URI</td>
+    </tr>
+    <tr>
+        <td style="width:50px">GET</td>
+        <td style="width:400px">/api/v1/auth/getBucketQuota/{email}</td>
+    </tr>
+</table>
+
+### JSON Response
+#### Success
+```
+status code:200
+{
+  "message": {
+    "enabled": *true | false*,
+    "max_size_kb": *maxSize(KB) | -1*,
+    "max_objects": *maxObjectCount | -1*
+  }
+}
+
+note: if value is -1, there is no limit
+```
+
+#### Error
+```
+status code:403
+{
+  "message": "User is not exist"
+}
+```
+
 
 
