@@ -6,6 +6,7 @@ use App\Repositories\UserRepository;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\CheckEmailRequest;
+use App\Http\Requests\Auth\QuotaRequest;
 use App\Services\RequestApiService;
 
 use App\Http\Controllers\Controller;
@@ -111,5 +112,18 @@ class AuthController extends Controller
         } else {
             return response()->json(['message' => 'User is not exist'], 403);
         }
+    }
+
+    public function setUserQuota(QuotaRequest $request, RequestApiService $requestApiService)
+    {
+        $data = $request->all();
+        $httpQuery = http_build_query([
+            'bucket' => $data['bucket'],
+            'max-objects' => $data['max-objects'],
+            'max-size' => $data['max-size'],
+            'quota-scope' => 'bucket'
+        ]);
+        $result = json_decode($requestApiService->request('PUT', 'user', "?quota&uid=" . $data['email'] . "&quota-type=user&$httpQuery"));
+        return response()->json(['message' => 'Setting is successful'], 200);
     }
 }
