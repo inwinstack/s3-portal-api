@@ -126,4 +126,15 @@ class AuthController extends Controller
         $result = json_decode($requestApiService->request('PUT', 'user', "?quota&uid=" . $data['email'] . "&quota-type=user&$httpQuery"));
         return response()->json(['message' => 'Setting is successful'], 200);
     }
+
+    public function getBucketQuota($user, RequestApiService $requestApiService)
+    {
+        $data = $this->users->check($user);
+        if ($data) {
+            $result = json_decode($requestApiService->request('GET', 'user', "?quota&uid=" . $user . "&quota-type=bucket"));
+            return response()->json(['message' => $result], 200);
+        } else {
+            return response()->json(['message' => 'User is not exist'], 403);
+        }
+    }
 }
