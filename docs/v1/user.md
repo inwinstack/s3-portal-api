@@ -798,26 +798,32 @@ status code:403
         <td style="width:100px">Remark</td>
     </tr>
     <tr>
-        <td style="width:50px">String</td>
+        <td style="width:50px">Email</td>
         <td style="width:150px">email</td>
         <td style="width:50px">✔︎</td>
         <td style="width:100px"></td>
     </tr>
     <tr>
-        <td style="width:50px">String</td>
+        <td style="width:50px">Integer</td>
         <td style="width:150px">max-objects</td>
         <td style="width:50px">✔︎</td>
         <td style="width:100px"></td>
     </tr>
     <tr>
-        <td style="width:50px">String</td>
-        <td style="width:150px">max-size</td>
+        <td style="width:50px">Integer</td>
+        <td style="width:150px">max-size-kb</td>
         <td style="width:50px">✔︎</td>
         <td style="width:100px"></td>
     </tr>
     <tr>
-        <td style="width:50px">String</td>
+        <td style="width:50px">Integer</td>
         <td style="width:150px">bucket</td>
+        <td style="width:50px">✔︎</td>
+        <td style="width:100px"></td>
+    </tr>
+    <tr>
+        <td style="width:50px">Boolean</td>
+        <td style="width:150px">enabled</td>
         <td style="width:50px">✔︎</td>
         <td style="width:100px"></td>
     </tr>
