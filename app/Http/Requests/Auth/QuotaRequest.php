@@ -19,7 +19,8 @@ class QuotaRequest extends Request
             'email' => 'required|email|max:255',
             'bucket' => 'required|max:10',
             'max-objects' => 'required|max:10',
-            'max-size' => 'required|max:6'
+            'max-size-kb' => 'required|max:6',
+            'enabled' => 'required|boolean'
         ];
     }
 }

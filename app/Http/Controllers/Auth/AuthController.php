@@ -120,8 +120,9 @@ class AuthController extends Controller
         $httpQuery = http_build_query([
             'bucket' => $data['bucket'],
             'max-objects' => $data['max-objects'],
-            'max-size' => $data['max-size'],
-            'quota-scope' => 'bucket'
+            'max-size-kb' => $data['max-size-kb'],
+            'quota-scope' => 'bucket',
+            'enabled' => $data['enabled']
         ]);
         $result = json_decode($requestApiService->request('PUT', 'user', "?quota&uid=" . $data['email'] . "&quota-type=user&$httpQuery"));
         return response()->json(['message' => 'Setting is successful'], 200);
