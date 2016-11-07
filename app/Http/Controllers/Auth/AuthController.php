@@ -121,7 +121,7 @@ class AuthController extends Controller
             'bucket' => $data['bucket'],
             'max-objects' => $data['max-objects'],
             'max-size-kb' => $data['max-size-kb'],
-            'quota-scope' => 'bucket',
+            'quota-scope' => 'user',
             'enabled' => $data['enabled']
         ]);
         $result = json_decode($requestApiService->request('PUT', 'user', "?quota&uid=" . $data['email'] . "&quota-type=user&$httpQuery"));
@@ -137,5 +137,19 @@ class AuthController extends Controller
         } else {
             return response()->json(['message' => 'User is not exist'], 403);
         }
+    }
+
+    public function setBucketQuota(QuotaRequest $request, RequestApiService $requestApiService)
+    {
+        $data = $request->all();
+        $httpQuery = http_build_query([
+            'bucket' => $data['bucket'],
+            'max-objects' => $data['max-objects'],
+            'max-size-kb' => $data['max-size-kb'],
+            'quota-scope' => 'bucket',
+            'enabled' => $data['enabled']
+        ]);
+        $result = json_decode($requestApiService->request('PUT', 'user', "?quota&uid=" . $data['email'] . "&quota-type=bucket&$httpQuery"));
+        return response()->json(['message' => 'Setting is successful'], 200);
     }
 }
