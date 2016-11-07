@@ -26,6 +26,7 @@ Route::group(['prefix' => 'api', 'middleware' => ['cors', 'api']], function () {
             Route::get('getUserQuota/{user}', 'AuthController@getUserQuota');
             Route::post('setUserQuota', 'AuthController@setUserQuota');
             Route::get('getBucketQuota/{user}', 'AuthController@getBucketQuota');
+            Route::post('setBucketQuota', 'AuthController@setBucketQuota');
         });
         Route::group(['middleware' => ['jwt.auth']], function () {
             Route::group(['prefix' => 'bucket', 'namespace' => 'Bucket'], function(){
