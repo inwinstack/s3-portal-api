@@ -19,6 +19,7 @@
 17. [Set User Quota](#SetUserQuota)
 18. [Get Bucket Quota](#GetBucketQuota)
 19. [Set Bucket Quota](#SetBucketQuota)
+20. [Move File](#MoveFile)
 
 ## 1.<a name="CreateAccount">Create a Account</a>
 
@@ -939,6 +940,84 @@ status code:200
   "message": "Setting is successful"
 }
 ```
+
+## 20.<a name="MoveFile">Move File</a>
+
+<table>
+    <tr>
+        <td style="width:50px">Method</td>
+        <td style="width:400px">URI</td>
+    </tr>
+    <tr>
+        <td style="width:50px">POST</td>
+        <td style="width:400px">/api/v1/file/move</td>
+    </tr>
+</table>
+
+### Input Parameter
+
+<table>
+    <tr>
+        <td style="width:50px">Type</td>
+        <td style="width:150px">Name</td>
+        <td style="width:50px">Require</td>
+        <td style="width:100px">Remark</td>
+    </tr>
+    <tr>
+        <td style="width:50px">String</td>
+        <td style="width:150px">sourceBucket</td>
+        <td style="width:50px">✔︎</td>
+        <td style="width:100px"></td>
+    </tr>
+    <tr>
+        <td style="width:50px">String</td>
+        <td style="width:150px">sourceFile</td>
+        <td style="width:50px">✔︎</td>
+        <td style="width:100px"></td>
+    </tr>
+    <tr>
+        <td style="width:50px"> String </td>
+        <td style="width:150px">goalBucket</td>
+        <td style="width:50px">✔︎</td>
+        <td style="width:100px"></td>
+    </tr>
+    <tr>
+        <td style="width:50px">String</td>
+        <td style="width:150px">goalFile</td>
+        <td style="width:50px">✔︎</td>
+        <td style="width:100px"></td>
+    </tr>
+</table>
+
+
+### JSON Response
+#### Success
+```
+status code:200
+{
+  "message": "The Move is complete."
+}
+```
+
+#### Error
+```
+status code:403
+{
+  "message": "The file don't exist."
+}
+- or -
+status code:403
+{
+  "message": "The file already exists."
+}
+- or -
+status code:403
+{
+  "message": "The file move failed."
+}
+
+```
+
 
 
 

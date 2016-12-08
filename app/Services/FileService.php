@@ -157,4 +157,26 @@ class FileService extends S3Service
             return 'Rename File Error';
         }
     }
+
+    public function moveFile($sourceBucket, $sourceFile, $goalBucket, $goalFile)
+    {
+        $checkSourceExist = $this->s3->doesObjectExist($sourceBucket, $sourceFile);
+        if (!$checkSourceExist) return 'The file don\'t exist';
+        $checkGoalExist = $this->s3->doesObjectExist($goalBucket, $goalFile);
+        if ($checkGoalExist) return 'The file already exists';
+        try {
+            $this->s3->copyObject([
+                'Bucket' => $goalBucket,
+                'CopySource' => $sourceBucket . '/' . $sourceFile,
+                'Key' => $goalFile
+            ]);
+            $this->s3->deleteObject([
+                'Bucket' => $sourceBucket,
+                'Key' => $sourceFile
+            ]);
+            return false;
+        } catch (S3Exception $e) {
+            return 'The file move failed';
+        }
+    }
 }

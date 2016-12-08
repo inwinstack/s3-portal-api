@@ -40,6 +40,7 @@ Route::group(['prefix' => 'api', 'middleware' => ['cors', 'api']], function () {
                 Route::post('rename', 'FileController@rename');
                 Route::get('get/{bucket}/{key}', 'FileController@getFile')->where('key', '(.*)');
                 Route::delete('delete/{bucket}/{key}', 'FileController@destroy')->where('key', '(.*)');
+                Route::post('move', 'FileController@move');
             });
             Route::group(['prefix' => 'folder', 'namespace' => 'Folder'], function(){
                 Route::post('create', 'FolderController@store');
