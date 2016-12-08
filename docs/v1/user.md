@@ -20,6 +20,7 @@
 18. [Get Bucket Quota](#GetBucketQuota)
 19. [Set Bucket Quota](#SetBucketQuota)
 20. [Move File](#MoveFile)
+21. [Replicate File](#ReplicateFile)
 
 ## 1.<a name="CreateAccount">Create a Account</a>
 
@@ -1014,6 +1015,66 @@ status code:403
 status code:403
 {
   "message": "The file move failed."
+}
+
+```
+
+## 21.<a name="ReplicateFile"> Replicate File </a>
+
+<table>
+    <tr>
+        <td style="width:50px">Method</td>
+        <td style="width:400px">URI</td>
+    </tr>
+    <tr>
+        <td style="width:50px">POST</td>
+        <td style="width:400px">/api/v1/file/replicate</td>
+    </tr>
+</table>
+
+### Input Parameter
+
+<table>
+    <tr>
+        <td style="width:50px">Type</td>
+        <td style="width:150px">Name</td>
+        <td style="width:50px">Require</td>
+        <td style="width:100px">Remark</td>
+    </tr>
+    <tr>
+        <td style="width:50px">String</td>
+        <td style="width:150px">bucket</td>
+        <td style="width:50px">✔︎</td>
+        <td style="width:100px"></td>
+    </tr>
+    <tr>
+        <td style="width:50px">String</td>
+        <td style="width:150px">file</td>
+        <td style="width:50px">✔︎</td>
+        <td style="width:100px"></td>
+    </tr>
+</table>
+
+
+### JSON Response
+#### Success
+```
+status code:200
+{
+  "message": "The replication is complete."
+}
+```
+
+#### Error
+```
+status code:403
+{
+  "message": "The file don't exist."
+}
+- or -
+status code:403
+{
+  "message": "The file copy failed."
 }
 
 ```

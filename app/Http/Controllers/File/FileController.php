@@ -86,4 +86,11 @@ class FileController extends Controller
         if ($moveResponse) return response()->json(['message' => 'The Move is complete'], 200);
         else return response()->json(['message' => $moveResponse], 403);
     }
+
+    public function replicate(Request $request)
+    {
+        $replicateResponse = $this->s3Service->replicateFile($request->bucket, $request->file);
+        if (!$replicateResponse) return response()->json(['message' => 'The replication is complete'], 200);
+        else return response()->json(['message' => $replicateResponse], 403);
+    }
 }
