@@ -83,7 +83,7 @@ class FileController extends Controller
     public function move(Request $request)
     {
         $moveResponse = $this->s3Service->moveFile($request->sourceBucket, $request->sourceFile, $request->goalBucket, $request->goalFile);
-        if ($moveResponse) return response()->json(['message' => 'The Move is complete'], 200);
+        if (!$moveResponse) return response()->json(['message' => 'The Move is complete'], 200);
         else return response()->json(['message' => $moveResponse], 403);
     }
 
