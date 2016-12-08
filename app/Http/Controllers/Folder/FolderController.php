@@ -40,4 +40,11 @@ class FolderController extends Controller
         }
         return response()->json(['message' => 'Delete File Success'], 200);
     }
+
+    public function rename(Request $request)
+    {
+        $renameFolderResponse = $this->s3Service->renameFolder($request->bucket, $request->oldName, $request->newName);
+        if (!$renameFolderResponse) return response()->json(['message' => 'The folder is renamed']);
+        else return response()->json(['message' => $renameFolderResponse], 403);
+    }
 }

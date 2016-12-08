@@ -21,6 +21,7 @@
 19. [Set Bucket Quota](#SetBucketQuota)
 20. [Move File](#MoveFile)
 21. [Replicate File](#ReplicateFile)
+22. [Rename Folder]($RenameFolder)
 
 ## 1.<a name="CreateAccount">Create a Account</a>
 
@@ -1019,7 +1020,7 @@ status code:403
 
 ```
 
-## 21.<a name="ReplicateFile"> Replicate File </a>
+## 21.<a name="ReplicateFile">Replicate File</a>
 
 <table>
     <tr>
@@ -1078,6 +1079,78 @@ status code:403
 }
 
 ```
+
+## 22.<a name="RenameFolder">Rename Folder</a>
+
+<table>
+    <tr>
+        <td style="width:50px">Method</td>
+        <td style="width:400px">URI</td>
+    </tr>
+    <tr>
+        <td style="width:50px">POST</td>
+        <td style="width:400px">/api/v1/folder/rename</td>
+    </tr>
+</table>
+
+### Input Parameter
+
+<table>
+    <tr>
+        <td style="width:50px">Type</td>
+        <td style="width:150px">Name</td>
+        <td style="width:50px">Require</td>
+        <td style="width:100px">Remark</td>
+    </tr>
+    <tr>
+        <td style="width:50px">String</td>
+        <td style="width:150px">bucket</td>
+        <td style="width:50px">✔︎</td>
+        <td style="width:100px"></td>
+    </tr>
+    <tr>
+        <td style="width:50px">String</td>
+        <td style="width:150px">oldName</td>
+        <td style="width:50px">✔︎</td>
+        <td style="width:100px"></td>
+    </tr>
+        <tr>
+        <td style="width:50px">String</td>
+        <td style="width:150px">newName</td>
+        <td style="width:50px">✔︎</td>
+        <td style="width:100px"></td>
+    </tr>
+</table>
+
+
+### JSON Response
+#### Success
+```
+status code:200
+{
+  "message": "The folder is renamed."
+}
+```
+
+#### Error
+```
+status code:403
+{
+  "message": "The folder don't exist."
+}
+- or -
+status code:403
+{
+  "message": "The folder already exists."
+}
+- or -
+status code:403
+{
+  "message": "The folder rename failed."
+}
+
+```
+
 
 
 
