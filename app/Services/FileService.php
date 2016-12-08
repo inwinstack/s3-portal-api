@@ -179,4 +179,20 @@ class FileService extends S3Service
             return 'The file move failed';
         }
     }
+
+    public function replicateFile($bucket, $file)
+    {
+        $checkFileExist = $this->s3->doesObjectExist($bucket, $file);
+        if (!$checkFileExist) return 'The file don\'t exist';
+        try {
+            $this->s3->copyObject([
+                'Bucket' => $bucket,
+                'CopySource' => $bucket . '/' . $file,
+                'Key' => explode('.', $file)[0] . '(copy).' . explode('.', $file)[1]
+            ]);
+            return false;
+        } catch (S3Exception $e) {
+            return 'The file copy failed';
+        }
+    }
 }
