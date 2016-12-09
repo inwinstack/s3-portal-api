@@ -209,7 +209,6 @@ class FileService extends S3Service
                 'Key' => $newName . '/'
             ]);
             $files = $this->listFile($bucket, $oldName . '/')->get('Contents');
-            $tmp = '';
             foreach ($files as $key => $value) {
                 $fileName = explode($oldName . '/', $value['Key'])[1];
                 if ($key != 0) {
@@ -227,6 +226,37 @@ class FileService extends S3Service
             return false;
         } catch (S3Exception $e) {
             return 'The folder rename failed';
+        }
+    }
+
+    public function moveFolder($sourceBucket, $sourceFolder, $goalBucket, $goalFolder)
+    {
+        $checkSourceFolderExist = $this->s3->doesObjectExist($sourceBucket, $sourceFolder . '/');
+        if (!$checkSourceFolderExist) return 'The folder don\'t exist';
+        $checkGoalFolderExist = $this->s3->doesObjectExist($goalBucket, $goalFolder);
+        if ($checkGoalFolderExist) return 'The folder already exists';
+        try {
+            $this->s3->copyObject([
+                'Bucket' => $goalBucket,
+                'CopySource' => $sourceBucket . '/' . $sourceFolder . '/',
+                'Key' => $goalFolder . '/'
+            ]);
+            $files = $this->listFile($sourceBucket, $sourceFolder . '/')->get('Contents');
+            foreach ($files as $key => $value) {
+                $fileName = explode($sourceFolder . '/', $value['Key'])[1];
+                $this->s3->copyObject([
+                    'Bucket' => $goalBucket,
+                    'CopySource' => $sourceBucket . '/' . $value['Key'],
+                    'Key' => $goalFolder . '/' . $fileName
+                ]);
+                $this->s3->deleteObject([
+                    'Bucket' => $sourceBucket,
+                    'Key' => $sourceFolder . '/' . $fileName
+                ]);
+            }
+            return false;
+        } catch (S3Exception $e) {
+            return 'The folder move failed';
         }
     }
 }

@@ -21,7 +21,8 @@
 19. [Set Bucket Quota](#SetBucketQuota)
 20. [Move File](#MoveFile)
 21. [Replicate File](#ReplicateFile)
-22. [Rename Folder]($RenameFolder)
+22. [Rename Folder](#RenameFolder)
+23. [Move Folder](#MoveFolder)
 
 ## 1.<a name="CreateAccount">Create a Account</a>
 
@@ -1147,6 +1148,84 @@ status code:403
 status code:403
 {
   "message": "The folder rename failed."
+}
+
+```
+
+## 23.<a name="MoveFolder">Move Folder</a>
+
+<table>
+    <tr>
+        <td style="width:50px">Method</td>
+        <td style="width:400px">URI</td>
+    </tr>
+    <tr>
+        <td style="width:50px">POST</td>
+        <td style="width:400px">/api/v1/folder/move</td>
+    </tr>
+</table>
+
+### Input Parameter
+
+<table>
+    <tr>
+        <td style="width:50px">Type</td>
+        <td style="width:150px">Name</td>
+        <td style="width:50px">Require</td>
+        <td style="width:100px">Remark</td>
+    </tr>
+    <tr>
+        <td style="width:50px">String</td>
+        <td style="width:150px">sourceBucket</td>
+        <td style="width:50px">✔︎</td>
+        <td style="width:100px"></td>
+    </tr>
+    <tr>
+        <td style="width:50px">String</td>
+        <td style="width:150px">sourceFolder</td>
+        <td style="width:50px">✔︎</td>
+        <td style="width:100px"></td>
+    </tr>
+        <tr>
+        <td style="width:50px">String</td>
+        <td style="width:150px">goalBucket</td>
+        <td style="width:50px">✔︎</td>
+        <td style="width:100px"></td>
+    </tr>
+    </tr>
+        <tr>
+        <td style="width:50px">String</td>
+        <td style="width:150px">goalFolder</td>
+        <td style="width:50px">✔︎</td>
+        <td style="width:100px"></td>
+    </tr>
+</table>
+
+
+### JSON Response
+#### Success
+```
+status code:200
+{
+  "message": "The Move is complete."
+}
+```
+
+#### Error
+```
+status code:403
+{
+  "message": "The folder don't exist."
+}
+- or -
+status code:403
+{
+  "message": "The folder already exists."
+}
+- or -
+status code:403
+{
+  "message": "The folder move failed."
 }
 
 ```

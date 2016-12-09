@@ -47,6 +47,7 @@ Route::group(['prefix' => 'api', 'middleware' => ['cors', 'api']], function () {
                 Route::post('create', 'FolderController@store');
                 Route::delete('delete/{bucket}/{key}', 'FolderController@destroy')->where('key', '(.*)');
                 Route::post('rename', 'FolderController@rename');
+                Route::post('move', 'FolderController@move');
             });
             Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
                 Route::post('create', 'AdminController@create');
