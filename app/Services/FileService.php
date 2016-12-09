@@ -195,4 +195,38 @@ class FileService extends S3Service
             return 'The file copy failed';
         }
     }
+
+    public function renameFolder($bucket, $oldName, $newName)
+    {
+        $checkOldFolderExist = $this->s3->doesObjectExist($bucket, $oldName . '/');
+        if (!$checkOldFolderExist) return 'The folder don\'t exist';
+        $checkNewFolderExist = $this->s3->doesObjectExist($bucket, $newName . '/');
+        if ($checkNewFolderExist) return 'The folder already exists';
+        try {
+            $this->s3->copyObject([
+                'Bucket' => $bucket,
+                'CopySource' => $bucket . '/' . $oldName . '/',
+                'Key' => $newName . '/'
+            ]);
+            $files = $this->listFile($bucket, $oldName . '/')->get('Contents');
+            $tmp = '';
+            foreach ($files as $key => $value) {
+                $fileName = explode($oldName . '/', $value['Key'])[1];
+                if ($key != 0) {
+                    $this->s3->copyObject([
+                        'Bucket' => $bucket,
+                        'CopySource' => $bucket . '/' . $value['Key'],
+                        'Key' => $newName . '/' . $fileName
+                    ]);
+                }
+                $this->s3->deleteObject([
+                    'Bucket' => $bucket,
+                    'Key' => $oldName . '/'. $fileName
+                ]);
+            }
+            return false;
+        } catch (S3Exception $e) {
+            return 'The folder rename failed';
+        }
+    }
 }
