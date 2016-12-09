@@ -47,4 +47,11 @@ class FolderController extends Controller
         if (!$renameFolderResponse) return response()->json(['message' => 'The folder is renamed']);
         else return response()->json(['message' => $renameFolderResponse], 403);
     }
+
+    public function move(Request $request)
+    {
+        $moveFolderResponse = $this->s3Service->moveFolder($request->sourceBucket, $request->sourceFolder, $request->goalBucket, $request->goalFolder);
+        if (!$moveFolderResponse) return response()->json(['message' => 'The Move is complete']);
+        else return response()->json(['message' => $moveFolderResponse], 403);
+    }
 }
