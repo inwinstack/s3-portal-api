@@ -254,7 +254,7 @@ class FileService extends S3Service
                     'Key' => $sourceFolder . '/' . $fileName
                 ]);
             }
-            return $files;
+            return false;
         } catch (S3Exception $e) {
             return 'The folder move failed';
         }
