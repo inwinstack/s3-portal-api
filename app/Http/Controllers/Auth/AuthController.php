@@ -41,23 +41,31 @@ class AuthController extends Controller
      */
     public function register(RegisterRequest $request, RequestApiService $requestApiService)
     {
-        $data = $request->all();
-        $data['uid'] = $data['email'];
-        $data['name'] = $data['email'];
-        $httpQuery = http_build_query([
-            'uid' => $data['uid'],
-            'display-name' => $data['email'],
-            'email' => $data['email']
-        ]);
-        $result = json_decode($requestApiService->request('PUT', 'user', "?format=json&$httpQuery"));
-
-        if ($result) {
-            $data['access_key'] = $result->keys[0]->access_key;
-            $data['secret_key'] = $result->keys[0]->secret_key;
-            $resultData = $this->users->createUser($data);
-            return response()->json($resultData);
-        }
-        return response()->json(['message' => 'curl_has_error'], 401);
+      $data = $request->all();
+      $data['uid'] = $data['email'];
+      $data['name'] = $data['email'];
+      $httpQuery = http_build_query([
+          'uid' => $data['uid'],
+          'display-name' => $data['email'],
+          'email' => $data['email'],
+          'user-caps' => 'usage=read, write; users=read'
+      ]);
+      $result = json_decode($requestApiService->request('PUT', 'user', "?format=json&$httpQuery"));
+      $httpQuery = http_build_query([
+          'bucket' => '5',
+          'max-objects' => '100',
+          'max-size-kb' => '50000',
+          'quota-scope' => 'user',
+          'enabled' => true
+      ]);
+      if ($result) {
+          $data['access_key'] = $result->keys[0]->access_key;
+          $data['secret_key'] = $result->keys[0]->secret_key;
+          $resultData = $this->users->createUser($data);
+      }
+      $updateQuotaResponse = json_decode($requestApiService->request('PUT', 'user', "?quota&uid=" . $data['email'] . "&quota-type=user&$httpQuery"));
+      if ($result) return response()->json(['message' => $result], 200);
+      else return response()->json(['message' => 'curl_has_error'], 401);
     }
 
      public function login(LoginRequest $request, RequestApiService $requestApiService)
