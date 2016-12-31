@@ -23,6 +23,7 @@
 21. [Replicate File](#ReplicateFile)
 22. [Rename Folder](#RenameFolder)
 23. [Move Folder](#MoveFolder)
+24. [Get User State](#GetUserState)
 
 ## 1.<a name="CreateAccount">Create a Account</a>
 
@@ -1229,6 +1230,42 @@ status code:403
 }
 
 ```
+
+## 24.<a name="GetUserState">Get User State</a>
+
+<table>
+    <tr>
+        <td style="width:50px">Method</td>
+        <td style="width:400px">URI</td>
+    </tr>
+    <tr>
+        <td style="width:50px">GET</td>
+#         <td style="width:400px">/api/v1/user/state/{email}</td>
+    </tr>
+</table>
+
+### JSON Response
+#### Success
+```
+status code:200
+{
+  "message": {
+    "totalSizeKB": *357 | -1*,
+    "sizePercent": *7.14% | -1*,
+    "maxSizeKB": *5000 | -1*,
+    "totalObjects": *3 | -1*,
+    "objectsPercent": *3% | -1*,
+    "maxObjects": *100 | -1*
+  }
+}
+
+note: if value is -1, there is no limit
+```
+
+#### Error
+```
+```
+
 
 
 
