@@ -16,10 +16,10 @@ class AuthRegisterTest extends TestCase
      * @var array
      */
     protected $postData = [
-        'name' => 'ApiTestName',
-        'email' => 'ApiTestEmail@yahoo.com.tw',
-        'password' => 'ApiTestPassword',
-        'password_confirmation' => 'ApiTestPassword',
+        'name' => 'User@imac.com',
+        'email' => 'User@imac.com',
+        'password' => '123456',
+        'password_confirmation' => '123456',
         'role' => 'user'
     ];
     /**
@@ -40,7 +40,7 @@ class AuthRegisterTest extends TestCase
     {
         $this->post('api/v1/auth/register', $this->postData, $this->headers)
             ->seeStatusCode(200)
-            ->seeJsonStructure(['uid', 'name']);
+            ->seeJsonStructure(['user_id', 'display_name']);
     }
     /**
      *Testing User register email is illegal.

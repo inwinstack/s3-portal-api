@@ -45,7 +45,7 @@ class AdminController extends Controller
             'display-name' => $data['email'],
             'email' => $data['email']
         ]);
-	if($this->users->check($data['email'])){
+        if($this->users->check($data['email'])){
             return response()->json(['message' => 'The email has already been taken.'], 403);
         }
         $result = json_decode($requestApiService->request('PUT', 'user', "?format=json&$httpQuery"));

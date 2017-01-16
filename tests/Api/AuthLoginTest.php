@@ -15,10 +15,10 @@ class AuthLoginTest extends TestCase
      * @var array
      */
     protected $postData = [
-        'name' => 'ApiTestName',
-        'email' => 'ApiTestEmail@yahoo.com.tw',
-        'password' => 'ApiTestPassword',
-        'password_confirmation' => 'ApiTestPassword',
+        'name' => 'User@imac.com',
+        'email' => 'User@imac.com',
+        'password' => '123456',
+        'password_confirmation' => '123456',
         'role' => 'user'
     ];
     /**

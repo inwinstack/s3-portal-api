@@ -16,8 +16,8 @@ class AuthBucketCreateTest extends TestCase
      * @var array
      */
     protected $postData = [
-        'email' => 'ApiTestEmail@yahoo.com.tw',
-        'password' => 'ApiTestPassword'
+        'email' => 'User@imac.com',
+        'password' => '123456'
     ];
     public function createBucket($user, $bucketName)
     {
@@ -26,7 +26,7 @@ class AuthBucketCreateTest extends TestCase
     }
     public function initBucketAndGetToken()
     {
-        $bucketName = str_random(10);
+        $bucketName = strtoupper(str_random(10));
         $user = $this->createUser($this->postData['email'], $this->postData['password'], true);
         $token = \JWTAuth::fromUser($user);
         $this->createBucket($user, $bucketName);
@@ -38,7 +38,7 @@ class AuthBucketCreateTest extends TestCase
         $headers = $this->headers;
         $headers['HTTP_Authorization'] = "Bearer {$init['token']}";
         $bucket = [
-            'bucket' => str_random(14)
+            'bucket' => strtoupper(str_random(14))
         ];
         $response = $this->post('/api/v1/bucket/create', $bucket, $headers)
             ->seeStatusCode(200)
@@ -78,7 +78,7 @@ class AuthBucketCreateTest extends TestCase
         $headers = $this->headers;
         $headers['HTTP_Authorization'] = "Bearer {$init['token']}";
         $bucket = [
-            'bucket' => str_random(1)
+            'bucket' => strtoupper(str_random(1))
         ];
         $this->post('/api/v1/bucket/create',$bucket, $headers)
             ->seeStatusCode(403)
