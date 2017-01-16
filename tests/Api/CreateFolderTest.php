@@ -17,10 +17,10 @@ class CreateFolderTest extends TestCase
      *
      * @var array
      */
-    protected $postData = [
-        'email' => 'ApiTestEmail@yahoo.com.tw',
-        'password' => 'ApiTestPassword'
-    ];
+     protected $postData = [
+         'email' => 'User@imac.com',
+         'password' => '123456'
+     ];
     public function createBucket($user, $bucketName)
     {
         $s3Service = new  \App\Services\BucketService($user['access_key'], $user['secret_key']);

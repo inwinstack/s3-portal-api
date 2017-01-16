@@ -15,20 +15,20 @@ class CreateAdminUserTest extends TestCase
      *
      * @var array
      */
-    protected $postData = [
-        'name' => 'ApiTestName',
-        'email' => 'ApiTestEmail@yahoo.com.tw',
-        'password' => 'ApiTestPassword',
-        'password_confirmation' => 'ApiTestPassword',
-        'role' => 'user'
-    ];
-    protected $adminData = [
-        'name' => 'backEndApiTestAdmin',
-        'email' => 'backEndAdmin@google.com',
-        'password' => 'test1234567890admin',
-        'password_confirmation' => 'test1234567890admin',
-        'role' => 'admin'
-    ];
+     protected $postData = [
+          'name' => 'User@imac.com',
+          'email' => 'User@imac.com',
+          'password' => '123456',
+          'password_confirmation' => '123456',
+          'role' => 'user'
+     ];
+     protected $adminData = [
+          'name' => 'Admin@imac.com',
+          'email' => 'Admin@imac.com',
+          'password' => '123456',
+          'password_confirmation' => '123456',
+          'role' => 'admin'
+     ];
     /**
      *Testing User register email is not taken.
      */

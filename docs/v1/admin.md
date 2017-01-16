@@ -5,6 +5,7 @@
 3. [Reset Password User](#ResetPasswordUser)
 4. [Update Role User](#UpdateRoleUser)
 5. [Delete User](#DeleteUser)
+6. [List User State](#ListUserState)
 
 ## 1.<a name="CreateUser">Create User</a>
 
@@ -285,4 +286,48 @@ status code:403
   "message": "The delete user operation failed"
 }
 ```
+
+## 6.<a name="ListUserState">List User State</a>
+<table>
+    <tr>
+        <td style="width:50px">Method</td>
+        <td style="width:400px">URI</td>
+    </tr>
+    <tr>
+        <td style="width:50px">GET</td>
+        <td style="width:400px">/api/v1/admin/state</td>
+    </tr>
+</table>
+
+### JSON Response
+#### Success
+```
+status code:200
+{
+  "Users": [
+    {
+    	"uid": *uid*,
+		"buckets": {
+			"0": {
+				"name": *bucket name*
+				"sizeKB": *object size*
+			},
+			...,
+			totalSizeKB: *total object size*,
+			sizePercent: *total object percent*
+		}
+    },
+    ...
+  ]
+}
+```
+
+#### Error
+```
+status code:403
+{
+  "message": "Permission denied"
+}
+```
+
 

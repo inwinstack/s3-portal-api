@@ -18,8 +18,8 @@ class FileDownloadTest extends TestCase
      * @var array
      */
     protected $postData = [
-        'email' => 'ApiTestEmail@yahoo.com.tw',
-        'password' => 'ApiTestPassword'
+        'email' => 'User@imac.com',
+        'password' => '123456'
     ];
     public function createBucket($user, $bucketName)
     {

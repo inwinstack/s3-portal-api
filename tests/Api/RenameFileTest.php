@@ -13,13 +13,13 @@ class RenameFileTest extends TestCase
         'HTTP_Accept' => 'application/json'
     ];
     /**
-     * The base PostData to use while testing the AuthLoginTest Class.
-     *
-     * @var array
-     */
+    * The base PostData to use while testing the AuthLoginTest Class.
+    *
+    * @var array
+    */
     protected $postData = [
-        'email' => 'ApiTestEmail@yahoo.com.tw',
-        'password' => 'ApiTestPassword'
+        'email' => 'User@imac.com',
+        'password' => '123456'
     ];
     public function createBucket($user, $bucketName)
     {
