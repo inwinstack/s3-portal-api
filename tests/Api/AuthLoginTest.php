@@ -1,43 +1,29 @@
 <?php
+
 class AuthLoginTest extends TestCase
 {
     /**
-     * The base Headers to use while testing the AuthLoginTest Class.
+     * Testing the user login is successfully.
      *
-     * @var array
-     */
-    protected $headers = [
-        'HTTP_Accept' => 'application/json'
-    ];
-    /**
-     * The base PostData to use while testing the AuthLoginTest Class.
-     *
-     * @var array
-     */
-    protected $postData = [
-        'name' => 'ApiTestName',
-        'email' => 'ApiTestEmail@yahoo.com.tw',
-        'password' => 'ApiTestPassword',
-        'password_confirmation' => 'ApiTestPassword',
-        'role' => 'user'
-    ];
-    /**
-     *Testing User is Login Success
+     * @return void
      */
     public function testLoginSuccess()
     {
-        $this->createUser($this->postData['email'], $this->postData['password']);
-        $this->post('api/v1/auth/login', $this->postData, $this->headers)
+        $this->createUser($this->userData['email'], $this->userData['password']);
+        $this->post('api/v1/auth/login', $this->userData, $this->headers)
             ->seeStatusCode(200)
             ->seeJsonStructure(['uid', 'token']);
     }
+
     /**
-     *Testing User is Login Failed
+     * Testing the user login is failed.
+     *
+     * @return void
      */
     public function testLoginFailed()
     {
         $toValidateData = ['message' => 'verify_error'];
-        $this->post('api/v1/auth/login', $this->postData, $this->headers)
+        $this->post('api/v1/auth/login', $this->userData, $this->headers)
             ->seeStatusCode(401)
             ->seeJsonContains($toValidateData);
     }

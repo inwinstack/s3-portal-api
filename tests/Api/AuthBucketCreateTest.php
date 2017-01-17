@@ -3,42 +3,17 @@
 class AuthBucketCreateTest extends TestCase
 {
     /**
-     * The base Headers to use while testing the AuthLoginTest Class.
+     * Testing the user create bucket is successfully.
      *
-     * @var array
+     * @return void
      */
-    protected $headers = [
-        'HTTP_Accept' => 'application/json'
-    ];
-    /**
-     * The base PostData to use while testing the AuthLoginTest Class.
-     *
-     * @var array
-     */
-    protected $postData = [
-        'email' => 'ApiTestEmail@yahoo.com.tw',
-        'password' => 'ApiTestPassword'
-    ];
-    public function createBucket($user, $bucketName)
+    public function testCreateBucketSuccess()
     {
-        $s3Service = new  \App\Services\BucketService($user['access_key'], $user['secret_key']);
-        $s3Service->createBucket($bucketName);
-    }
-    public function initBucketAndGetToken()
-    {
-        $bucketName = str_random(10);
-        $user = $this->createUser($this->postData['email'], $this->postData['password'], true);
-        $token = \JWTAuth::fromUser($user);
-        $this->createBucket($user, $bucketName);
-        return ['bucketName' => $bucketName, 'token' => $token, 'user' => $user];
-    }
-    public function testBucketCreateSuccess()
-    {
-        $init = $this->initBucketAndGetToken();
+        $init = $this->initBucket();
         $headers = $this->headers;
         $headers['HTTP_Authorization'] = "Bearer {$init['token']}";
         $bucket = [
-            'bucket' => str_random(14)
+            'bucket' => str_random(10)
         ];
         $response = $this->post('/api/v1/bucket/create', $bucket, $headers)
             ->seeStatusCode(200)
@@ -57,9 +32,15 @@ class AuthBucketCreateTest extends TestCase
         }
         $this->assertTrue($hasName);
     }
+
+    /**
+     * Testing the user create bucket but the bucket name has exist.
+     *
+     * @return void
+     */
     public function testCheckBucketIsExist()
     {
-        $init = $this->initBucketAndGetToken();
+        $init = $this->initBucket();
         $headers = $this->headers;
         $headers['HTTP_Authorization'] = "Bearer {$init['token']}";
         $bucket = [
@@ -72,9 +53,15 @@ class AuthBucketCreateTest extends TestCase
                 "message" => "Has Bucket"
             ]);
     }
+
+    /**
+     * Testing the user create bucket is failed.
+     *
+     * @return void
+     */
     public function testCreateBucketFail()
     {
-        $init = $this->initBucketAndGetToken();
+        $init = $this->initBucket();
         $headers = $this->headers;
         $headers['HTTP_Authorization'] = "Bearer {$init['token']}";
         $bucket = [

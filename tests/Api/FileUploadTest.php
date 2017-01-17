@@ -5,58 +5,39 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 class FileUploadTest extends TestCase
 {
     /**
-     * The base Headers to use while testing the AuthLoginTest Class.
+     * Testing the user upload file is successfully.
      *
-     * @var array
+     * @return void
      */
-    protected $headers = [
-        'HTTP_Accept' => 'application/json'
-    ];
-    /**
-     * The base PostData to use while testing the AuthLoginTest Class.
-     *
-     * @var array
-     */
-    protected $postData = [
-        'email' => 'ApiTestEmail@yahoo.com.tw',
-        'password' => 'ApiTestPassword'
-    ];
-    public function createBucket($user, $bucketName)
-    {
-        $s3Service = new  \App\Services\BucketService($user['access_key'], $user['secret_key']);
-        $s3Service->createBucket($bucketName);
-    }
-    public function initBucketAndGetToken()
-    {
-        $bucketName = str_random(10);
-        $user = $this->createUser($this->postData['email'], $this->postData['password'], true);
-        $token = \JWTAuth::fromUser($user);
-        $this->createBucket($user, $bucketName);
-        return ['bucketName' => $bucketName, 'token' => $token];
-    }
-    public function testFileUploadFailed()
-    {
-        $init = $this->initBucketAndGetToken();
-        $headers = $this->headers;
-        $headers['HTTP_Authorization'] = "Bearer {$init['token']}";
-        $postData = [
-            'bucket' => $init['bucketName']
-        ];
-        $this->post("/api/v1/file/create", $postData, $headers)
-            ->seeStatusCode(422)
-            ->seeJson(['message' => 'validator_error']);
-    }
     public function testFileUploadSuccess()
     {
-        $init = $this->initBucketAndGetToken();
+        $init = $this->initBucket();
         $headers = $this->headers;
         $headers['HTTP_Authorization'] = "Bearer {$init['token']}";
         $local_file = __DIR__ . '/../test-files/test.jpg';
         $uploadedFile = new UploadedFile($local_file, 'test.jpg', 'image/jpeg', filesize($local_file), true);
-        $postData = [
+        $userData = [
             'bucket' => $init['bucketName']
         ];
-        $response = $this->call('post', 'api/v1/file/create', $postData, [], ['file' => $uploadedFile], $headers);
+        $response = $this->call('post', 'api/v1/file/create', $userData, [], ['file' => $uploadedFile], $headers);
         $this->assertEquals($response->getStatusCode(), 200);
+    }
+
+    /**
+     * Testing the user upload file is failed.
+     *
+     * @return void
+     */
+    public function testFileUploadFailed()
+    {
+        $init = $this->initBucket();
+        $headers = $this->headers;
+        $headers['HTTP_Authorization'] = "Bearer {$init['token']}";
+        $userData = [
+            'bucket' => $init['bucketName']
+        ];
+        $this->post("/api/v1/file/create", $userData, $headers)
+            ->seeStatusCode(422)
+            ->seeJson(['message' => 'validator_error']);
     }
 }

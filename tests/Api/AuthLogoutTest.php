@@ -3,31 +3,13 @@
 class AuthLogoutTest extends TestCase
 {
     /**
-     * The base Headers to use while testing the AuthLoginTest Class.
+     * Testing the user is Logout Successfully.
      *
-     * @var array
-     */
-    protected $headers = [
-        'HTTP_Accept' => 'application/json'
-    ];
-    /**
-     * The base PostData to use while testing the AuthLoginTest Class.
-     *
-     * @var array
-     */
-    protected $postData = [
-        'name' => 'ApiTestName',
-        'email' => 'ApiTestEmail@yahoo.com.tw',
-        'password' => 'ApiTestPassword',
-        'password_confirmation' => 'ApiTestPassword',
-        'role' => 'user'
-    ];
-    /**
-     *Testing User is Logout Success
+     * @return void
      */
     public function testLogoutSuccess()
     {
-        $token = \JWTAuth::fromUser($this->createUser($this->postData['email'], $this->postData['password']));
+        $token = \JWTAuth::fromUser($this->createUser($this->userData['email'], $this->userData['password']));
         $this->refreshApplication();
         $headers = $this->headers;
         $headers['HTTP_Authorization'] = "Bearer $token";
@@ -36,8 +18,11 @@ class AuthLogoutTest extends TestCase
         $this->post('api/v1/auth/logout', [], $headers)
             ->seeStatusCode(500);
     }
+
     /**
-     *Testing User is Logout Failed
+     * Testing user is logout Failed.
+     *
+     * @return void
      */
     public function testLogoutFailed()
     {
