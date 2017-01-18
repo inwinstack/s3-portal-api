@@ -3,67 +3,57 @@
 class AuthRegisterTest extends TestCase
 {
     /**
-     * The base Headers to use while testing the AuthLoginTest Class.
+     * Testing the user email is not used by anynoe.
      *
-     * @var array
-     */
-    protected $headers = [
-        'HTTP_Accept' => 'application/json'
-    ];
-    /**
-     * The base PostData to use while testing the AuthLoginTest Class.
-     *
-     * @var array
-     */
-    protected $postData = [
-        'name' => 'ApiTestName',
-        'email' => 'ApiTestEmail@yahoo.com.tw',
-        'password' => 'ApiTestPassword',
-        'password_confirmation' => 'ApiTestPassword',
-        'role' => 'user'
-    ];
-    /**
-     *Testing User register email is not taken.
+     * @return void
      */
     public function testEmailCheckSuccess()
     {
-        // $query = '?email=' . $this->postData['email'];
-        $email = $this->postData['email'];
+        $email = $this->userData['email'];
         $this->get('api/v1/auth/checkEmail/{$email}', $this->headers)
             ->seeStatusCode(200)
             ->seeJsonContains(['message' => 'You can use the email']);
     }
+
     /**
-     *Testing User register is Success Action.
+     * Testing the user register is successfully.
+     *
+     * @return void
      */
     public function testRegisterSuccess()
     {
-        $this->post('api/v1/auth/register', $this->postData, $this->headers)
+        $this->post('api/v1/auth/register', $this->userData, $this->headers)
             ->seeStatusCode(200)
             ->seeJsonStructure(['uid', 'name']);
     }
+
     /**
-     *Testing User register email is illegal.
+     * Testing the user email has already exist.
+     *
+     * @return void
      */
     public function testEmailCheckFailed()
     {
-        $this->createUser($this->postData['email'], $this->postData['password']);
+        $this->createUser($this->userData['email'], $this->userData['password']);
         $toValidateData = [];
         $toValidateData['errors']['email'][0] = 'The email has already been taken.';
-        $this->post('api/v1/auth/register', $this->postData, $this->headers)
+        $this->post('api/v1/auth/register', $this->userData, $this->headers)
             ->seeStatusCode(422)
             ->seeJsonContains($toValidateData);
     }
+
     /**
-     *Testing User register parameter is illegal.
+     * Testing the user email is malformed.
+     *
+     * @return void
      */
     public function testParamFailed()
     {
-        $postData = $this->postData;
-        unset($postData['email']);
+        $userData = $this->userData;
+        unset($userData['email']);
         $data = [];
         $data['message'] = 'validator_error';
-        $this->post('api/v1/auth/register', $postData, $this->headers)
+        $this->post('api/v1/auth/register', $userData, $this->headers)
             ->seeStatusCode(422)
             ->seeJsonContains($data);
     }

@@ -13,15 +13,72 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
     protected $baseUrl = 'http://localhost';
 
     /**
+     * The base Headers to use while testing the AuthLoginTest Class.
+     *
+     * @var array
+     */
+    protected $headers = [
+        'HTTP_Accept' => 'application/json'
+    ];
+
+    /**
+     * The base UserData to use while testing.
+     *
+     * @var array
+     */
+    protected $userData = [
+        'name' => 'ApiTestName',
+        'email' => 'ApiTestEmail@yahoo.com.tw',
+        'password' => 'ApiTestPassword',
+        'password_confirmation' => 'ApiTestPassword',
+        'role' => 'user'
+    ];
+
+    /**
+     * The base AdminData to use while testing.
+     *
+     * @var array
+     */
+    protected $adminData = [
+        'name' => 'backEndApiTestAdmin',
+        'email' => 'backEndAdmin@google.com',
+        'password' => 'test1234567890admin',
+        'password_confirmation' => 'test1234567890admin',
+        'role' => 'admin'
+    ];
+
+    /**
+     * Get user token.
+     *
+     * @return array
+     */
+    public function getToken()
+    {
+        $user = $this->createUser($this->userData['email'], $this->userData['password'], true);
+        $token = \JWTAuth::fromUser($user);
+        return ['token' => $token, 'user' => $user];
+    }
+
+    /**
+     * Get administration token.
+     *
+     * @return array
+     */
+    public function getAdminToken()
+    {
+        $user = $this->createAdminUser($this->adminData['email'], $this->adminData['password'], true);
+        $token = \JWTAuth::fromUser($user);
+        return ['token' => $token, 'user' => $user];
+    }
+
+    /**
      * Creates the application.
      *
      * @return \Illuminate\Foundation\Application
      */
     public function createApplication()
     {
-
         $app = require __DIR__ . '/../bootstrap/app.php';
-
         $app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();
         $this->initDatabase();
         return $app;
@@ -29,6 +86,8 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
 
     /**
      * every Test Function to setUp
+     *
+     * @return void
      */
     public function setUp()
     {
@@ -38,6 +97,8 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
 
     /**
      * every Test Function to tearDown
+     *
+     * @return void
      */
     public function tearDown()
     {
@@ -45,9 +106,9 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
     }
 
     /**
-     *initial database config to sqlite
+     * initial database config to sqlite
      *
-     *
+     * @return void
      */
     public function initDatabase()
     {
@@ -65,9 +126,9 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
     }
 
     /**
-     *call migrate to reset status
+     * call migrate to reset status
      *
-     *
+     * @return viod
      */
     public function resetDatabase()
     {
@@ -111,6 +172,16 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
 
         return User::create($userData);
     }
+
+    /**
+     * Create Admin
+     *
+     * @param $email
+     * @param $password
+     * @param bool $hasBucket
+     * @return static
+     * @internal param bool $hasBucket
+     */
     public function createAdminUser($email, $password, $hasBucket = false)
     {
         $httpQuery = http_build_query([
@@ -126,7 +197,6 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
             $accessKey = $result->keys[0]->access_key;
             $secretKey = $result->keys[0]->secret_key;
         }
-
         $userData = [
             'uid' => $email,
             'email' => $email,
@@ -136,9 +206,31 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
             'secret_key' => $secretKey,
             'role' => 'admin'
         ];
-
         return User::create($userData);
     }
 
+    /**
+     * Create Bucket
+     *
+     * @return void
+     */
+    protected function createBucket($user, $bucketName)
+    {
+        $s3Service = new \App\Services\BucketService($user['access_key'], $user['secret_key']);
+        $s3Service->createBucket($bucketName);
+    }
 
+    /**
+     * Initialize the testing.
+     *
+     * @return array
+     */
+    protected function initBucket()
+    {
+        $bucket = str_random(10);
+        $user = $this->createUser($this->userData['email'], $this->userData['password'], true);
+        $token = \JWTAuth::fromUser($user);
+        $this->createBucket($user, $bucket);
+        return ['bucketName' => $bucket, 'token' => $token, 'user' => $user];
+    }
 }
