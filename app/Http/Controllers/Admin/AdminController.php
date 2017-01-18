@@ -113,4 +113,36 @@ class AdminController extends Controller
         }
         return response()->json(['message' => 'The email does not exist.'], 403);
     }
+
+    public function state(RequestApiService $requestApiService)
+    {
+        $user = $this->user;
+        if ($user['role'] != 'admin') return response()->json(['message' => 'Permission denied'], 403);
+        $listUser = $this->users->getUsers();
+        for ($userCount = 0; $userCount < count($listUser); $userCount++) {
+            $sizeKB = 0;
+            $userState[$userCount]['uid'] = $listUser[$userCount]->uid;
+            $userQuota = json_decode($requestApiService->request('GET', 'user', "?quota&uid=" . $userState[$userCount]['uid'] . "&quota-type=user"));
+            $bucketList = json_decode($requestApiService->request('GET', 'bucket', '?format=json&uid=' . $userState[$userCount]['uid']));
+            for ($bucketCount = 0; $bucketCount < count($bucketList); $bucketCount++) {
+                $httpQuery = http_build_query([
+                    'bucket' => $bucketList[$bucketCount]
+                ]);
+                $bucket = json_decode($requestApiService->request('GET', 'bucket', "?$httpQuery"));
+                if (!empty((array)($bucket->usage))) {
+                    $sizeKB += intval($bucket->usage->{'rgw.main'}->size_kb);
+                    $userState[$userCount]['buckets'][$bucketCount]['name'] = $bucket->bucket;
+                    $userState[$userCount]['buckets'][$bucketCount]['sizeKB'] = $bucket->usage->{'rgw.main'}->size_kb;
+                }
+            }
+            $userState[$userCount]['buckets']['totalSizeKB'] = $sizeKB;
+            if (!empty((array)$userQuota) && $userQuota->enabled == true) {
+                $test[$userCount] = $userQuota;
+                $userState[$userCount]['buckets']['sizePercent'] = ($userState[$userCount]['buckets']['totalSizeKB'] / $userQuota->max_size_kb) * 100 . '%';
+            } else {
+                $userState[$userCount]['buckets']['sizePercent'] = -1;
+            }
+        }
+        return response()->json(['message' => $userState], 200);
+    }
 }

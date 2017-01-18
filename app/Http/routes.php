@@ -55,6 +55,7 @@ Route::group(['prefix' => 'api', 'middleware' => ['cors', 'api']], function () {
                 Route::post('reset', 'AdminController@reset');
                 Route::post('role', 'AdminController@update');
                 Route::delete('delete/{email}', 'AdminController@destroy');
+                Route::get('state', 'AdminController@state');
             });
             Route::group(['prefix' => 'user', 'namespace' => 'User'], function(){
                 Route::get('state/{email}', 'UserController@state');
