@@ -64,14 +64,14 @@ class AuthController extends Controller
           $resultData = $this->users->createUser($data);
       }
       $updateQuotaResponse = json_decode($requestApiService->request('PUT', 'user', "?quota&uid=" . $data['email'] . "&quota-type=user&$httpQuery"));
-      if ($result) return response()->json(['message' => $result], 200);
+      if ($result) return response()->json($result, 200);
       else return response()->json(['message' => 'curl_has_error'], 401);
     }
 
      public function login(LoginRequest $request, RequestApiService $requestApiService)
     {
         $result = json_decode($requestApiService->request('GET', 'bucket', "?format=json"));
-        if (is_array($result)) {
+        if (is_array($result) && sizeof($result) == 0) {
           return response()->json(['message' => 'Connection to Ceph failed'], 403);
         }
         $data = $this->users->verify($request->all());

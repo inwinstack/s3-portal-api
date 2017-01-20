@@ -55,22 +55,42 @@ class AuthBucketCreateTest extends TestCase
     }
 
     /**
-     * Testing the user create bucket is failed.
+     * Testing the user create bucket is failed and return cteate bucket error message.
      *
      * @return void
      */
-    public function testCreateBucketFail()
+    public function testCreateBucketError()
     {
         $init = $this->initBucket();
         $headers = $this->headers;
         $headers['HTTP_Authorization'] = "Bearer {$init['token']}";
         $bucket = [
-            'bucket' => str_random(1)
+            'bucket' => 'D'
         ];
         $this->post('/api/v1/bucket/create',$bucket, $headers)
             ->seeStatusCode(403)
             ->seeJsonContains([
                 "message" => "Create Bucket Error"
+            ]);
+    }
+
+    /**
+     * Testing the user create bucket is failed and return invalid name message.
+     *
+     * @return void
+     */
+    public function testCreateBucketInvaidName()
+    {
+        $init = $this->initBucket();
+        $headers = $this->headers;
+        $headers['HTTP_Authorization'] = "Bearer {$init['token']}";
+        $bucket = [
+            'bucket' => '1'
+        ];
+        $this->post('/api/v1/bucket/create',$bucket, $headers)
+            ->seeStatusCode(403)
+            ->seeJsonContains([
+                "message" => "Invalid Name"
             ]);
     }
 }
