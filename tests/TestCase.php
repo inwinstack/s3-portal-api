@@ -27,10 +27,10 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
      * @var array
      */
     protected $userData = [
-        'name' => 'ApiTestName',
-        'email' => 'ApiTestEmail@yahoo.com.tw',
-        'password' => 'ApiTestPassword',
-        'password_confirmation' => 'ApiTestPassword',
+        'name' => 'UserTest@imac.com',
+        'email' => 'UserTest@imac.com',
+        'password' => '123456',
+        'password_confirmation' => '123456',
         'role' => 'user'
     ];
 
@@ -40,10 +40,10 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
      * @var array
      */
     protected $adminData = [
-        'name' => 'backEndApiTestAdmin',
-        'email' => 'backEndAdmin@google.com',
-        'password' => 'test1234567890admin',
-        'password_confirmation' => 'test1234567890admin',
+        'name' => 'AdminTest@imac.com',
+        'email' => 'AdminTest@imac.com',
+        'password' => '123456',
+        'password_confirmation' => '123456',
         'role' => 'admin'
     ];
 
@@ -227,10 +227,10 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
      */
     protected function initBucket()
     {
-        $bucket = str_random(10);
+        $bucketName = str_random(10);
         $user = $this->createUser($this->userData['email'], $this->userData['password'], true);
         $token = \JWTAuth::fromUser($user);
-        $this->createBucket($user, $bucket);
-        return ['bucketName' => $bucket, 'token' => $token, 'user' => $user];
+        $this->createBucket($user, $bucketName);
+        return ['bucketName' => $bucketName, 'token' => $token, 'user' => $user];
     }
 }

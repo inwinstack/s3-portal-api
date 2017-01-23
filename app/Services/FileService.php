@@ -70,7 +70,7 @@ class FileService extends S3Service
             try {
                 $result = $this->s3->putObject([
                     'Bucket'     => $bucket,
-                    'Key'        => "$prefix",
+                    'Key'        => $prefix,
                     'Body'       => "",
                 ]);
                 return false;

@@ -15,11 +15,11 @@ class CreateFolderTest extends TestCase
         $headers = $this->headers;
         $headers['HTTP_Authorization'] = "Bearer {$init['token']}";
         $bucketName = $init['bucketName'];
-        $userData = [
+        $bucket = [
             'bucket' => $bucketName,
-            'prefix' => str_random(15)
+            'prefix' => str_random(10)
         ];
-        $this->post('/api/v1/folder/create', $userData, $headers)
+        $this->post('/api/v1/folder/create', $bucket, $headers)
             ->seeStatusCode(200)
             ->seeJsonContains([
                 "message" => "Create Folder Success"

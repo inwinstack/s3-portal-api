@@ -24,7 +24,7 @@ class AuthRegisterTest extends TestCase
     {
         $this->post('api/v1/auth/register', $this->userData, $this->headers)
             ->seeStatusCode(200)
-            ->seeJsonStructure(['uid', 'name']);
+            ->seeJsonStructure(['user_id', 'display_name']);
     }
 
     /**
