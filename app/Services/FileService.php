@@ -188,7 +188,7 @@ class FileService extends S3Service
             $this->s3->copyObject([
                 'Bucket' => $bucket,
                 'CopySource' => $bucket . '/' . $file,
-                'Key' => explode('.', $file)[0] . '(copy).' . explode('.', $file)[1]
+                'Key' => pathinfo($file, PATHINFO_FILENAME ) . '_copy.' . pathinfo($file, PATHINFO_EXTENSION)
             ]);
             return false;
         } catch (S3Exception $e) {
