@@ -77,4 +77,31 @@ class RenameFolderTest extends TestCase
                 'message' => 'The folder already exists'
             ]);
      }
+
+     /**
+      * Testing the user use special characters to rename folder is failed.
+      *
+      * @return void
+      */
+     public function testRenameFolderUseSpecialCharacters()
+     {
+        $init = $this->initBucket();
+        $headers = $this->headers;
+        $headers['HTTP_Authorization'] = "Bearer {$init['token']}";
+        $createData = [
+            'bucket' => $init['bucketName'],
+            'prefix' => 'oldName/'
+        ];
+        $this->post('/api/v1/folder/create', $createData, $headers);
+        $renameData = [
+            'bucket' => $init['bucketName'],
+            'oldName' => 'oldName',
+            'newName' => '$#@!_'
+        ];
+        $this->post('/api/v1/folder/rename', $renameData, $headers)
+            ->seeStatusCode(403)
+            ->seeJsonContains([
+                'message' => 'The folder rename failed'
+            ]);
+     }
 }
