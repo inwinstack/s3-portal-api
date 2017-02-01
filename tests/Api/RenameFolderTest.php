@@ -9,20 +9,20 @@ class RenameFolderTest extends TestCase
      */
      public function testRenameFolder()
      {
-        $init = $this->initBucket();
-        $headers = $this->headers;
-        $headers['HTTP_Authorization'] = "Bearer {$init['token']}";
-        $createData = [
+         $init = $this->initBucket();
+         $headers = $this->headers;
+         $headers['HTTP_Authorization'] = "Bearer {$init['token']}";
+         $createData = [
             'bucket' => $init['bucketName'],
             'prefix' => 'oldName/'
         ];
-        $this->post('/api/v1/folder/create', $createData, $headers);
-        $renameData = [
+         $this->post('/api/v1/folder/create', $createData, $headers);
+         $renameData = [
             'bucket' => $init['bucketName'],
             'oldName' => 'oldName',
             'newName' => 'newName'
         ];
-        $this->post('/api/v1/folder/rename', $renameData, $headers)
+         $this->post('/api/v1/folder/rename', $renameData, $headers)
             ->seeStatusCode(200)
             ->seeJsonContains([
               'message' => 'The folder is renamed'
@@ -36,15 +36,15 @@ class RenameFolderTest extends TestCase
       */
      public function testRenameFolderButNotExist()
      {
-        $init = $this->initBucket();
-        $headers = $this->headers;
-        $headers['HTTP_Authorization'] = "Bearer {$init['token']}";
-        $renameData = [
+         $init = $this->initBucket();
+         $headers = $this->headers;
+         $headers['HTTP_Authorization'] = "Bearer {$init['token']}";
+         $renameData = [
             'bucket' => $init['bucketName'],
             'oldName' => 'oldName',
             'newName' => 'newName'
         ];
-        $this->post('/api/v1/folder/rename', $renameData, $headers)
+         $this->post('/api/v1/folder/rename', $renameData, $headers)
             ->seeStatusCode(403)
             ->seeJsonContains([
               'message' => 'The folder don\'t exist'
@@ -58,20 +58,20 @@ class RenameFolderTest extends TestCase
       */
      public function testRenameFolderButNewNameIsExist()
      {
-        $init = $this->initBucket();
-        $headers = $this->headers;
-        $headers['HTTP_Authorization'] = "Bearer {$init['token']}";
-        $createData = [
+         $init = $this->initBucket();
+         $headers = $this->headers;
+         $headers['HTTP_Authorization'] = "Bearer {$init['token']}";
+         $createData = [
            'bucket' => $init['bucketName'],
            'prefix' => 'newName/'
         ];
-        $this->post('/api/v1/folder/create', $createData, $headers);
-        $renameData = [
+         $this->post('/api/v1/folder/create', $createData, $headers);
+         $renameData = [
             'bucket' => $init['bucketName'],
             'oldName' => 'newName',
             'newName' => 'newName'
         ];
-        $this->post('/api/v1/folder/rename', $renameData, $headers)
+         $this->post('/api/v1/folder/rename', $renameData, $headers)
             ->seeStatusCode(403)
             ->seeJsonContains([
                 'message' => 'The folder already exists'
@@ -85,20 +85,20 @@ class RenameFolderTest extends TestCase
       */
      public function testRenameFolderUseSpecialCharacters()
      {
-        $init = $this->initBucket();
-        $headers = $this->headers;
-        $headers['HTTP_Authorization'] = "Bearer {$init['token']}";
-        $createData = [
+         $init = $this->initBucket();
+         $headers = $this->headers;
+         $headers['HTTP_Authorization'] = "Bearer {$init['token']}";
+         $createData = [
             'bucket' => $init['bucketName'],
             'prefix' => 'oldName/'
         ];
-        $this->post('/api/v1/folder/create', $createData, $headers);
-        $renameData = [
+         $this->post('/api/v1/folder/create', $createData, $headers);
+         $renameData = [
             'bucket' => $init['bucketName'],
             'oldName' => 'oldName',
             'newName' => '$#@!_'
         ];
-        $this->post('/api/v1/folder/rename', $renameData, $headers)
+         $this->post('/api/v1/folder/rename', $renameData, $headers)
             ->seeStatusCode(403)
             ->seeJsonContains([
                 'message' => 'The folder rename failed'

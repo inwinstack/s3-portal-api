@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Aws\S3\S3Client;
 use Aws\S3\Exception\S3Exception as S3Exception;
+
 class FileService extends S3Service
 {
     protected $s3;
@@ -79,7 +80,6 @@ class FileService extends S3Service
             }
         }
         return $checkBucket;
-
     }
 
     public function checkHeadBucket($bucket)
@@ -161,9 +161,13 @@ class FileService extends S3Service
     public function moveFile($sourceBucket, $sourceFile, $goalBucket, $goalFile)
     {
         $checkSourceExist = $this->s3->doesObjectExist($sourceBucket, $sourceFile);
-        if (!$checkSourceExist) return 'The file don\'t exist';
+        if (!$checkSourceExist) {
+            return 'The file don\'t exist';
+        }
         $checkGoalExist = $this->s3->doesObjectExist($goalBucket, $goalFile);
-        if ($checkGoalExist) return 'The file already exists';
+        if ($checkGoalExist) {
+            return 'The file already exists';
+        }
         try {
             $this->s3->copyObject([
                 'Bucket' => $goalBucket,
@@ -183,12 +187,14 @@ class FileService extends S3Service
     public function replicateFile($bucket, $file)
     {
         $checkFileExist = $this->s3->doesObjectExist($bucket, $file);
-        if (!$checkFileExist) return 'The file don\'t exist';
+        if (!$checkFileExist) {
+            return 'The file don\'t exist';
+        }
         try {
             $this->s3->copyObject([
                 'Bucket' => $bucket,
                 'CopySource' => $bucket . '/' . $file,
-                'Key' => pathinfo($file, PATHINFO_FILENAME ) . '_copy.' . pathinfo($file, PATHINFO_EXTENSION)
+                'Key' => pathinfo($file, PATHINFO_FILENAME) . '_copy.' . pathinfo($file, PATHINFO_EXTENSION)
             ]);
             return false;
         } catch (S3Exception $e) {
@@ -199,9 +205,13 @@ class FileService extends S3Service
     public function renameFolder($bucket, $oldName, $newName)
     {
         $checkOldFolderExist = $this->s3->doesObjectExist($bucket, $oldName . '/');
-        if (!$checkOldFolderExist) return 'The folder don\'t exist';
+        if (!$checkOldFolderExist) {
+            return 'The folder don\'t exist';
+        }
         $checkNewFolderExist = $this->s3->doesObjectExist($bucket, $newName . '/');
-        if ($checkNewFolderExist) return 'The folder already exists';
+        if ($checkNewFolderExist) {
+            return 'The folder already exists';
+        }
         try {
             $this->s3->copyObject([
                 'Bucket' => $bucket,
@@ -232,9 +242,13 @@ class FileService extends S3Service
     public function moveFolder($sourceBucket, $sourceFolder, $goalBucket, $goalFolder)
     {
         $checkSourceFolderExist = $this->s3->doesObjectExist($sourceBucket, $sourceFolder . '/');
-        if (!$checkSourceFolderExist) return 'The folder don\'t exist';
-        $checkGoalFolderExist = $this->s3->doesObjectExist($goalBucket, $goalFolder);
-        if ($checkGoalFolderExist) return 'The folder already exists';
+        if (!$checkSourceFolderExist) {
+            return 'The folder don\'t exist';
+        }
+        $checkGoalFolderExist = $this->s3->doesObjectExist($goalBucket, $goalFolder . '/');
+        if ($checkGoalFolderExist) {
+            return 'The folder already exists';
+        }
         try {
             $this->s3->copyObject([
                 'Bucket' => $goalBucket,
