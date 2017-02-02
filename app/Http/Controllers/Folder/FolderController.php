@@ -13,7 +13,6 @@ use JWTAuth;
 
 class FolderController extends Controller
 {
-
     protected $s3Service;
     protected $user;
 
@@ -44,14 +43,20 @@ class FolderController extends Controller
     public function rename(Request $request)
     {
         $renameFolderResponse = $this->s3Service->renameFolder($request->bucket, $request->oldName, $request->newName);
-        if (!$renameFolderResponse) return response()->json(['message' => 'The folder is renamed']);
-        else return response()->json(['message' => $renameFolderResponse], 403);
+        if (!$renameFolderResponse) {
+            return response()->json(['message' => 'The folder is renamed']);
+        } else {
+            return response()->json(['message' => $renameFolderResponse], 403);
+        }
     }
 
     public function move(Request $request)
     {
         $moveFolderResponse = $this->s3Service->moveFolder($request->sourceBucket, $request->sourceFolder, $request->goalBucket, $request->goalFolder);
-        if (!$moveFolderResponse) return response()->json(['message' => 'The Move is complete']);
-        else return response()->json(['message' => $moveFolderResponse], 403);
+        if (!$moveFolderResponse) {
+            return response()->json(['message' => 'The Move is complete']);
+        } else {
+            return response()->json(['message' => $moveFolderResponse], 403);
+        }
     }
 }

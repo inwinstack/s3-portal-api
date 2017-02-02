@@ -845,6 +845,24 @@ status code:200
 }
 ```
 
+#### Error
+```
+status code:403
+{
+  "message": "The user is not exist"
+}
+- or -
+status code:403
+{
+  "message": "Max Objects or Max Size are not allowed"
+}
+- or -
+status code:403
+{
+  "message": "The number of buckets must be positive"
+}
+```
+
 ## 18.<a name="GetBucketQuota">Get Bucket Quota</a>
 
 <table>
