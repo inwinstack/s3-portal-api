@@ -29,7 +29,7 @@ class UserController extends Controller
         $listResponse = $this->s3Service->listBucket();
         $bucketList = $listResponse->get('Buckets');
         $userQuota = json_decode($requestApiService->request('GET', 'user', "?quota&uid=" . $email . "&quota-type=user"));
-        while($num < count($bucketList)) {
+        while ($num < count($bucketList)) {
             $httpQuery = http_build_query([
                 'bucket' => $bucketList[$num]['Name']
             ]);
@@ -41,23 +41,23 @@ class UserController extends Controller
             $num++;
         }
         if ($userQuota->max_size != -1) {
-          $result['totalSizeKB'] = $sizeKB;
-          $result['sizePercent'] = ($sizeKB / $userQuota->max_size_kb) * 100 . '%';
-          $result['maxSizeKB'] = $userQuota->max_size_kb;
+            $result['totalSizeKB'] = $sizeKB;
+            $result['sizePercent'] = ($sizeKB / $userQuota->max_size_kb) * 100 . '%';
+            $result['maxSizeKB'] = $userQuota->max_size_kb;
         } else {
-          $result['totalSizeKB'] = -1;
-          $result['sizePercent'] = -1;
-          $result['maxSizeKB'] = -1;
+            $result['totalSizeKB'] = -1;
+            $result['sizePercent'] = -1;
+            $result['maxSizeKB'] = -1;
         }
-        if ($userQuota->max_objects != -1){
-          $result['totalObjects'] = $objectCount;
-          $result['objectsPercent'] = ($objectCount / $userQuota->max_objects) * 100 . '%';
-          $result['maxObjects'] = $userQuota->max_objects;
+        if ($userQuota->max_objects != -1) {
+            $result['totalObjects'] = $objectCount;
+            $result['objectsPercent'] = ($objectCount / $userQuota->max_objects) * 100 . '%';
+            $result['maxObjects'] = $userQuota->max_objects;
         } else {
-          $result['totalObjects'] = -1;
-          $result['objectsPercent'] = -1;
-          $result['maxObjects'] = -1;
+            $result['totalObjects'] = -1;
+            $result['objectsPercent'] = -1;
+            $result['maxObjects'] = -1;
         }
-        return response()->json(['message' => $result], 200);
+        return response()->json($result, 200);
     }
 }
