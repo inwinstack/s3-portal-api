@@ -17,7 +17,7 @@ Route::get('/', function () {
 
 Route::group(['prefix' => 'api', 'middleware' => ['cors', 'api']], function () {
     Route::group(['prefix' => 'v1'], function () {
-        Route::group(['prefix' => 'auth', 'namespace' => 'Auth'], function(){
+        Route::group(['prefix' => 'auth', 'namespace' => 'Auth'], function () {
             Route::post('register', 'AuthController@register');
             Route::post('login', 'AuthController@login');
             Route::post('logout', 'AuthController@logout');
@@ -29,12 +29,12 @@ Route::group(['prefix' => 'api', 'middleware' => ['cors', 'api']], function () {
             Route::post('setBucketQuota', 'AuthController@setBucketQuota');
         });
         Route::group(['middleware' => ['jwt.auth']], function () {
-            Route::group(['prefix' => 'bucket', 'namespace' => 'Bucket'], function(){
+            Route::group(['prefix' => 'bucket', 'namespace' => 'Bucket'], function () {
                 Route::post('create', 'BucketController@store');
                 Route::post('list', 'BucketController@index');
                 Route::delete('delete/{bucket}', 'BucketController@destroy');
             });
-            Route::group(['prefix' => 'file', 'namespace' => 'File'], function(){
+            Route::group(['prefix' => 'file', 'namespace' => 'File'], function () {
                 Route::get('list/{bucket}', 'FileController@index');
                 Route::post('create', 'FileController@store');
                 Route::post('rename', 'FileController@rename');
@@ -43,21 +43,21 @@ Route::group(['prefix' => 'api', 'middleware' => ['cors', 'api']], function () {
                 Route::post('move', 'FileController@move');
                 Route::post('replicate', 'FileController@replicate');
             });
-            Route::group(['prefix' => 'folder', 'namespace' => 'Folder'], function(){
+            Route::group(['prefix' => 'folder', 'namespace' => 'Folder'], function () {
                 Route::post('create', 'FolderController@store');
                 Route::delete('delete/{bucket}/{key}', 'FolderController@destroy')->where('key', '(.*)');
                 Route::post('rename', 'FolderController@rename');
                 Route::post('move', 'FolderController@move');
             });
-            Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
+            Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function () {
                 Route::post('create', 'AdminController@create');
                 Route::get('list', 'AdminController@index');
                 Route::post('reset', 'AdminController@reset');
                 Route::post('role', 'AdminController@update');
                 Route::delete('delete/{email}', 'AdminController@destroy');
-                Route::get('state', 'AdminController@state');
+                Route::get('state/{page}', 'AdminController@state');
             });
-            Route::group(['prefix' => 'user', 'namespace' => 'User'], function(){
+            Route::group(['prefix' => 'user', 'namespace' => 'User'], function () {
                 Route::get('state/{email}', 'UserController@state');
             });
         });

@@ -295,7 +295,7 @@ status code:403
     </tr>
     <tr>
         <td style="width:50px">GET</td>
-        <td style="width:400px">/api/v1/admin/state</td>
+        <td style="width:400px">/api/v1/admin/state/{page}</td>
     </tr>
 </table>
 
@@ -306,16 +306,9 @@ status code:200
 {
   "Users": [
     {
-    	"uid": *uid*,
-		"buckets": {
-			"0": {
-				"name": *bucket name*
-				"sizeKB": *object size*
-			},
-			...,
-			totalSizeKB: *total object size*,
-			sizePercent: *total object percent*
-		}
+    	"uid": *uid*,	
+		"totalSizeKB": *total object size*,
+		"sizePercent": *total object percent*
     },
     ...
   ]
@@ -328,6 +321,12 @@ status code:403
 {
   "message": "Permission denied"
 }
+- or -
+status code:403
+{
+  "message": "The page value is not incorrect"
+}
+
 ```
 
 
