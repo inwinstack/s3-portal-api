@@ -17,7 +17,6 @@ use JWTAuth;
 
 class AuthController extends Controller
 {
-
     use AuthenticatesAndRegistersUsers, ThrottlesLogins;
 
     /**
@@ -41,38 +40,41 @@ class AuthController extends Controller
      */
     public function register(RegisterRequest $request, RequestApiService $requestApiService)
     {
-      $data = $request->all();
-      $data['uid'] = $data['email'];
-      $data['name'] = $data['email'];
-      $httpQuery = http_build_query([
+        $data = $request->all();
+        $data['uid'] = $data['email'];
+        $data['name'] = $data['email'];
+        $httpQuery = http_build_query([
           'uid' => $data['uid'],
           'display-name' => $data['email'],
           'email' => $data['email'],
           'user-caps' => 'usage=read, write; users=read'
-      ]);
-      $result = json_decode($requestApiService->request('PUT', 'user', "?format=json&$httpQuery"));
-      $httpQuery = http_build_query([
+        ]);
+        $result = json_decode($requestApiService->request('PUT', 'user', "?format=json&$httpQuery"));
+        $httpQuery = http_build_query([
           'bucket' => '5',
           'max-objects' => '100',
           'max-size-kb' => '50000',
           'quota-scope' => 'user',
           'enabled' => true
-      ]);
-      if ($result) {
-          $data['access_key'] = $result->keys[0]->access_key;
-          $data['secret_key'] = $result->keys[0]->secret_key;
-          $resultData = $this->users->createUser($data);
-      }
-      $updateQuotaResponse = json_decode($requestApiService->request('PUT', 'user', "?quota&uid=" . $data['email'] . "&quota-type=user&$httpQuery"));
-      if ($result) return response()->json($result, 200);
-      else return response()->json(['message' => 'curl_has_error'], 401);
+        ]);
+        if ($result) {
+            $data['access_key'] = $result->keys[0]->access_key;
+            $data['secret_key'] = $result->keys[0]->secret_key;
+            $resultData = $this->users->createUser($data);
+        }
+        $updateQuotaResponse = json_decode($requestApiService->request('PUT', 'user', "?quota&uid=" . $data['email'] . "&quota-type=user&$httpQuery"));
+        if ($result) {
+            return response()->json($result, 200);
+        } else {
+            return response()->json(['message' => 'curl_has_error'], 401);
+        }
     }
 
-     public function login(LoginRequest $request, RequestApiService $requestApiService)
+    public function login(LoginRequest $request, RequestApiService $requestApiService)
     {
         $result = json_decode($requestApiService->request('GET', 'bucket', "?format=json"));
         if (is_array($result) && sizeof($result) == 0) {
-          return response()->json(['message' => 'Connection to Ceph failed'], 403);
+            return response()->json(['message' => 'Connection to Ceph failed'], 403);
         }
         $data = $this->users->verify($request->all());
         if ($data) {
@@ -125,6 +127,15 @@ class AuthController extends Controller
     public function setUserQuota(QuotaRequest $request, RequestApiService $requestApiService)
     {
         $data = $request->all();
+        if ($data['max-objects'] < -1 || $data['max-size-kb'] < -1) {
+            return response()->json(['message' => 'Max Objects or Max Size are not allowed'], 403);
+        }
+        if ($data['bucket'] < 0) {
+            return response()->json(['message' => 'The number of buckets must be positive'], 403);
+        }
+        if (!$this->users->check($data['email'])) {
+            return response()->json(['message' => 'The user is not exist'], 403);
+        }
         $httpQuery = http_build_query([
             'bucket' => $data['bucket'],
             'max-objects' => $data['max-objects'],

@@ -20,8 +20,7 @@ class QuotaRequest extends Request
             'bucket' => 'required|max:10',
             'max-objects' => 'required|max:10',
             'max-size-kb' => 'required|max:6',
-            'enabled' => 'required|boolean'
+            'enabled' => 'required'
         ];
     }
 }
-?>
