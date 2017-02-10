@@ -87,7 +87,6 @@ status code:403
 ```
 status code:200
 {
-  "Users": [
     {
     	"id": *id*,
 		"uid": *uid*,
@@ -95,9 +94,11 @@ status code:200
 		"name": *name*,
 		"role": *role*,
 		"created_at": *createTime*,
-		"updated_at": *updateTime*
+		"updated_at": *updateTime*,
+		"used_size_kb": *usedSizeKB*,
+		"total_size_kb": *totalSizeKB*
     }
-  ]
+    ...
 }
 ```
 
@@ -105,7 +106,7 @@ status code:200
 ```
 status code:403
 {
-  "message": "The email has already been taken"
+  "message": "The page value is not incorrect"
 }
 - or -
 status code:403
