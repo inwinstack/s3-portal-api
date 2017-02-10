@@ -1258,7 +1258,7 @@ status code:403
     </tr>
     <tr>
         <td style="width:50px">GET</td>
-        <td style="width:400px">/api/v1/user/state/{email}</td>
+        <td style="width:400px">/api/v1/user/state</td>
     </tr>
 </table>
 
@@ -1267,16 +1267,16 @@ status code:403
 ```
 status code:200
 {
-  "totalSizeKB": *357 | -1*,
-  "sizePercent": *7.14% | -1*,
-  "maxSizeKB": *5000 | -1*,
-  "totalObjects": *3 | -1*,
-  "objectsPercent": *3% | -1*,
-  "maxObjects": *100 | -1*
+  "total_size_kb": *total_size_kb*,
+  "max_size_kb": *max_size_kb | -1*,
+  "total_objects": *total_objects*,
+  "max_objects": *max_objects | -1*
 }
 
 note: if value is -1, there is no limit
 ```
+
+
 
 
 

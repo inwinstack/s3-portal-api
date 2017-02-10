@@ -58,7 +58,7 @@ Route::group(['prefix' => 'api', 'middleware' => ['cors', 'api']], function () {
                 Route::get('state/{page}', 'AdminController@state');
             });
             Route::group(['prefix' => 'user', 'namespace' => 'User'], function () {
-                Route::get('state/{email}', 'UserController@state');
+                Route::get('state', 'UserController@state');
             });
         });
     });
