@@ -21,6 +21,11 @@ class UserRepository
         return User::skip($skip)->take($count)->get();
     }
 
+    public function getUserCount()
+    {
+        return User::count();
+    }
+
     public function createUser($userData)
     {
         $userData['password'] = bcrypt($userData['password']);
