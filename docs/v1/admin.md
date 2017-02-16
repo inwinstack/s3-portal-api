@@ -78,7 +78,7 @@ status code:403
     </tr>
     <tr>
         <td style="width:50px">GET</td>
-        <td style="width:400px">/api/v1/admin/list</td>
+        <td style="width:400px">/api/v1/admin/list/{page}</td>
     </tr>
 </table>
 
@@ -87,17 +87,21 @@ status code:403
 ```
 status code:200
 {
-  "Users": [
-    {
-    	"id": *id*,
-		"uid": *uid*,
-		"email": *email*,
-		"name": *name*,
-		"role": *role*,
-		"created_at": *createTime*,
-		"updated_at": *updateTime*
-    }
-  ]
+    "users" [
+      {
+    	  "id": *id*,
+		  "uid": *uid*,
+		  "email": *email*,
+		  "name": *name*,
+		  "role": *role*,
+		  "created_at": *createTime*,
+		  "updated_at": *updateTime*,
+		  "used_size_kb": *usedSizeKB*,
+		  "total_size_kb": *totalSizeKB*
+      }
+      ...
+    ],
+    "total_page": *totalPage*
 }
 ```
 
@@ -105,7 +109,7 @@ status code:200
 ```
 status code:403
 {
-  "message": "The email has already been taken"
+  "message": "The page value is not incorrect"
 }
 - or -
 status code:403
@@ -295,7 +299,7 @@ status code:403
     </tr>
     <tr>
         <td style="width:50px">GET</td>
-        <td style="width:400px">/api/v1/admin/state</td>
+        <td style="width:400px">/api/v1/admin/state/{page}</td>
     </tr>
 </table>
 
@@ -306,16 +310,9 @@ status code:200
 {
   "Users": [
     {
-    	"uid": *uid*,
-		"buckets": {
-			"0": {
-				"name": *bucket name*
-				"sizeKB": *object size*
-			},
-			...,
-			totalSizeKB: *total object size*,
-			sizePercent: *total object percent*
-		}
+    	"uid": *uid*,	
+		"totalSizeKB": *total object size*,
+		"sizePercent": *total object percent*
     },
     ...
   ]
@@ -328,6 +325,12 @@ status code:403
 {
   "message": "Permission denied"
 }
+- or -
+status code:403
+{
+  "message": "The page value is not incorrect"
+}
+
 ```
 
 

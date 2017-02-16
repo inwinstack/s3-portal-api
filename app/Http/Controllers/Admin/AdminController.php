@@ -21,20 +21,40 @@ class AdminController extends Controller
         $this->user = JWTAuth::parseToken()->authenticate();
     }
 
-    public function index()
+    public function index($page, RequestApiService $requestApiService)
     {
-        $user = $this->user;
-        if($user['role'] != 'admin') {
+        if ($this->user['role'] != 'admin') {
             return response()->json(['message' => 'Permission denied'], 403);
         }
-        $resultData = $this->users->getUsers();
-        return response()->json(['Users' => $resultData], 200);
+        if ($page < 1) {
+            return response()->json(['message' => 'The page value is not incorrect'], 403);
+        }
+        $listUser = $this->users->getUser($page, 10);
+        for ($userCount = 0; $userCount < count($listUser); $userCount++) {
+            $sizeKB = 0;
+            $userState['users'][$userCount] = $listUser[$userCount];
+            $userQuota = json_decode($requestApiService->request('GET', 'user', "?quota&uid=" . $listUser[$userCount]->uid . "&quota-type=user"));
+            $bucketList = json_decode($requestApiService->request('GET', 'bucket', '?format=json&uid=' . $listUser[$userCount]->uid));
+            for ($bucketCount = 0; $bucketCount < count($bucketList); $bucketCount++) {
+                $httpQuery = http_build_query([
+                    'bucket' => $bucketList[$bucketCount]
+                ]);
+                $bucket = json_decode($requestApiService->request('GET', 'bucket', "?$httpQuery"));
+                if (!empty((array)($bucket->usage))) {
+                    $sizeKB += intval($bucket->usage->{'rgw.main'}->size_kb);
+                }
+            }
+            $userState['users'][$userCount]['used_size_kb'] = $sizeKB;
+            $userState['users'][$userCount]['total_size_kb'] = $userQuota->max_size_kb;
+            $userState['total_page'] = ceil($this->users->getUserCount() / 10);
+        }
+        return response()->json($userState, 200);
     }
 
     public function create(AdminRequest $request, RequestApiService $requestApiService)
     {
         $user = $this->user;
-        if($user['role'] != 'admin') {
+        if ($user['role'] != 'admin') {
             return response()->json(['message' => 'Permission denied'], 403);
         }
         $data = $request->all();
@@ -45,11 +65,10 @@ class AdminController extends Controller
             'display-name' => $data['email'],
             'email' => $data['email']
         ]);
-	if($this->users->check($data['email'])){
+        if ($this->users->check($data['email'])) {
             return response()->json(['message' => 'The email has already been taken.'], 403);
         }
         $result = json_decode($requestApiService->request('PUT', 'user', "?format=json&$httpQuery"));
-
         if ($result) {
             $data['access_key'] = $result->keys[0]->access_key;
             $data['secret_key'] = $result->keys[0]->secret_key;
@@ -62,11 +81,11 @@ class AdminController extends Controller
     public function reset(AdminRequest $request)
     {
         $user = $this->user;
-        if($user['role'] != 'admin') {
+        if ($user['role'] != 'admin') {
             return response()->json(['message' => 'Permission denied'], 403);
         }
         $data = $request->all();
-        if(!$this->users->check($data['email'])){
+        if (!$this->users->check($data['email'])) {
             return response()->json(['message' => 'The email does not exist.'], 403);
         }
         $resultData = $this->users->resetPassword($data);
@@ -76,14 +95,14 @@ class AdminController extends Controller
     public function update(UpdateRoleRequest $request)
     {
         $user = $this->user;
-        if($user['role'] != 'admin') {
+        if ($user['role'] != 'admin') {
             return response()->json(['message' => 'Permission denied'], 403);
         }
         $data = $request->all();
-        if($data['email'] == 'root@inwinstack.com'){
+        if ($data['email'] == 'root@inwinstack.com') {
             return response()->json(['message' => 'Root is not allowed to be operated.'], 405);
         }
-        if(!$this->users->check($data['email'])){
+        if (!$this->users->check($data['email'])) {
             return response()->json(['message' => 'The email does not exist.'], 403);
         }
         $resultData = $this->users->updateRole($data);
@@ -96,7 +115,7 @@ class AdminController extends Controller
         if ($user['role'] != 'admin') {
             return response()->json(['message' => 'Permission denied'], 403);
         }
-        if($email == 'root@inwinstack.com') {
+        if ($email == 'root@inwinstack.com') {
             return response()->json(['message' => 'Root is not allowed to be operated.'], 405);
         }
         $httpQuery = http_build_query([
@@ -114,11 +133,16 @@ class AdminController extends Controller
         return response()->json(['message' => 'The email does not exist.'], 403);
     }
 
-    public function state(RequestApiService $requestApiService)
+    public function state($page, RequestApiService $requestApiService)
     {
         $user = $this->user;
-        if ($user['role'] != 'admin') return response()->json(['message' => 'Permission denied'], 403);
-        $listUser = $this->users->getUsers();
+        if ($page < 1) {
+            return response()->json(['message' => 'The page value is not incorrect'], 403);
+        }
+        if ($user['role'] != 'admin') {
+            return response()->json(['message' => 'Permission denied'], 403);
+        }
+        $listUser = $this->users->getUser($page, 10);
         for ($userCount = 0; $userCount < count($listUser); $userCount++) {
             $sizeKB = 0;
             $userState[$userCount]['uid'] = $listUser[$userCount]->uid;
@@ -131,18 +155,16 @@ class AdminController extends Controller
                 $bucket = json_decode($requestApiService->request('GET', 'bucket', "?$httpQuery"));
                 if (!empty((array)($bucket->usage))) {
                     $sizeKB += intval($bucket->usage->{'rgw.main'}->size_kb);
-                    $userState[$userCount]['buckets'][$bucketCount]['name'] = $bucket->bucket;
-                    $userState[$userCount]['buckets'][$bucketCount]['sizeKB'] = $bucket->usage->{'rgw.main'}->size_kb;
                 }
             }
-            $userState[$userCount]['buckets']['totalSizeKB'] = $sizeKB;
-            if (!empty((array)$userQuota) && $userQuota->enabled == true) {
+            $userState[$userCount]['totalSizeKB'] = $sizeKB;
+            if (!empty((array)$userQuota) && $userQuota->enabled) {
                 $test[$userCount] = $userQuota;
-                $userState[$userCount]['buckets']['sizePercent'] = ($userState[$userCount]['buckets']['totalSizeKB'] / $userQuota->max_size_kb) * 100 . '%';
+                $userState[$userCount]['sizePercent'] = ($userState[$userCount]['totalSizeKB'] / $userQuota->max_size_kb) * 100 . '%';
             } else {
-                $userState[$userCount]['buckets']['sizePercent'] = -1;
+                $userState[$userCount]['sizePercent'] = -1;
             }
         }
-        return response()->json(['message' => $userState], 200);
+        return response()->json($userState, 200);
     }
 }
