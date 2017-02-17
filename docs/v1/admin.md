@@ -78,7 +78,7 @@ status code:403
     </tr>
     <tr>
         <td style="width:50px">GET</td>
-        <td style="width:400px">/api/v1/admin/list</td>
+        <td style="width:400px">/api/v1/admin/list/{page}</td>
     </tr>
 </table>
 
@@ -87,18 +87,21 @@ status code:403
 ```
 status code:200
 {
-    {
-    	"id": *id*,
-		"uid": *uid*,
-		"email": *email*,
-		"name": *name*,
-		"role": *role*,
-		"created_at": *createTime*,
-		"updated_at": *updateTime*,
-		"used_size_kb": *usedSizeKB*,
-		"total_size_kb": *totalSizeKB*
-    }
-    ...
+    "users" [
+      {
+    	  "id": *id*,
+		  "uid": *uid*,
+		  "email": *email*,
+		  "name": *name*,
+		  "role": *role*,
+		  "created_at": *createTime*,
+		  "updated_at": *updateTime*,
+		  "used_size_kb": *usedSizeKB*,
+		  "total_size_kb": *totalSizeKB*
+      }
+      ...
+    ],
+    "total_page": *totalPage*
 }
 ```
 

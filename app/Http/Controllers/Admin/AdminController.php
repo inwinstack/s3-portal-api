@@ -32,7 +32,7 @@ class AdminController extends Controller
         $listUser = $this->users->getUser($page, 10);
         for ($userCount = 0; $userCount < count($listUser); $userCount++) {
             $sizeKB = 0;
-            $userState[$userCount] = $listUser[$userCount];
+            $userState['users'][$userCount] = $listUser[$userCount];
             $userQuota = json_decode($requestApiService->request('GET', 'user', "?quota&uid=" . $listUser[$userCount]->uid . "&quota-type=user"));
             $bucketList = json_decode($requestApiService->request('GET', 'bucket', '?format=json&uid=' . $listUser[$userCount]->uid));
             for ($bucketCount = 0; $bucketCount < count($bucketList); $bucketCount++) {
@@ -44,8 +44,9 @@ class AdminController extends Controller
                     $sizeKB += intval($bucket->usage->{'rgw.main'}->size_kb);
                 }
             }
-            $userState[$userCount]['used_size_kb'] = $sizeKB;
-            $userState[$userCount]['total_size_kb'] = $userQuota->max_size_kb;
+            $userState['users'][$userCount]['used_size_kb'] = $sizeKB;
+            $userState['users'][$userCount]['total_size_kb'] = $userQuota->max_size_kb;
+            $userState['total_page'] = ceil($this->users->getUserCount() / 10);
         }
         return response()->json($userState, 200);
     }
