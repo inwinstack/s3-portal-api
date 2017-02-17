@@ -15,6 +15,12 @@ class UserRepository
         return User::all();
     }
 
+    public function getUser($page, $count)
+    {
+        $skip = ($page - 1) * 10;
+        return User::skip($skip)->take($count)->get();
+    }
+
     public function createUser($userData)
     {
         $userData['password'] = bcrypt($userData['password']);
@@ -59,5 +65,3 @@ class UserRepository
         return true;
     }
 }
-
-?>
