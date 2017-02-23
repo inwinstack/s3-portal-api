@@ -32,9 +32,12 @@ class AdminController extends Controller
             return response()->json(['message' => 'The page value is not incorrect'], 403);
         }
         $listUser = $this->users->getUser($page, 10);
-        $userState = $this->admin->listStatus($listUser, $requestApiService);
+        if (count($listUser) == 0) {
+            $userState['users'] = $listUser;
+        } else {
+            $userState = $this->admin->listStatus($listUser, $requestApiService);
+        }
         $userState['count'] = $this->users->getUserCount();
-        $userState['capacity'] = $this->admin->capacity();
         return response()->json($userState, 200);
     }
 

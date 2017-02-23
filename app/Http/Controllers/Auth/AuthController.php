@@ -127,48 +127,20 @@ class AuthController extends Controller
     public function setUserQuota(QuotaRequest $request, RequestApiService $requestApiService)
     {
         $data = $request->all();
-        if ($data['max-objects'] < -1 || $data['max-size-kb'] < -1) {
-            return response()->json(['message' => 'Max Objects or Max Size are not allowed'], 403);
-        }
-        if ($data['bucket'] < 0) {
-            return response()->json(['message' => 'The number of buckets must be positive'], 403);
+        if ($data['maxSizeKB'] < -1) {
+            return response()->json(['message' => 'Max Size are not allowed'], 403);
         }
         if (!$this->users->check($data['email'])) {
             return response()->json(['message' => 'The user is not exist'], 403);
         }
         $httpQuery = http_build_query([
-            'bucket' => $data['bucket'],
-            'max-objects' => $data['max-objects'],
-            'max-size-kb' => $data['max-size-kb'],
+            'bucket' => -1,
+            'max-objects' => -1,
+            'max-size-kb' => $data['maxSizeKB'],
             'quota-scope' => 'user',
             'enabled' => $data['enabled']
         ]);
         $result = json_decode($requestApiService->request('PUT', 'user', "?quota&uid=" . $data['email'] . "&quota-type=user&$httpQuery"));
-        return response()->json(['message' => 'Setting is successful'], 200);
-    }
-
-    public function getBucketQuota($user, RequestApiService $requestApiService)
-    {
-        $data = $this->users->check($user);
-        if ($data) {
-            $result = json_decode($requestApiService->request('GET', 'user', "?quota&uid=" . $user . "&quota-type=bucket"));
-            return response()->json(['message' => $result], 200);
-        } else {
-            return response()->json(['message' => 'User is not exist'], 403);
-        }
-    }
-
-    public function setBucketQuota(QuotaRequest $request, RequestApiService $requestApiService)
-    {
-        $data = $request->all();
-        $httpQuery = http_build_query([
-            'bucket' => $data['bucket'],
-            'max-objects' => $data['max-objects'],
-            'max-size-kb' => $data['max-size-kb'],
-            'quota-scope' => 'bucket',
-            'enabled' => $data['enabled']
-        ]);
-        $result = json_decode($requestApiService->request('PUT', 'user', "?quota&uid=" . $data['email'] . "&quota-type=bucket&$httpQuery"));
         return response()->json(['message' => 'Setting is successful'], 200);
     }
 }

@@ -100,12 +100,7 @@ status code:200
       }
       ...
     ],
-    "count": *user count*,
-    "capacity": {
-    	"total_bytes": *ceph total capacity (byte)*,
-    	"used_bytes": *used total capacity (byte)*,
-    	"avail_bytes": *available total capacity (byte)*
-  	}
+    "count": *user count*
 }
 ```
 

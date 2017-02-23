@@ -14,20 +14,12 @@ class AdminService
         ssh2_auth_pubkey_file($this->ssh, $username, $publicKeyPath, $privateKeyPath);
     }
 
-    public function capacity()
+    public function listStatus($users, $requestApiService)
     {
         $stream = ssh2_exec($this->ssh, 'ceph df -f json');
         stream_set_blocking($stream, true);
         $contents = json_decode(stream_get_contents($stream));
         fclose($stream);
-        $capacity['total_bytes'] = $contents->stats->total_bytes;
-        $capacity['used_bytes'] = $contents->stats->total_used_bytes;
-        $capacity['avail_bytes'] = $contents->stats->total_avail_bytes;
-        return $capacity;
-    }
-
-    public function listStatus($users, $requestApiService)
-    {
         for ($userCount = 0; $userCount < count($users); $userCount++) {
             $sizeKB = 0;
             $userState['users'][$userCount] = $users[$userCount];
@@ -43,7 +35,11 @@ class AdminService
                 }
             }
             $userState['users'][$userCount]['used_size_kb'] = $sizeKB;
-            $userState['users'][$userCount]['total_size_kb'] = $userQuota->max_size_kb;
+            if ($userQuota->max_size_kb == -1) {
+                $userState['users'][$userCount]['total_size_kb'] = $contents->stats->total_avail_bytes;
+            } else {
+                $userState['users'][$userCount]['total_size_kb'] = $userQuota->max_size_kb;
+            }
         }
         return $userState;
     }

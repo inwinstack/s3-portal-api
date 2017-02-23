@@ -17,13 +17,10 @@
 15. [Check Ceph Connected](#CheckCephConnected)
 16. [Get User Quota](#GetUserQuota)
 17. [Set User Quota](#SetUserQuota)
-18. [Get Bucket Quota](#GetBucketQuota)
-19. [Set Bucket Quota](#SetBucketQuota)
-20. [Move File](#MoveFile)
-21. [Replicate File](#ReplicateFile)
-22. [Rename Folder](#RenameFolder)
-23. [Move Folder](#MoveFolder)
-24. [Get User State](#GetUserState)
+18. [Move File](#MoveFile)
+19. [Replicate File](#ReplicateFile)
+20. [Rename Folder](#RenameFolder)
+21. [Move Folder](#MoveFolder)
 
 ## 1.<a name="CreateAccount">Create a Account</a>
 
@@ -863,107 +860,7 @@ status code:403
 }
 ```
 
-## 18.<a name="GetBucketQuota">Get Bucket Quota</a>
-
-<table>
-    <tr>
-        <td style="width:50px">Method</td>
-        <td style="width:400px">URI</td>
-    </tr>
-    <tr>
-        <td style="width:50px">GET</td>
-        <td style="width:400px">/api/v1/auth/getBucketQuota/{email}</td>
-    </tr>
-</table>
-
-### JSON Response
-#### Success
-```
-status code:200
-{
-  "message": {
-    "enabled": *true | false*,
-    "max_size_kb": *maxSize(KB) | -1*,
-    "max_objects": *maxObjectCount | -1*
-  }
-}
-
-note: if value is -1, there is no limit
-```
-
-#### Error
-```
-status code:403
-{
-  "message": "User is not exist"
-}
-```
-
-## 19.<a name="SetBucketQuota">Set Bucket Quota</a>
-
-<table>
-    <tr>
-        <td style="width:50px">Method</td>
-        <td style="width:400px">URI</td>
-    </tr>
-    <tr>
-        <td style="width:50px">POST</td>
-        <td style="width:400px">/api/v1/auth/setBucketQuota</td>
-    </tr>
-</table>
-
-### Input Parameter
-
-<table>
-    <tr>
-        <td style="width:50px">Type</td>
-        <td style="width:150px">Name</td>
-        <td style="width:50px">Require</td>
-        <td style="width:100px">Remark</td>
-    </tr>
-    <tr>
-        <td style="width:50px">Email</td>
-        <td style="width:150px">email</td>
-        <td style="width:50px">✔︎</td>
-        <td style="width:100px"></td>
-    </tr>
-    <tr>
-        <td style="width:50px">Integer</td>
-        <td style="width:150px">max-objects</td>
-        <td style="width:50px">✔︎</td>
-        <td style="width:100px"></td>
-    </tr>
-    <tr>
-        <td style="width:50px">Integer</td>
-        <td style="width:150px">max-size-kb</td>
-        <td style="width:50px">✔︎</td>
-        <td style="width:100px"></td>
-    </tr>
-    <tr>
-        <td style="width:50px">Integer</td>
-        <td style="width:150px">bucket</td>
-        <td style="width:50px">✔︎</td>
-        <td style="width:100px"></td>
-    </tr>
-    <tr>
-        <td style="width:50px">Boolean</td>
-        <td style="width:150px">enabled</td>
-        <td style="width:50px">✔︎</td>
-        <td style="width:100px"></td>
-    </tr>
-</table>
-
-
-### JSON Response
-#### Success
-```
-status code:200
-{
-  "message": "Setting is successful"
-}
-```
-
-## 20.<a name="MoveFile">Move File</a>
+## 18.<a name="MoveFile">Move File</a>
 
 <table>
     <tr>
@@ -1040,7 +937,7 @@ status code:403
 
 ```
 
-## 21.<a name="ReplicateFile">Replicate File</a>
+## 19.<a name="ReplicateFile">Replicate File</a>
 
 <table>
     <tr>
@@ -1100,7 +997,7 @@ status code:403
 
 ```
 
-## 22.<a name="RenameFolder">Rename Folder</a>
+## 20.<a name="RenameFolder">Rename Folder</a>
 
 <table>
     <tr>
@@ -1171,7 +1068,7 @@ status code:403
 
 ```
 
-## 23.<a name="MoveFolder">Move Folder</a>
+## 21.<a name="MoveFolder">Move Folder</a>
 
 <table>
     <tr>
@@ -1248,35 +1145,6 @@ status code:403
 }
 
 ```
-
-## 24.<a name="GetUserState">Get User State</a>
-
-<table>
-    <tr>
-        <td style="width:50px">Method</td>
-        <td style="width:400px">URI</td>
-    </tr>
-    <tr>
-        <td style="width:50px">GET</td>
-        <td style="width:400px">/api/v1/user/state</td>
-    </tr>
-</table>
-
-### JSON Response
-#### Success
-```
-status code:200
-{
-  "total_size_kb": *total_size_kb*,
-  "max_size_kb": *max_size_kb | -1*,
-  "total_objects": *total_objects*,
-  "max_objects": *max_objects | -1*
-}
-
-note: if value is -1, there is no limit
-```
-
-
 
 
 

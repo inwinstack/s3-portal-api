@@ -16,10 +16,8 @@ class QuotaRequest extends Request
     public function rules()
     {
         return [
-            'email' => 'required|email|max:255',
-            'bucket' => 'required|max:10',
-            'max-objects' => 'required|max:10',
-            'max-size-kb' => 'required|max:6',
+            'email' => 'required|email',
+            'maxSizeKB' => 'required',
             'enabled' => 'required'
         ];
     }
