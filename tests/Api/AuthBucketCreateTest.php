@@ -17,11 +17,7 @@ class AuthBucketCreateTest extends TestCase
         ];
         $response = $this->post('/api/v1/bucket/create', $bucket, $headers)
             ->seeStatusCode(200)
-            ->seeJsonStructure([
-                'Buckets' => [
-                    '*' => ['Name', 'CreationDate']
-                ]
-            ])
+            ->seeJsonStructure(['Buckets' => ['*' => ['Name', 'CreationDate']]])
             ->response->content();
         $response = json_decode($response, true);
         $hasName = false;
@@ -67,7 +63,7 @@ class AuthBucketCreateTest extends TestCase
         $bucket = [
             'bucket' => 'D'
         ];
-        $this->post('/api/v1/bucket/create',$bucket, $headers)
+        $this->post('/api/v1/bucket/create', $bucket, $headers)
             ->seeStatusCode(403)
             ->seeJsonContains([
                 "message" => "Create Bucket Error"
@@ -87,7 +83,7 @@ class AuthBucketCreateTest extends TestCase
         $bucket = [
             'bucket' => '1'
         ];
-        $this->post('/api/v1/bucket/create',$bucket, $headers)
+        $this->post('/api/v1/bucket/create', $bucket, $headers)
             ->seeStatusCode(403)
             ->seeJsonContains([
                 "message" => "Invalid Name"
