@@ -71,7 +71,7 @@ class FileService extends S3Service
             try {
                 $result = $this->s3->putObject([
                     'Bucket'     => $bucket,
-                    'Key'        => $prefix,
+                    'Key'        => $prefix . '/',
                     'Body'       => "",
                 ]);
                 return false;
@@ -115,8 +115,7 @@ class FileService extends S3Service
         if (!$checkObject) {
             return 'Folder Non-exist';
         }
-        $files = $this->listFile($bucket, $key)->get('Contents');
-
+        $files = $this->listFile($bucket, $key . '/')->get('Contents');
         foreach ($files as $key => $value) {
             try {
                 $this->s3->deleteObject([
