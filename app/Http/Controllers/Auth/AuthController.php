@@ -8,6 +8,7 @@ use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\CheckEmailRequest;
 use App\Http\Requests\Auth\QuotaRequest;
 use App\Services\RequestApiService;
+use App\Services\CephService;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\ThrottlesLogins;
@@ -27,6 +28,7 @@ class AuthController extends Controller
     public function __construct(UserRepository $users)
     {
         $this->users = $users;
+        $this->ceph = new CephService(env('ServerIP'), env('Username'), env('Port'), env('PublicKeyPath'), env('PrivateKeyPath'));
         $this->middleware('guest', ['except' => 'logout']);
     }
 
@@ -122,25 +124,5 @@ class AuthController extends Controller
         } else {
             return response()->json(['message' => 'User is not exist'], 403);
         }
-    }
-
-    public function setUserQuota(QuotaRequest $request, RequestApiService $requestApiService)
-    {
-        $data = $request->all();
-        if ($data['maxSizeKB'] < -1) {
-            return response()->json(['message' => 'Max Size are not allowed'], 403);
-        }
-        if (!$this->users->check($data['email'])) {
-            return response()->json(['message' => 'The user is not exist'], 403);
-        }
-        $httpQuery = http_build_query([
-            'bucket' => -1,
-            'max-objects' => -1,
-            'max-size-kb' => $data['maxSizeKB'],
-            'quota-scope' => 'user',
-            'enabled' => $data['enabled']
-        ]);
-        $result = json_decode($requestApiService->request('PUT', 'user', "?quota&uid=" . $data['email'] . "&quota-type=user&$httpQuery"));
-        return response()->json(['message' => 'Setting is successful'], 200);
     }
 }

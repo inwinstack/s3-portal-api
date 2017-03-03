@@ -16,11 +16,10 @@
 14. [Rename File](#RenameFile)
 15. [Check Ceph Connected](#CheckCephConnected)
 16. [Get User Quota](#GetUserQuota)
-17. [Set User Quota](#SetUserQuota)
-18. [Move File](#MoveFile)
-19. [Replicate File](#ReplicateFile)
-20. [Rename Folder](#RenameFolder)
-21. [Move Folder](#MoveFolder)
+17. [Move File](#MoveFile)
+18. [Replicate File](#ReplicateFile)
+19. [Rename Folder](#RenameFolder)
+20. [Move Folder](#MoveFolder)
 
 ## 1.<a name="CreateAccount">Create a Account</a>
 
@@ -778,89 +777,7 @@ status code:403
 }
 ```
 
-## 17.<a name="SetUserQuota">Set User Quota</a>
-
-<table>
-    <tr>
-        <td style="width:50px">Method</td>
-        <td style="width:400px">URI</td>
-    </tr>
-    <tr>
-        <td style="width:50px">POST</td>
-        <td style="width:400px">/api/v1/auth/setUserQuota</td>
-    </tr>
-</table>
-
-### Input Parameter
-
-<table>
-    <tr>
-        <td style="width:50px">Type</td>
-        <td style="width:150px">Name</td>
-        <td style="width:50px">Require</td>
-        <td style="width:100px">Remark</td>
-    </tr>
-    <tr>
-        <td style="width:50px">Email</td>
-        <td style="width:150px">email</td>
-        <td style="width:50px">✔︎</td>
-        <td style="width:100px"></td>
-    </tr>
-    <tr>
-        <td style="width:50px">Integer</td>
-        <td style="width:150px">max-objects</td>
-        <td style="width:50px">✔︎</td>
-        <td style="width:100px"></td>
-    </tr>
-    <tr>
-        <td style="width:50px">Integer</td>
-        <td style="width:150px">max-size-kb</td>
-        <td style="width:50px">✔︎</td>
-        <td style="width:100px"></td>
-    </tr>
-    <tr>
-        <td style="width:50px">Integer</td>
-        <td style="width:150px">bucket</td>
-        <td style="width:50px">✔︎</td>
-        <td style="width:100px"></td>
-    </tr>
-    <tr>
-        <td style="width:50px">Boolean</td>
-        <td style="width:150px">enabled</td>
-        <td style="width:50px">✔︎</td>
-        <td style="width:100px"></td>
-    </tr>
-</table>
-
-
-### JSON Response
-#### Success
-```
-status code:200
-{
-  "message": "Setting is successful"
-}
-```
-
-#### Error
-```
-status code:403
-{
-  "message": "The user is not exist"
-}
-- or -
-status code:403
-{
-  "message": "Max Objects or Max Size are not allowed"
-}
-- or -
-status code:403
-{
-  "message": "The number of buckets must be positive"
-}
-```
-
-## 18.<a name="MoveFile">Move File</a>
+## 17.<a name="MoveFile">Move File</a>
 
 <table>
     <tr>
@@ -937,7 +854,7 @@ status code:403
 
 ```
 
-## 19.<a name="ReplicateFile">Replicate File</a>
+## 18.<a name="ReplicateFile">Replicate File</a>
 
 <table>
     <tr>
@@ -997,7 +914,7 @@ status code:403
 
 ```
 
-## 20.<a name="RenameFolder">Rename Folder</a>
+## 19.<a name="RenameFolder">Rename Folder</a>
 
 <table>
     <tr>
@@ -1068,7 +985,7 @@ status code:403
 
 ```
 
-## 21.<a name="MoveFolder">Move Folder</a>
+## 20.<a name="MoveFolder">Move Folder</a>
 
 <table>
     <tr>

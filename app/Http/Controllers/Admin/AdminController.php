@@ -3,11 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Repositories\UserRepository;
+use App\Http\Requests\Auth\QuotaRequest;
 use App\Http\Requests\Admin\AdminRequest;
 use App\Http\Requests\Admin\UpdateRoleRequest;
 use App\Http\Controllers\Controller;
 use App\Services\RequestApiService;
-use App\Services\AdminService;
+use App\Services\CephService;
 
 use JWTAuth;
 use Aws\S3\S3Client;
@@ -20,7 +21,7 @@ class AdminController extends Controller
     {
         $this->users = $users;
         $this->user = JWTAuth::parseToken()->authenticate();
-        $this->admin = new AdminService(env('ServerIP'), env('Username'), env('Port'), env('PublicKeyPath'), env('PrivateKeyPath'));
+        $this->ceph = new CephService(env('ServerIP'), env('Username'), env('Port'), env('PublicKeyPath'), env('PrivateKeyPath'));
     }
 
     public function index($page, RequestApiService $requestApiService)
@@ -35,7 +36,7 @@ class AdminController extends Controller
         if (count($listUser) == 0) {
             $userState['users'] = $listUser;
         } else {
-            $userState = $this->admin->listStatus($listUser, $requestApiService);
+            $userState = $this->ceph->listStatus($listUser, $requestApiService);
         }
         $userState['count'] = $this->users->getUserCount();
         return response()->json($userState, 200);
@@ -121,5 +122,33 @@ class AdminController extends Controller
             return response()->json(['message' => 'The delete user operation failed.'], 403);
         }
         return response()->json(['message' => 'The email does not exist.'], 403);
+    }
+
+    public function setUserQuota(QuotaRequest $request, RequestApiService $requestApiService)
+    {
+        $user = $this->user;
+        if ($user['role'] != 'admin') {
+            return response()->json(['message' => 'Permission denied'], 403);
+        }
+        $data = $request->all();
+        if ($data['maxSizeKB'] < -1) {
+            return response()->json(['message' => 'Max Size are not allowed'], 403);
+        }
+        if (!$this->users->check($data['email'])) {
+            return response()->json(['message' => 'The user is not exist'], 403);
+        }
+        $totalCapacity = $this->ceph->totalCapacity();
+        if ($data['maxSizeKB'] > $totalCapacity / 1024) {
+            return response()->json(['message' => 'Max size is bigger than variable capacity']);
+        }
+        $httpQuery = http_build_query([
+            'bucket' => -1,
+            'max-objects' => -1,
+            'max-size-kb' => $data['maxSizeKB'],
+            'quota-scope' => 'user',
+            'enabled' => $data['enabled']
+        ]);
+        $result = json_decode($requestApiService->request('PUT', 'user', "?quota&uid=" . $data['email'] . "&quota-type=user&$httpQuery"));
+        return response()->json(['message' => 'Setting is successful'], 200);
     }
 }

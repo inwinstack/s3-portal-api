@@ -4,7 +4,7 @@ namespace App\Services;
 
 use App\Repositories\UserRepository;
 
-class AdminService
+class CephService
 {
     protected $ssh;
 
@@ -42,5 +42,14 @@ class AdminService
             }
         }
         return $userState;
+    }
+
+    public function totalCapacity()
+    {
+        $stream = ssh2_exec($this->ssh, 'ceph df -f json');
+        stream_set_blocking($stream, true);
+        $contents = json_decode(stream_get_contents($stream));
+        fclose($stream);
+        return $contents->stats->total_avail_bytes;
     }
 }
