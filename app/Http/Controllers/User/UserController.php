@@ -4,6 +4,7 @@ namespace App\Http\Controllers\User;
 
 use App\Services\BucketService;
 use App\Services\RequestApiService;
+use App\Services\CephService;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -19,6 +20,7 @@ class UserController extends Controller
     {
         $this->user = JWTAuth::parseToken()->authenticate();
         $this->s3Service = new BucketService($this->user['access_key'], $this->user['secret_key']);
+        $this->ceph = new CephService(env('ServerIP'), env('Username'), env('Port'), env('PublicKeyPath'), env('PrivateKeyPath'));
     }
 
     public function state(RequestApiService $requestApiService)
@@ -41,7 +43,11 @@ class UserController extends Controller
             $num++;
         }
         $result['total_size_kb'] = $sizeKB;
-        $result['max_size_kb'] = $userQuota->max_size_kb;
+        if ($userQuota->max_size_kb == -1) {
+            $result['max_size_kb'] = round($this->ceph->totalCapacity() / 1024);
+        } else {
+            $result['max_size_kb'] = $userQuota->max_size_kb;
+        }
         $result['total_objects'] = $objectCount;
         $result['max_objects'] = $userQuota->max_objects;
         return response()->json($result, 200);
