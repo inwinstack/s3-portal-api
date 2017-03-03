@@ -20,7 +20,7 @@ class AdminController extends Controller
     {
         $this->users = $users;
         $this->user = JWTAuth::parseToken()->authenticate();
-        $this->ssh = new AdminService(env('ServerIP'), env('Username'), env('Port'), env('PublicKeyPath'), env('privateKeyPath'));
+        $this->admin = new AdminService(env('ServerIP'), env('Username'), env('Port'), env('PublicKeyPath'), env('PrivateKeyPath'));
     }
 
     public function index($page, RequestApiService $requestApiService)
