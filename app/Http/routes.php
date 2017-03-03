@@ -24,9 +24,6 @@ Route::group(['prefix' => 'api', 'middleware' => ['cors', 'api']], function () {
             Route::get('checkEmail/{email}', 'AuthController@checkEmail');
             Route::get('checkCephConnected', 'AuthController@checkCephConnected');
             Route::get('getUserQuota/{user}', 'AuthController@getUserQuota');
-            Route::post('setUserQuota', 'AuthController@setUserQuota');
-            Route::get('getBucketQuota/{user}', 'AuthController@getBucketQuota');
-            Route::post('setBucketQuota', 'AuthController@setBucketQuota');
         });
         Route::group(['middleware' => ['jwt.auth']], function () {
             Route::group(['prefix' => 'bucket', 'namespace' => 'Bucket'], function () {
@@ -55,7 +52,7 @@ Route::group(['prefix' => 'api', 'middleware' => ['cors', 'api']], function () {
                 Route::post('reset', 'AdminController@reset');
                 Route::post('role', 'AdminController@update');
                 Route::delete('delete/{email}', 'AdminController@destroy');
-                Route::get('state/{page}', 'AdminController@state');
+                Route::post('setQuota', 'AdminController@setQuota');
             });
             Route::group(['prefix' => 'user', 'namespace' => 'User'], function () {
                 Route::get('state', 'UserController@state');

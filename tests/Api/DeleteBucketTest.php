@@ -17,9 +17,11 @@ class DeleteBucketTest extends TestCase
             'bucket' => $bucketName,
             'prefix' => str_random(15)
         ];
-        $this->delete('/api/v1/bucket/delete/' . $bucketName, $userData, $headers)->seeStatusCode(200)->seeJsonContains([
-            "message" => "Delete Bucket Success"
-        ]);
+        $this->delete('/api/v1/bucket/delete/' . $bucketName, $userData, $headers)
+            ->seeStatusCode(200)
+            ->seeJsonContains([
+              "message" => "Delete Bucket Success"
+            ]);
     }
 
     /**
@@ -37,8 +39,10 @@ class DeleteBucketTest extends TestCase
             'bucket' => $bucketName,
             'prefix' => str_random(15)
         ];
-        $this->delete('/api/v1/bucket/delete/' . $bucketName, $userData, $headers)->seeStatusCode(403)->seeJsonContains([
-            "message" => "Bucket Non-exist"
-        ]);
+        $this->delete('/api/v1/bucket/delete/' . $bucketName, $userData, $headers)
+            ->seeStatusCode(403)
+            ->seeJsonContains([
+              "message" => "Bucket Non-exist"
+            ]);
     }
 }

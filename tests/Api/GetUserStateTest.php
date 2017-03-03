@@ -14,6 +14,6 @@ class GetUserStateTest extends TestCase
          $headers['HTTP_Authorization'] = "Bearer {$init['token']}";
          $this->get('/api/v1/user/state/' . $this->userData['email'], $headers)
              ->seeStatusCode(200)
-             ->seeJsonStructure(['totalSizeKB', 'sizePercent', 'maxSizeKB', 'totalObjects', 'objectsPercent', 'maxObjects']);
+             ->seeJsonStructure(['total_size_kb',  'max_size_kb', 'total_objects',  'max_objects']);
      }
 }

@@ -13,9 +13,7 @@ class SetQuotaTest extends TestCase
          $headers = $this->headers;
          $headers['HTTP_Authorization'] = "Bearer {$init['token']}";
          $quotaData = [
-             'bucket' => 5,
-             'max-objects' => 10,
-             'max-size-kb' => 10,
+             'maxSizeKB' => 50000,
              'email' => $this->userData['email'],
              'enabled' => true
          ];
@@ -37,9 +35,7 @@ class SetQuotaTest extends TestCase
           $headers = $this->headers;
           $headers['HTTP_Authorization'] = "Bearer {$init['token']}";
           $quotaData = [
-              'bucket' => 5,
-              'max-objects' => 10,
-              'max-size-kb' => 10,
+              'maxSizeKB' => 50000,
               'email' => $this->userData['email'] . 'not',
               'enabled' => true
           ];
@@ -55,46 +51,20 @@ class SetQuotaTest extends TestCase
        *
        * @return void
        */
-       public function testSetQuotaButMaxObjectOrMaxSizeAreNotAllowed()
+       public function testSetQuotaButMaxSizeAreNotAllowed()
        {
            $init = $this->initBucket();
            $headers = $this->headers;
            $headers['HTTP_Authorization'] = "Bearer {$init['token']}";
            $quotaData = [
-               'bucket' => 5,
-               'max-objects' => -3,
-               'max-size-kb' => -3,
+               'maxSizeKB' => -3,
                'email' => $this->userData['email'],
                'enabled' => true
            ];
            $this->post('/api/v1/auth/setUserQuota', $quotaData, $headers)
                ->seeStatusCode(403)
                ->seeJsonContains([
-                   'message' => 'Max Objects or Max Size are not allowed'
+                   'message' => 'Max Size are not allowed'
                ]);
        }
-
-       /**
-        * Testing the admin set quota but the number of bucket is must be positive.
-        *
-        * @return void
-        */
-        public function testSetQuotaButNumberOfBucketIsPositive()
-        {
-            $init = $this->initBucket();
-            $headers = $this->headers;
-            $headers['HTTP_Authorization'] = "Bearer {$init['token']}";
-            $quotaData = [
-                'bucket' => -1,
-                'max-objects' => 10,
-                'max-size-kb' => 10,
-                'email' => $this->userData['email'],
-                'enabled' => true
-            ];
-            $this->post('/api/v1/auth/setUserQuota', $quotaData, $headers)
-                ->seeStatusCode(403)
-                ->seeJsonContains([
-                    'message' => 'The number of buckets must be positive'
-                ]);
-        }
 }

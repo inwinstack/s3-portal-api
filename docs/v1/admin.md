@@ -5,7 +5,7 @@
 3. [Reset Password User](#ResetPasswordUser)
 4. [Update Role User](#UpdateRoleUser)
 5. [Delete User](#DeleteUser)
-6. [List User State](#ListUserState)
+6. [Set Quota](#SetQuota)
 
 ## 1.<a name="CreateUser">Create User</a>
 
@@ -101,7 +101,7 @@ status code:200
       }
       ...
     ],
-    "total_page": *totalPage*
+    "count": *user count*
 }
 ```
 
@@ -291,31 +291,67 @@ status code:403
 }
 ```
 
-## 6.<a name="ListUserState">List User State</a>
+## 17.<a name="SetUserQuota">Set User Quota</a>
+
 <table>
     <tr>
         <td style="width:50px">Method</td>
         <td style="width:400px">URI</td>
     </tr>
     <tr>
-        <td style="width:50px">GET</td>
-        <td style="width:400px">/api/v1/admin/state/{page}</td>
+        <td style="width:50px">POST</td>
+        <td style="width:400px">/api/v1/auth/setUserQuota</td>
     </tr>
 </table>
+
+### Input Parameter
+
+<table>
+    <tr>
+        <td style="width:50px">Type</td>
+        <td style="width:150px">Name</td>
+        <td style="width:50px">Require</td>
+        <td style="width:100px">Remark</td>
+    </tr>
+    <tr>
+        <td style="width:50px">Email</td>
+        <td style="width:150px">email</td>
+        <td style="width:50px">✔︎</td>
+        <td style="width:100px"></td>
+    </tr>
+    <tr>
+        <td style="width:50px">Integer</td>
+        <td style="width:150px">max-objects</td>
+        <td style="width:50px">✔︎</td>
+        <td style="width:100px"></td>
+    </tr>
+    <tr>
+        <td style="width:50px">Integer</td>
+        <td style="width:150px">max-size-kb</td>
+        <td style="width:50px">✔︎</td>
+        <td style="width:100px"></td>
+    </tr>
+    <tr>
+        <td style="width:50px">Integer</td>
+        <td style="width:150px">bucket</td>
+        <td style="width:50px">✔︎</td>
+        <td style="width:100px"></td>
+    </tr>
+    <tr>
+        <td style="width:50px">Boolean</td>
+        <td style="width:150px">enabled</td>
+        <td style="width:50px">✔︎</td>
+        <td style="width:100px"></td>
+    </tr>
+</table>
+
 
 ### JSON Response
 #### Success
 ```
 status code:200
 {
-  "Users": [
-    {
-    	"uid": *uid*,	
-		"totalSizeKB": *total object size*,
-		"sizePercent": *total object percent*
-    },
-    ...
-  ]
+  "message": "Setting is successful"
 }
 ```
 
@@ -326,11 +362,20 @@ status code:403
   "message": "Permission denied"
 }
 - or -
+- status code:403
+{
+  "message": "Max size is bigger than variable capacity"
+}
+- or -
 status code:403
 {
-  "message": "The page value is not incorrect"
+  "message": "The user is not exist"
 }
-
+- or -
+status code:403
+{
+  "message": "Max Size are not allowed"
+}
 ```
 
 

@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Repositories\UserRepository;
+use App\Http\Requests\Auth\QuotaRequest;
 use App\Http\Requests\Admin\AdminRequest;
 use App\Http\Requests\Admin\UpdateRoleRequest;
 use App\Http\Controllers\Controller;
 use App\Services\RequestApiService;
+use App\Services\CephService;
 
 use JWTAuth;
 use Aws\S3\S3Client;
@@ -19,6 +21,7 @@ class AdminController extends Controller
     {
         $this->users = $users;
         $this->user = JWTAuth::parseToken()->authenticate();
+        $this->ceph = new CephService(env('ServerIP'), env('Username'), env('Port'), env('PublicKeyPath'), env('PrivateKeyPath'));
     }
 
     public function index($page, RequestApiService $requestApiService)
@@ -30,24 +33,12 @@ class AdminController extends Controller
             return response()->json(['message' => 'The page value is not incorrect'], 403);
         }
         $listUser = $this->users->getUser($page, 10);
-        for ($userCount = 0; $userCount < count($listUser); $userCount++) {
-            $sizeKB = 0;
-            $userState['users'][$userCount] = $listUser[$userCount];
-            $userQuota = json_decode($requestApiService->request('GET', 'user', "?quota&uid=" . $listUser[$userCount]->uid . "&quota-type=user"));
-            $bucketList = json_decode($requestApiService->request('GET', 'bucket', '?format=json&uid=' . $listUser[$userCount]->uid));
-            for ($bucketCount = 0; $bucketCount < count($bucketList); $bucketCount++) {
-                $httpQuery = http_build_query([
-                    'bucket' => $bucketList[$bucketCount]
-                ]);
-                $bucket = json_decode($requestApiService->request('GET', 'bucket', "?$httpQuery"));
-                if (!empty((array)($bucket->usage))) {
-                    $sizeKB += intval($bucket->usage->{'rgw.main'}->size_kb);
-                }
-            }
-            $userState['users'][$userCount]['used_size_kb'] = $sizeKB;
-            $userState['users'][$userCount]['total_size_kb'] = $userQuota->max_size_kb;
-            $userState['total_page'] = ceil($this->users->getUserCount() / 10);
+        if (count($listUser) == 0) {
+            $userState['users'] = $listUser;
+        } else {
+            $userState = $this->ceph->listStatus($listUser, $requestApiService);
         }
+        $userState['count'] = $this->users->getUserCount();
         return response()->json($userState, 200);
     }
 
@@ -133,38 +124,31 @@ class AdminController extends Controller
         return response()->json(['message' => 'The email does not exist.'], 403);
     }
 
-    public function state($page, RequestApiService $requestApiService)
+    public function setUserQuota(QuotaRequest $request, RequestApiService $requestApiService)
     {
         $user = $this->user;
-        if ($page < 1) {
-            return response()->json(['message' => 'The page value is not incorrect'], 403);
-        }
         if ($user['role'] != 'admin') {
             return response()->json(['message' => 'Permission denied'], 403);
         }
-        $listUser = $this->users->getUser($page, 10);
-        for ($userCount = 0; $userCount < count($listUser); $userCount++) {
-            $sizeKB = 0;
-            $userState[$userCount]['uid'] = $listUser[$userCount]->uid;
-            $userQuota = json_decode($requestApiService->request('GET', 'user', "?quota&uid=" . $userState[$userCount]['uid'] . "&quota-type=user"));
-            $bucketList = json_decode($requestApiService->request('GET', 'bucket', '?format=json&uid=' . $userState[$userCount]['uid']));
-            for ($bucketCount = 0; $bucketCount < count($bucketList); $bucketCount++) {
-                $httpQuery = http_build_query([
-                    'bucket' => $bucketList[$bucketCount]
-                ]);
-                $bucket = json_decode($requestApiService->request('GET', 'bucket', "?$httpQuery"));
-                if (!empty((array)($bucket->usage))) {
-                    $sizeKB += intval($bucket->usage->{'rgw.main'}->size_kb);
-                }
-            }
-            $userState[$userCount]['totalSizeKB'] = $sizeKB;
-            if (!empty((array)$userQuota) && $userQuota->enabled) {
-                $test[$userCount] = $userQuota;
-                $userState[$userCount]['sizePercent'] = ($userState[$userCount]['totalSizeKB'] / $userQuota->max_size_kb) * 100 . '%';
-            } else {
-                $userState[$userCount]['sizePercent'] = -1;
-            }
+        $data = $request->all();
+        if ($data['maxSizeKB'] < -1) {
+            return response()->json(['message' => 'Max Size are not allowed'], 403);
         }
-        return response()->json($userState, 200);
+        if (!$this->users->check($data['email'])) {
+            return response()->json(['message' => 'The user is not exist'], 403);
+        }
+        $totalCapacity = $this->ceph->totalCapacity();
+        if ($data['maxSizeKB'] > $totalCapacity / 1024) {
+            return response()->json(['message' => 'Max size is bigger than variable capacity']);
+        }
+        $httpQuery = http_build_query([
+            'bucket' => -1,
+            'max-objects' => -1,
+            'max-size-kb' => $data['maxSizeKB'],
+            'quota-scope' => 'user',
+            'enabled' => $data['enabled']
+        ]);
+        $result = json_decode($requestApiService->request('PUT', 'user', "?quota&uid=" . $data['email'] . "&quota-type=user&$httpQuery"));
+        return response()->json(['message' => 'Setting is successful'], 200);
     }
 }
