@@ -5,7 +5,6 @@
 3. [Reset Password User](#ResetPasswordUser)
 4. [Update Role User](#UpdateRoleUser)
 5. [Delete User](#DeleteUser)
-6. [List User State](#ListUserState)
 
 ## 1.<a name="CreateUser">Create User</a>
 
@@ -101,7 +100,12 @@ status code:200
       }
       ...
     ],
-    "total_page": *totalPage*
+    "count": *user count*,
+    "capacity": {
+    	"total_bytes": *ceph total capacity (byte)*,
+    	"used_bytes": *used total capacity (byte)*,
+    	"avail_bytes": *available total capacity (byte)*
+  	}
 }
 ```
 
@@ -289,48 +293,6 @@ status code:403
 {
   "message": "The delete user operation failed"
 }
-```
-
-## 6.<a name="ListUserState">List User State</a>
-<table>
-    <tr>
-        <td style="width:50px">Method</td>
-        <td style="width:400px">URI</td>
-    </tr>
-    <tr>
-        <td style="width:50px">GET</td>
-        <td style="width:400px">/api/v1/admin/state/{page}</td>
-    </tr>
-</table>
-
-### JSON Response
-#### Success
-```
-status code:200
-{
-  "Users": [
-    {
-    	"uid": *uid*,	
-		"totalSizeKB": *total object size*,
-		"sizePercent": *total object percent*
-    },
-    ...
-  ]
-}
-```
-
-#### Error
-```
-status code:403
-{
-  "message": "Permission denied"
-}
-- or -
-status code:403
-{
-  "message": "The page value is not incorrect"
-}
-
 ```
 
 
