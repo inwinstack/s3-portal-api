@@ -506,17 +506,17 @@ status code:200
 ```
 status code:403
 {
-  "message": "Bucket not Exist"
+  "message": "The bucket is not exist"
 }
 - or -
 status code:403
 {
-  "message": "Create Folder Error"
+  "message": "The folder is exist"
 }
 - or -
 status code:403
 {
-  "message": "Folder exist"
+  "message": "Create folder is failed"
 }
 ```
 
@@ -633,12 +633,17 @@ status code:200
 ```
 status code:403
 {
-  "message": "Delete Folder Error"
+  "message": "The bucket is not exist"
 }
 - or -
 status code:403
 {
-  "message": "Folder Non-exist"
+  "message": "The folder is not exist"
+}
+- or -
+status code:403
+{
+  "message": "Delete folder is failed"
 }
 ```
 
@@ -970,17 +975,22 @@ status code:200
 ```
 status code:403
 {
-  "message": "The folder don't exist."
+  "message": "The bucket is not exist"
 }
 - or -
 status code:403
 {
-  "message": "The folder already exists."
+  "message": "The old name is not exist"
 }
 - or -
 status code:403
 {
-  "message": "The folder rename failed."
+  "message": "The new name is exist"
+}
+- or -
+status code:403
+{
+  "message": "The renamed is failed"
 }
 
 ```
@@ -1048,17 +1058,17 @@ status code:200
 ```
 status code:403
 {
-  "message": "The folder don't exist."
+  "message": "The folder of source is not exist"
 }
 - or -
 status code:403
 {
-  "message": "The folder already exists."
+  "message": "The folder of goal is exist"
 }
 - or -
 status code:403
 {
-  "message": "The folder move failed."
+  "message": "The move is failed"
 }
 
 ```
