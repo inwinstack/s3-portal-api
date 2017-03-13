@@ -14,7 +14,7 @@ class FileService extends S3Service
         $this->s3 = $this->connect($accessKey, $secretKey);
     }
 
-    public function list($bucket, $prefix)
+    public function get($bucket, $prefix)
     {
         try {
             $objects = $this->s3->listObjects([
