@@ -30,7 +30,7 @@ class FileController extends Controller
         if (!$this->bucketService->check($bucket)) {
             return response()->json(['message' => 'The bucket is not exist']);
         }
-        $listResponse = $this->fileService->list($bucket, $request->input('prefix', ''));
+        $listResponse = $this->fileService->get($bucket, $request->input('prefix', ''));
         if (!$listResponse) {
             return response()->json(['message' => 'List files is failed'], 403);
         }
