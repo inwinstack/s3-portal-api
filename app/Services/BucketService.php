@@ -5,6 +5,7 @@ namespace App\Services;
 use Aws\S3\S3Client;
 use Aws\S3\Model\ClearBucket;
 use Aws\S3\Exception\S3Exception as S3Exception;
+
 class BucketService extends S3Service
 {
     protected $s3;
@@ -35,6 +36,16 @@ class BucketService extends S3Service
     public function checkBucket($bucket)
     {
         return $this->s3->doesBucketExist($bucket);
+    }
+
+    public function check($bucket)
+    {
+        try {
+            $this->s3->headBucket(['Bucket' => $bucket]);
+            return true;
+        } catch (S3Exception $e) {
+            return false;
+        }
     }
 
     public function deleteBucket($bucket)

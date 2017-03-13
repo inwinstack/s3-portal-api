@@ -124,7 +124,7 @@ class AdminController extends Controller
         return response()->json(['message' => 'The email does not exist.'], 403);
     }
 
-    public function setUserQuota(QuotaRequest $request, RequestApiService $requestApiService)
+    public function setQuota(QuotaRequest $request, RequestApiService $requestApiService)
     {
         $user = $this->user;
         if ($user['role'] != 'admin') {

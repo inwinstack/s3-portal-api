@@ -35,7 +35,7 @@ Route::group(['prefix' => 'api', 'middleware' => ['cors', 'api']], function () {
                 Route::get('list/{bucket}', 'FileController@index');
                 Route::post('create', 'FileController@store');
                 Route::post('rename', 'FileController@rename');
-                Route::get('get/{bucket}/{key}', 'FileController@getFile')->where('key', '(.*)');
+                Route::get('get/{bucket}/{key}', 'FileController@get')->where('key', '(.*)');
                 Route::delete('delete/{bucket}/{key}', 'FileController@destroy')->where('key', '(.*)');
                 Route::post('move', 'FileController@move');
                 Route::post('replicate', 'FileController@replicate');

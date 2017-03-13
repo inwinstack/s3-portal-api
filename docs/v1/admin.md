@@ -300,7 +300,7 @@ status code:403
     </tr>
     <tr>
         <td style="width:50px">POST</td>
-        <td style="width:400px">/api/v1/auth/setUserQuota</td>
+        <td style="width:400px">/api/v1/admin/setQuota</td>
     </tr>
 </table>
 
@@ -320,25 +320,13 @@ status code:403
         <td style="width:100px"></td>
     </tr>
     <tr>
-        <td style="width:50px">Integer</td>
-        <td style="width:150px">max-objects</td>
-        <td style="width:50px">✔︎</td>
-        <td style="width:100px"></td>
-    </tr>
-    <tr>
-        <td style="width:50px">Integer</td>
-        <td style="width:150px">max-size-kb</td>
-        <td style="width:50px">✔︎</td>
-        <td style="width:100px"></td>
-    </tr>
-    <tr>
-        <td style="width:50px">Integer</td>
-        <td style="width:150px">bucket</td>
-        <td style="width:50px">✔︎</td>
-        <td style="width:100px"></td>
-    </tr>
-    <tr>
         <td style="width:50px">Boolean</td>
+        <td style="width:150px">maxSizeKB</td>
+        <td style="width:50px">✔︎</td>
+        <td style="width:100px"></td>
+    </tr>
+    <tr>
+        <td style="width:50px">Integer</td>
         <td style="width:150px">enabled</td>
         <td style="width:50px">✔︎</td>
         <td style="width:100px"></td>
@@ -377,5 +365,3 @@ status code:403
   "message": "Max Size are not allowed"
 }
 ```
-
-
