@@ -28,51 +28,56 @@ class FileController extends Controller
     public function index(Request $request, $bucket)
     {
         if (!$this->bucketService->check($bucket)) {
-            return response()->json(['message' => 'The bucket is not exist']);
+            return response()->json(['message' => 'The bucket is not exist'], 403);
         }
-        $listResponse = $this->fileService->get($bucket, $request->input('prefix', ''));
-        if (!$listResponse) {
+        $response = $this->fileService->get($bucket, $request->input('prefix', ''));
+        if ($response) {
+            return response()->json(['files' => $response->get('Contents')], 200);
+        } else {
             return response()->json(['message' => 'List files is failed'], 403);
         }
-        return response()->json(['files' => $listResponse->get('Contents')], 200);
     }
 
     public function store(UploadFileRequest $request)
     {
         if (!$this->bucketService->check($request->bucket)) {
-            return response()->json(['message' => 'The bucket is not exist']);
+            return response()->json(['message' => 'The bucket is not exist'], 403);
         }
-        $uploadResponse = $this->fileService->upload($request->bucket, $request->file('file')->getPathName(), $request->file('file')->getClientOriginalName(), $request->prefix);
-        if ($uploadResponse) {
+        if ($this->fileService->upload($request->bucket, $request->file('file')->getPathName(), $request->file('file')->getClientOriginalName(), $request->prefix)) {
             return response()->json(['message' => 'Upload file is successfully'], 200);
+        } else {
+            return response()->json(['message' => 'Upload file is failed'], 403);
         }
-        return response()->json(['message' => 'Upload file is failed'], 403);
     }
 
     public function get($bucket, $key)
     {
         if (!$this->bucketService->check($bucket)) {
-            return response()->json(['message' => 'The bucket is not exist']);
+            return response()->json(['message' => 'The bucket is not exist'], 403);
         }
         $explodeString = explode('/', $key);
         $explodeStringCount = count($explodeString);
         $downloadURL = $this->fileService->download($bucket, $key);
         if ($downloadURL) {
             return response()->download(storage_path('tmpfile/' . $downloadURL), $explodeString[$explodeStringCount - 1])->deleteFileAfterSend(true);
+        } else {
+            return response()->json(['message' => 'Download file is failed'], 403);
         }
-        return response()->json(['message' => 'Download file is failed'], 403);
     }
 
     public function destroy($bucket, $key)
     {
         if (!$this->bucketService->check($bucket)) {
-            return response()->json(['message' => 'The bucket is not exist']);
+            return response()->json(['message' => 'The bucket is not exist'], 403);
         }
-        $deleteFile = $this->fileService->delete($bucket, $key);
-        if ($deleteFile) {
+        if (!$this->fileService->check($bucket, $key)) {
+            return response()->json(['message' => 'The file is not exist'], 403);
+        }
+        if ($this->fileService->delete($bucket, $key)) {
             return response()->json(['message' => 'Delete file is successfully'], 200);
+        } else {
+            return response()->json(['message' => 'Delete file is failed'], 403);
         }
-        return response()->json(['message' => 'Delete file is failed'], 403);
     }
 
     public function rename(Request $request)
@@ -86,11 +91,11 @@ class FileController extends Controller
         if ($this->fileService->check($request->bucket, $request->new)) {
             return response()->json(['message' => 'The file of new name is exist'], 403);
         }
-        $renameRespones = $this->fileService->rename($request->bucket, $request->old, $request->new);
-        if ($renameRespones) {
+        if ($this->fileService->rename($request->bucket, $request->old, $request->new)) {
             return response()->json(['message' => 'Rename file is Successfully'], 200);
+        } else {
+            return response()->json(['message' => 'Rename file is failed'], 403);
         }
-        return response()->json(['message' => 'Rename file is failed'], 403);
     }
 
     public function move(Request $request)
@@ -107,8 +112,7 @@ class FileController extends Controller
         if ($this->fileService->check($request->goalBucket, $request->goalFile)) {
             return response()->json(['message' => 'The file of goal is exist in goal bucket'], 403);
         }
-        $moveResponse = $this->fileService->moveFile($request->sourceBucket, $request->sourceFile, $request->goalBucket, $request->goalFile);
-        if ($moveResponse) {
+        if ($this->fileService->moveFile($request->sourceBucket, $request->sourceFile, $request->goalBucket, $request->goalFile)) {
             return response()->json(['message' => 'Move file is successfully'], 200);
         } else {
             return response()->json(['message' => 'Move file is failed'], 403);
@@ -126,8 +130,7 @@ class FileController extends Controller
         if ($this->fileService->check($request->bucket, pathinfo($request->file, PATHINFO_FILENAME) . '_copy.' . pathinfo($request->file, PATHINFO_EXTENSION))) {
             return response()->json(['message' => 'The replicas file is exist'], 403);
         }
-        $replicateResponse = $this->fileService->replicate($request->bucket, $request->file);
-        if ($replicateResponse) {
+        if ($this->fileService->replicate($request->bucket, $request->file)) {
             return response()->json(['message' => 'Replication is successfully'], 200);
         } else {
             return response()->json(['message' => 'Replication is failed'], 403);

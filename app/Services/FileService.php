@@ -39,7 +39,6 @@ class FileService extends S3Service
         } catch (S3Exception $e) {
             return false;
         }
-        return $checkBucket;
     }
 
     public function download($bucket, $key)
@@ -72,7 +71,11 @@ class FileService extends S3Service
 
     public function check($bucket, $file)
     {
-        return $this->s3->doesObjectExist($bucket, $file);
+        try {
+            return $this->s3->doesObjectExist($bucket, $file);
+        } catch (S3Exception $e) {
+            return false;
+        }
     }
 
     public function rename($bucket, $old, $new)
