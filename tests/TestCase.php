@@ -2,6 +2,7 @@
 
 use App\User;
 use Illuminate\Support\Facades\Artisan;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class TestCase extends Illuminate\Foundation\Testing\TestCase
 {
@@ -144,32 +145,24 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
      * @return static
      * @internal param bool $hasBucket
      */
-    public function createUser($email, $password, $hasBucket = false)
+    public function initUser()
     {
         $httpQuery = http_build_query([
-            'uid' => $email,
-            'display-name' => $email,
-            'email' => $email
+            'uid' => $this->userData['email'],
+            'display-name' => $this->userData['email'],
+            'email' => $this->userData['email']
         ]);
-        $accessKey = str_random(10);
-        $secretKey = str_random(10);
-        if ($hasBucket) {
-            $apiService = new  \App\Services\RequestApiService;
-            $result = json_decode($apiService->request('PUT', 'user', "?format=json&$httpQuery"));
-            $accessKey = $result->keys[0]->access_key;
-            $secretKey = $result->keys[0]->secret_key;
-        }
-
+        $apiService = new  \App\Services\RequestApiService;
+        $result = json_decode($apiService->request('PUT', 'user', "?format=json&$httpQuery"));
         $userData = [
-            'uid' => $email,
-            'email' => $email,
+            'uid' => $this->userData['email'],
+            'email' => $this->userData['email'],
             'name' => str_random(4),
-            'password' => bcrypt($password),
-            'access_key' => $accessKey,
-            'secret_key' => $secretKey,
+            'password' => bcrypt($this->userData['password']),
+            'access_key' => $result->keys[0]->access_key,
+            'secret_key' => $result->keys[0]->secret_key,
             'role' => 'user'
         ];
-
         return User::create($userData);
     }
 
@@ -232,5 +225,12 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
         $token = \JWTAuth::fromUser($user);
         $this->createBucket($user, $bucketName);
         return ['bucketName' => $bucketName, 'token' => $token, 'user' => $user];
+    }
+
+    protected function uploadFile($bucket, $headers)
+    {
+        $local_file = __DIR__ . '/test-files/test.jpg';
+        $uploadedFile = new UploadedFile($local_file, 'test.jpg', 'image/jpeg', filesize($local_file), true);
+        return $this->call('post', 'api/v1/file/create', ['bucket' => $bucket], [], ['file' => $uploadedFile], $headers);
     }
 }

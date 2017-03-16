@@ -1,22 +1,21 @@
 <?php
 
-class RenameFileTest extends TestCase
+class ReplicateFileTest extends TestCase
 {
     /**
-     * Testing the user rename the file but the bucket is not exist.
+     * Testing the user replicate the file but the bucket is not exist.
      *
      * @return void
      */
-    public function testRenameFileButBucketIsNotExist()
+    public function testReplicateFileButBucketIsNotExist()
     {
         $user = $this->initUser();
         $token = \JWTAuth::fromUser($user);
         $headers = $this->headers;
         $headers['HTTP_Authorization'] = "Bearer $token";
-        $this->post("api/v1/file/rename/", [
+        $this->post("api/v1/file/replicate/", [
               'bucket' => str_random(10),
-              'old' => 'old',
-              'new' => 'new'
+              'file' => str_random(10)
             ], $headers)
             ->seeStatusCode(403)
             ->seeJsonContains([
@@ -25,11 +24,11 @@ class RenameFileTest extends TestCase
     }
 
     /**
-     * Testing the user rename the file but the file of old is not exist.
+     * Testing the user replicate the file but the file is not exist.
      *
      * @return void
      */
-    public function testRenameFileButOldFileIsNotExist()
+    public function testReplicateFileButFileIsNotExist()
     {
         $user = $this->initUser();
         $token = \JWTAuth::fromUser($user);
@@ -37,23 +36,22 @@ class RenameFileTest extends TestCase
         $headers['HTTP_Authorization'] = "Bearer $token";
         $bucket = str_random(10);
         $this->createBucket($user, $bucket);
-        $this->post("api/v1/file/rename/", [
+        $this->post("api/v1/file/replicate/", [
               'bucket' => $bucket,
-              'old' => 'old',
-              'new' => 'new'
+              'file' => str_random(10)
             ], $headers)
             ->seeStatusCode(403)
             ->seeJsonContains([
-                "message" => "The file of old name is not exist"
+                "message" => "The file is not exist"
             ]);
     }
 
     /**
-     * Testing the user rename the file but the file of new is exist.
+     * Testing the user replicate the file but the replicas is exist.
      *
      * @return void
      */
-    public function testRenameFileButNewFileIsExist()
+    public function testReplicateFileButReplicasIsExist()
     {
         $user = $this->initUser();
         $token = \JWTAuth::fromUser($user);
@@ -62,23 +60,26 @@ class RenameFileTest extends TestCase
         $bucket = str_random(10);
         $this->createBucket($user, $bucket);
         $this->uploadFile($bucket, $headers);
-        $this->post("api/v1/file/rename/", [
+        $this->post("api/v1/file/replicate/", [
               'bucket' => $bucket,
-              'old' => 'test.jpg',
-              'new' => 'test.jpg'
+              'file' => 'test.jpg'
+            ], $headers);
+        $this->post("api/v1/file/replicate/", [
+              'bucket' => $bucket,
+              'file' => 'test.jpg'
             ], $headers)
             ->seeStatusCode(403)
             ->seeJsonContains([
-                "message" => "The file of new name is exist"
+                "message" => "The replicas is exist"
             ]);
     }
 
     /**
-     * Testing the user rename the file is successfully.
+     * Testing the user replicate is successfully.
      *
      * @return void
      */
-    public function testRenameFileSuccess()
+    public function testReplicateFileSuccess()
     {
         $user = $this->initUser();
         $token = \JWTAuth::fromUser($user);
@@ -87,14 +88,13 @@ class RenameFileTest extends TestCase
         $bucket = str_random(10);
         $this->createBucket($user, $bucket);
         $this->uploadFile($bucket, $headers);
-        $this->post("api/v1/file/rename/", [
+        $this->post("api/v1/file/replicate/", [
               'bucket' => $bucket,
-              'old' => 'test.jpg',
-              'new' => 'test2.jpg'
+              'file' => 'test.jpg'
             ], $headers)
             ->seeStatusCode(200)
             ->seeJsonContains([
-                "message" => "Rename file is Successfully"
+                "message" => "Replication is successfully"
             ]);
     }
 }

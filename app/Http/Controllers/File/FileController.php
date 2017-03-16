@@ -128,7 +128,7 @@ class FileController extends Controller
             return response()->json(['message' => 'The file is not exist'], 403);
         }
         if ($this->fileService->check($request->bucket, pathinfo($request->file, PATHINFO_FILENAME) . '_copy.' . pathinfo($request->file, PATHINFO_EXTENSION))) {
-            return response()->json(['message' => 'The replicas file is exist'], 403);
+            return response()->json(['message' => 'The replicas is exist'], 403);
         }
         if ($this->fileService->replicate($request->bucket, $request->file)) {
             return response()->json(['message' => 'Replication is successfully'], 200);
