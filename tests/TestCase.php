@@ -217,7 +217,7 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
     protected function createBucket($user, $bucketName)
     {
         $s3Service = new \App\Services\BucketService($user['access_key'], $user['secret_key']);
-        $s3Service->createBucket($bucketName);
+        $s3Service->create($bucketName);
     }
 
     /**
