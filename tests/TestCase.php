@@ -209,8 +209,19 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
      */
     protected function createBucket($user, $bucketName)
     {
-        $s3Service = new \App\Services\BucketService($user['access_key'], $user['secret_key']);
-        $s3Service->create($bucketName);
+        $bucketService = new \App\Services\BucketService($user['access_key'], $user['secret_key']);
+        $bucketService->create($bucketName);
+    }
+
+    /**
+     * Create Folder
+     *
+     * @return void
+     */
+    protected function createFolder($user, $bucketName, $folderName)
+    {
+        $folderService = new \App\Services\FolderService($user['access_key'], $user['secret_key']);
+        $folderService->store($bucketName, $folderName);
     }
 
     /**

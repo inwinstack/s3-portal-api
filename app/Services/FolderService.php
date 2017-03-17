@@ -30,7 +30,7 @@ class FolderService extends S3Service
 
     public function delete($bucket, $key, $fileService)
     {
-        $files = $fileService->listFile($bucket, $key . '/')->get('Contents');
+        $files = $fileService->get($bucket, $key . '/')->get('Contents');
         foreach ($files as $key => $value) {
             try {
                 $this->s3->deleteObject([
@@ -52,7 +52,7 @@ class FolderService extends S3Service
                 'CopySource' => $bucket . '/' . $oldName . '/',
                 'Key' => $newName . '/'
             ]);
-            $files = $fileService->listFile($bucket, $oldName . '/')->get('Contents');
+            $files = $fileService->get($bucket, $oldName . '/')->get('Contents');
             foreach ($files as $key => $value) {
                 $fileName = explode($oldName . '/', $value['Key'])[1];
                 if ($key != 0) {
@@ -81,7 +81,7 @@ class FolderService extends S3Service
                 'CopySource' => $sourceBucket . '/' . $sourceFolder . '/',
                 'Key' => $goalFolder . '/'
             ]);
-            $files = $fileService->listFile($sourceBucket, $sourceFolder . '/')->get('Contents');
+            $files = $fileService->get($sourceBucket, $sourceFolder . '/')->get('Contents');
             foreach ($files as $key => $value) {
                 $fileName = explode($sourceFolder . '/', $value['Key'])[1];
                 $this->s3->copyObject([
@@ -100,7 +100,7 @@ class FolderService extends S3Service
         }
     }
 
-    public function checkFolder($bucket, $folderName)
+    public function check($bucket, $folderName)
     {
         try {
             return $this->s3->doesObjectExist($bucket, $folderName . '/');
