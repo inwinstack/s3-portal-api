@@ -64,7 +64,7 @@ class AuthController extends Controller
             $data['secret_key'] = $result->keys[0]->secret_key;
             $resultData = $this->users->createUser($data);
         }
-        $updateQuotaResponse = json_decode($requestApiService->request('PUT', 'user', "?quota&uid=" . $data['email'] . "&quota-type=user&$httpQuery"));
+        json_decode($requestApiService->request('PUT', 'user', "?quota&uid=" . $data['email'] . "&quota-type=user&$httpQuery"));
         if ($result) {
             return response()->json($result, 200);
         } else {
@@ -81,34 +81,34 @@ class AuthController extends Controller
         $data = $this->users->verify($request->all());
         if ($data) {
             $data['token'] = JWTAuth::fromUser($data);
-            return response()->json($data);
+            return response()->json($data, 200);
+        } else {
+            return response()->json(['message' => 'The email is not exist'], 401);
         }
-        return response()->json(['message' => 'verify_error'], 401);
     }
 
     public function checkEmail($email)
     {
-        $data = $this->users->check($email);
-        if ($data) {
-            return response()->json(['message' => 'has_user'], 403);
+        if ($this->users->check($email)) {
+            return response()->json(['message' => 'The email is exist'], 403);
+        } else {
+            return response()->json(['message' => 'You can use the email'], 200);
         }
-        return response()->json(['message' => 'You can use the email']);
     }
 
     public function logout()
     {
         $token = JWTAuth::getToken();
-        $invalidateResult = JWTAuth::setToken($token)->invalidate();
-        if ($invalidateResult) {
-            return response()->json(['message' => 'Invalidate Token Success']);
+        if (JWTAuth::setToken($token)->invalidate()) {
+            return response()->json(['message' => 'Logout is successfully'], 200);
+        } else {
+            return response()->json(['message' => 'Logout is failed'], 401);
         }
-        return response()->json(['message' => 'Invalidate Token Error'], 401);
     }
 
     public function checkCephConnected(RequestApiService $requestApiService)
     {
-        $result = json_decode($requestApiService->request('GET', 'bucket', "?format=json"));
-        if (is_array($result)) {
+        if (!is_array(json_decode($requestApiService->request('GET', 'bucket', "?format=json")))) {
             return response()->json(['message' => 'Connection to Ceph failed'], 403);
         } else {
             return  response()->json(['message' => 'Connected to Ceph success'], 200);
@@ -117,12 +117,11 @@ class AuthController extends Controller
 
     public function getUserQuota($user, RequestApiService $requestApiService)
     {
-        $data = $this->users->check($user);
-        if ($data) {
+        if ($this->users->check($user)) {
             $result = json_decode($requestApiService->request('GET', 'user', "?quota&uid=" . $user . "&quota-type=user"));
-            return response()->json(['message' => $result], 200);
+            return response()->json($result, 200);
         } else {
-            return response()->json(['message' => 'User is not exist'], 403);
+            return response()->json(['message' => 'The user is not exist'], 403);
         }
     }
 }
