@@ -9,10 +9,11 @@ class ListBucketTest extends TestCase
      */
     public function testListBucketSuccess()
     {
-        $init = $this->initBucket();
+        $user = $this->initUser();
+        $token = \JWTAuth::fromUser($user);
         $headers = $this->headers;
-        $headers['HTTP_Authorization'] = "Bearer {$init['token']}";
-        $response = $this->get('/api/v1/bucket/list', $headers)
+        $headers['HTTP_Authorization'] = "Bearer $token";
+        $this->get('/api/v1/bucket/list', $headers)
            ->seeStatusCode(200)
            ->seeJsonStructure(['Buckets' => ['*' => ['Name', 'CreationDate']]]);
     }
