@@ -48,7 +48,7 @@ Route::group(['prefix' => 'api', 'middleware' => ['cors', 'api']], function () {
             });
             Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function () {
                 Route::post('create', 'AdminController@create');
-                Route::get('list/{page}', 'AdminController@index');
+                Route::get('list/{page}/{count}', 'AdminController@index');
                 Route::post('reset', 'AdminController@reset');
                 Route::post('role', 'AdminController@update');
                 Route::delete('delete/{email}', 'AdminController@destroy');

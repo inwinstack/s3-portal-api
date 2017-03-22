@@ -9,7 +9,7 @@ class CheckCephConnectedTest extends TestCase
      */
     public function testRegisterSuccess()
     {
-        $this->get('api/v1/auth/checkCephConnected', [], $this->headers)
+        $this->get('api/v1/auth/checkCephConnected', [], [])
             ->seeStatusCode(200);
     }
 }

@@ -22,7 +22,7 @@ class CephService
         fclose($stream);
         for ($userCount = 0; $userCount < count($users); $userCount++) {
             $sizeKB = 0;
-            $userState['users'][$userCount] = $users[$userCount];
+            $userState[$userCount] = $users[$userCount];
             $userQuota = json_decode($requestApiService->request('GET', 'user', "?quota&uid=" . $users[$userCount]->uid . "&quota-type=user"));
             $bucketList = json_decode($requestApiService->request('GET', 'bucket', '?format=json&uid=' . $users[$userCount]->uid));
             for ($bucketCount = 0; $bucketCount < count($bucketList); $bucketCount++) {
@@ -34,11 +34,11 @@ class CephService
                     $sizeKB += intval($bucket->usage->{'rgw.main'}->size_kb);
                 }
             }
-            $userState['users'][$userCount]['used_size_kb'] = $sizeKB;
+            $userState[$userCount]['used_size_kb'] = $sizeKB;
             if ($userQuota->max_size_kb == -1) {
-                $userState['users'][$userCount]['total_size_kb'] = $contents->stats->total_avail_bytes;
+                $userState[$userCount]['total_size_kb'] = $contents->stats->total_avail_bytes;
             } else {
-                $userState['users'][$userCount]['total_size_kb'] = $userQuota->max_size_kb;
+                $userState[$userCount]['total_size_kb'] = $userQuota->max_size_kb;
             }
         }
         return $userState;

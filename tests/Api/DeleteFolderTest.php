@@ -9,11 +9,9 @@ class DeleteFolderTest extends TestCase
      */
     public function testDeleteFolderButBucketIsNotExist()
     {
-        $user = $this->initUser();
+        $user = $this->initUser(str_random(5) . "@imac.com", str_random(10));
         $token = \JWTAuth::fromUser($user);
-        $headers = $this->headers;
-        $headers['HTTP_Authorization'] = "Bearer $token";
-        $this->delete('/api/v1/folder/delete/{str_random(10)}/{str_random(10)}', [], $headers)
+        $this->delete("/api/v1/folder/delete/{str_random(10)}/{str_random(10)}?token={$token}", [], [])
         ->seeStatusCode(403)
         ->seeJsonContains([
             "message" => "The bucket is not exist"
@@ -27,13 +25,11 @@ class DeleteFolderTest extends TestCase
      */
     public function testDeleteFolderButFolderIsNotExist()
     {
-        $user = $this->initUser();
+        $user = $this->initUser(str_random(5) . "@imac.com", str_random(10));
         $token = \JWTAuth::fromUser($user);
-        $headers = $this->headers;
-        $headers['HTTP_Authorization'] = "Bearer $token";
         $bucket = str_random(10);
         $this->createBucket($user, $bucket);
-        $this->delete('/api/v1/folder/delete/' . $bucket . '/{str_random(10)}', [], $headers)
+        $this->delete("/api/v1/folder/delete/{$bucket}/{str_random(10)}?token={$token}", [], [])
         ->seeStatusCode(403)
         ->seeJsonContains([
             "message" => "The folder is not exist"
@@ -47,15 +43,13 @@ class DeleteFolderTest extends TestCase
      */
     public function testDeleteFolderSuccess()
     {
-        $user = $this->initUser();
+        $user = $this->initUser(str_random(5) . "@imac.com", str_random(10));
         $token = \JWTAuth::fromUser($user);
-        $headers = $this->headers;
-        $headers['HTTP_Authorization'] = "Bearer $token";
         $bucket = str_random(10);
         $folder = str_random(10);
         $this->createBucket($user, $bucket);
         $this->createFolder($user, $bucket, $folder);
-        $this->delete('/api/v1/folder/delete/' . $bucket . '/' . $folder, [], $headers)
+        $this->delete("/api/v1/folder/delete/{$bucket}/{$folder}?token={$token}", [], [])
         ->seeStatusCode(200)
         ->seeJsonContains([
             "message" => "Delete folder is successfully"

@@ -1,18 +1,19 @@
 <?php
 
-use Illuminate\Foundation\Testing\WithoutMiddleware;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
-
 class GetUserQuotaTest extends TestCase
 {
     /**
-     * A basic test example.
+     * Testing the user get quota is successfully
      *
      * @return void
      */
-    public function testExample()
+    public function testGetQuotaSuccess()
     {
-        $this->assertTrue(true);
+        $email = str_random(5) . "@imac.com";
+        $user = $this->initUser($email, str_random(10));
+        $token = \JWTAuth::fromUser($user);
+        $this->get("/api/v1/auth/getUserQuota/{$email}?token={$token}", [], [])
+           ->seeStatusCode(200)
+           ->seeJsonStructure(["enabled", "max_objects", "max_size_kb"]);
     }
 }

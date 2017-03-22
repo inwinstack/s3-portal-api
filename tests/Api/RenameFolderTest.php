@@ -9,15 +9,13 @@ class RenameFolderTest extends TestCase
      */
     public function testRenameFolderButBucketIsNotExist()
     {
-        $user = $this->initUser();
+        $user = $this->initUser(str_random(5) . "@imac.com", str_random(10));
         $token = \JWTAuth::fromUser($user);
-        $headers = $this->headers;
-        $headers['HTTP_Authorization'] = "Bearer $token";
-        $this->post('/api/v1/folder/rename', [
-            'bucket' => str_random(10),
-            'oldName' => str_random(10),
-            'newName'=> str_random(10)
-        ], $headers)
+        $this->post("/api/v1/folder/rename?token={$token}", [
+            "bucket" => str_random(10),
+            "oldName" => str_random(10),
+            "newName"=> str_random(10)
+        ], [])
         ->seeStatusCode(403)
         ->seeJsonContains([
             "message" => "The bucket is not exist"
@@ -31,17 +29,15 @@ class RenameFolderTest extends TestCase
      */
     public function testRenameFolderButOldNameFolderIsNotExist()
     {
-        $user = $this->initUser();
+        $user = $this->initUser(str_random(5) . "@imac.com", str_random(10));
         $token = \JWTAuth::fromUser($user);
-        $headers = $this->headers;
-        $headers['HTTP_Authorization'] = "Bearer $token";
         $bucket = str_random(10);
         $this->createBucket($user, $bucket);
-        $this->post('/api/v1/folder/rename', [
-            'bucket' => $bucket,
-            'oldName' => str_random(10),
-            'newName'=> str_random(10)
-        ], $headers)
+        $this->post("/api/v1/folder/rename?token={$token}", [
+            "bucket" => $bucket,
+            "oldName" => str_random(10),
+            "newName"=> str_random(10)
+        ], [])
         ->seeStatusCode(403)
         ->seeJsonContains([
             "message" => "The old name is not exist"
@@ -55,19 +51,17 @@ class RenameFolderTest extends TestCase
      */
     public function testRenameFolderButNewNameFolderIsExist()
     {
-        $user = $this->initUser();
+        $user = $this->initUser(str_random(5) . "@imac.com", str_random(10));
         $token = \JWTAuth::fromUser($user);
-        $headers = $this->headers;
-        $headers['HTTP_Authorization'] = "Bearer $token";
         $bucket = str_random(10);
         $folder = str_random(10);
         $this->createBucket($user, $bucket);
         $this->createFolder($user, $bucket, $folder);
-        $this->post('/api/v1/folder/rename', [
-            'bucket' => $bucket,
-            'oldName' => $folder,
-            'newName'=> $folder
-        ], $headers)
+        $this->post("/api/v1/folder/rename?token={$token}", [
+            "bucket" => $bucket,
+            "oldName" => $folder,
+            "newName"=> $folder
+        ], [])
         ->seeStatusCode(403)
         ->seeJsonContains([
             "message" => "The new name is exist"
@@ -81,19 +75,17 @@ class RenameFolderTest extends TestCase
      */
     public function testRenameFolderSuccess()
     {
-        $user = $this->initUser();
+        $user = $this->initUser(str_random(5) . "@imac.com", str_random(10));
         $token = \JWTAuth::fromUser($user);
-        $headers = $this->headers;
-        $headers['HTTP_Authorization'] = "Bearer $token";
         $bucket = str_random(10);
         $folder = str_random(10);
         $this->createBucket($user, $bucket);
         $this->createFolder($user, $bucket, $folder);
-        $this->post('/api/v1/folder/rename', [
-            'bucket' => $bucket,
-            'oldName' => $folder,
-            'newName'=> str_random(10)
-        ], $headers)
+        $this->post("/api/v1/folder/rename?token={$token}", [
+            "bucket" => $bucket,
+            "oldName" => $folder,
+            "newName"=> str_random(10)
+        ], [])
         ->seeStatusCode(200)
         ->seeJsonContains([
             "message" => "The renamed is successfully"

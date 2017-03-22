@@ -45,6 +45,9 @@ class AuthController extends Controller
         $data = $request->all();
         $data['uid'] = $data['email'];
         $data['name'] = $data['email'];
+        if ($this->users->check($data['email'])) {
+            return response()->json(['message' => 'The user is exist'], 403);
+        }
         $httpQuery = http_build_query([
           'uid' => $data['uid'],
           'display-name' => $data['email'],
@@ -53,9 +56,9 @@ class AuthController extends Controller
         ]);
         $result = json_decode($requestApiService->request('PUT', 'user', "?format=json&$httpQuery"));
         $httpQuery = http_build_query([
-          'bucket' => '5',
-          'max-objects' => '100',
-          'max-size-kb' => '50000',
+          'bucket' => '-1',
+          'max-objects' => '-1',
+          'max-size-kb' => env('UserDefaultCapacityKB'),
           'quota-scope' => 'user',
           'enabled' => true
         ]);
@@ -64,7 +67,7 @@ class AuthController extends Controller
             $data['secret_key'] = $result->keys[0]->secret_key;
             $resultData = $this->users->createUser($data);
         }
-        json_decode($requestApiService->request('PUT', 'user', "?quota&uid=" . $data['email'] . "&quota-type=user&$httpQuery"));
+        $updateQuotaResponse = json_decode($requestApiService->request('PUT', 'user', "?quota&uid=" . $data['email'] . "&quota-type=user&$httpQuery"));
         if ($result) {
             return response()->json($result, 200);
         } else {

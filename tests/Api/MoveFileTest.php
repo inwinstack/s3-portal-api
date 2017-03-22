@@ -9,20 +9,18 @@ class MoveFileTest extends TestCase
      */
     public function testMoveFileButSourceBucketIsNotExist()
     {
-        $user = $this->initUser();
+        $user = $this->initUser(str_random(5) . "@imac.com", str_random(10));
         $token = \JWTAuth::fromUser($user);
-        $headers = $this->headers;
-        $headers['HTTP_Authorization'] = "Bearer $token";
-        $this->post("api/v1/file/move/", [
-              'sourceBucket' => str_random(10),
-              'goalBucket' => str_random(10),
-              'sourceFile' => 'source',
-              'goalFile' => 'goal'
-            ], $headers)
-            ->seeStatusCode(403)
-            ->seeJsonContains([
-                "message" => "The bucket of source is not exist"
-            ]);
+        $this->post("api/v1/file/move?token={$token}", [
+            "sourceBucket" => str_random(10),
+            "goalBucket" => str_random(10),
+            "sourceFile" => "source",
+            "goalFile" => "goal"
+        ], [])
+        ->seeStatusCode(403)
+        ->seeJsonContains([
+            "message" => "The bucket of source is not exist"
+        ]);
     }
 
     /**
@@ -32,22 +30,20 @@ class MoveFileTest extends TestCase
      */
     public function testMoveFileButGoalBucketIsNotExist()
     {
-        $user = $this->initUser();
+        $user = $this->initUser(str_random(5) . "@imac.com", str_random(10));
         $token = \JWTAuth::fromUser($user);
-        $headers = $this->headers;
-        $headers['HTTP_Authorization'] = "Bearer $token";
         $bucket = str_random(10);
         $this->createBucket($user, $bucket);
-        $this->post("api/v1/file/move/", [
-              'sourceBucket' => $bucket,
-              'goalBucket' => str_random(10),
-              'sourceFile' => 'source',
-              'goalFile' => 'goal'
-            ], $headers)
-            ->seeStatusCode(403)
-            ->seeJsonContains([
-                "message" => "The bucket of goal is not exist"
-            ]);
+        $this->post("api/v1/file/move?token={$token}", [
+            "sourceBucket" => $bucket,
+            "goalBucket" => str_random(10),
+            "sourceFile" => "source",
+            "goalFile" => "goal"
+        ], [])
+        ->seeStatusCode(403)
+        ->seeJsonContains([
+            "message" => "The bucket of goal is not exist"
+        ]);
     }
 
     /**
@@ -57,22 +53,20 @@ class MoveFileTest extends TestCase
      */
     public function testMoveFileButSourceFileIsNotExist()
     {
-        $user = $this->initUser();
+        $user = $this->initUser(str_random(5) . "@imac.com", str_random(10));
         $token = \JWTAuth::fromUser($user);
-        $headers = $this->headers;
-        $headers['HTTP_Authorization'] = "Bearer $token";
         $bucket = str_random(10);
         $this->createBucket($user, $bucket);
-        $this->post("api/v1/file/move/", [
-              'sourceBucket' => $bucket,
-              'goalBucket' => $bucket,
-              'sourceFile' => 'source',
-              'goalFile' => 'goal'
-            ], $headers)
-            ->seeStatusCode(403)
-            ->seeJsonContains([
-                "message" => "The file of source is not exist in source bucket"
-            ]);
+        $this->post("api/v1/file/move?token={$token}", [
+            "sourceBucket" => $bucket,
+            "goalBucket" => $bucket,
+            "sourceFile" => "source",
+            "goalFile" => "goal"
+        ], [])
+        ->seeStatusCode(403)
+        ->seeJsonContains([
+            "message" => "The file of source is not exist in source bucket"
+        ]);
     }
 
     /**
@@ -82,23 +76,21 @@ class MoveFileTest extends TestCase
      */
     public function testMoveFileButGoalFileIsExist()
     {
-        $user = $this->initUser();
+        $user = $this->initUser(str_random(5) . "@imac.com", str_random(10));
         $token = \JWTAuth::fromUser($user);
-        $headers = $this->headers;
-        $headers['HTTP_Authorization'] = "Bearer $token";
         $bucket = str_random(10);
         $this->createBucket($user, $bucket);
-        $this->uploadFile($bucket, $headers);
-        $this->post("api/v1/file/move/", [
-              'sourceBucket' => $bucket,
-              'goalBucket' => $bucket,
-              'sourceFile' => 'test.jpg',
-              'goalFile' => 'test.jpg'
-            ], $headers)
-            ->seeStatusCode(403)
-            ->seeJsonContains([
-                "message" => "The file of goal is exist in goal bucket"
-            ]);
+        $this->uploadFile($bucket, $token);
+        $this->post("api/v1/file/move?token={$token}", [
+            "sourceBucket" => $bucket,
+            "goalBucket" => $bucket,
+            "sourceFile" => "test.jpg",
+            "goalFile" => "test.jpg"
+        ], [])
+        ->seeStatusCode(403)
+        ->seeJsonContains([
+            "message" => "The file of goal is exist in goal bucket"
+        ]);
     }
 
     /**
@@ -108,22 +100,20 @@ class MoveFileTest extends TestCase
      */
     public function testMoveFileSuccess()
     {
-        $user = $this->initUser();
+        $user = $this->initUser(str_random(5) . "@imac.com", str_random(10));
         $token = \JWTAuth::fromUser($user);
-        $headers = $this->headers;
-        $headers['HTTP_Authorization'] = "Bearer $token";
         $bucket = str_random(10);
         $this->createBucket($user, $bucket);
-        $this->uploadFile($bucket, $headers);
-        $this->post("api/v1/file/move/", [
-              'sourceBucket' => $bucket,
-              'goalBucket' => $bucket,
-              'sourceFile' => 'test.jpg',
-              'goalFile' => 'test2.jpg'
-            ], $headers)
-            ->seeStatusCode(200)
-            ->seeJsonContains([
-                "message" => "Move file is successfully"
-            ]);
+        $this->uploadFile($bucket, $token);
+        $this->post("api/v1/file/move?token={$token}", [
+              "sourceBucket" => $bucket,
+              "goalBucket" => $bucket,
+              "sourceFile" => "test.jpg",
+              "goalFile" => "test2.jpg"
+            ], [])
+        ->seeStatusCode(200)
+        ->seeJsonContains([
+            "message" => "Move file is successfully"
+        ]);
     }
 }

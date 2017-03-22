@@ -9,18 +9,16 @@ class ReplicateFileTest extends TestCase
      */
     public function testReplicateFileButBucketIsNotExist()
     {
-        $user = $this->initUser();
+        $user = $this->initUser(str_random(5) . "@imac.com", str_random(10));
         $token = \JWTAuth::fromUser($user);
-        $headers = $this->headers;
-        $headers['HTTP_Authorization'] = "Bearer $token";
-        $this->post("api/v1/file/replicate/", [
-              'bucket' => str_random(10),
-              'file' => str_random(10)
-            ], $headers)
-            ->seeStatusCode(403)
-            ->seeJsonContains([
-                "message" => "The bucket is not exist"
-            ]);
+        $this->post("api/v1/file/replicate?token={$token}", [
+            "bucket" => str_random(10),
+            "file" => str_random(10)
+        ], [])
+        ->seeStatusCode(403)
+        ->seeJsonContains([
+            "message" => "The bucket is not exist"
+        ]);
     }
 
     /**
@@ -30,20 +28,18 @@ class ReplicateFileTest extends TestCase
      */
     public function testReplicateFileButFileIsNotExist()
     {
-        $user = $this->initUser();
+        $user = $this->initUser(str_random(5) . "@imac.com", str_random(10));
         $token = \JWTAuth::fromUser($user);
-        $headers = $this->headers;
-        $headers['HTTP_Authorization'] = "Bearer $token";
         $bucket = str_random(10);
         $this->createBucket($user, $bucket);
-        $this->post("api/v1/file/replicate/", [
-              'bucket' => $bucket,
-              'file' => str_random(10)
-            ], $headers)
-            ->seeStatusCode(403)
-            ->seeJsonContains([
-                "message" => "The file is not exist"
-            ]);
+        $this->post("api/v1/file/replicate?token={$token}", [
+            "bucket" => $bucket,
+            "file" => str_random(10)
+        ], [])
+        ->seeStatusCode(403)
+        ->seeJsonContains([
+            "message" => "The file is not exist"
+        ]);
     }
 
     /**
@@ -53,25 +49,23 @@ class ReplicateFileTest extends TestCase
      */
     public function testReplicateFileButReplicasIsExist()
     {
-        $user = $this->initUser();
+        $user = $this->initUser(str_random(5) . "@imac.com", str_random(10));
         $token = \JWTAuth::fromUser($user);
-        $headers = $this->headers;
-        $headers['HTTP_Authorization'] = "Bearer $token";
         $bucket = str_random(10);
         $this->createBucket($user, $bucket);
-        $this->uploadFile($bucket, $headers);
-        $this->post("api/v1/file/replicate/", [
-              'bucket' => $bucket,
-              'file' => 'test.jpg'
-            ], $headers);
-        $this->post("api/v1/file/replicate/", [
-              'bucket' => $bucket,
-              'file' => 'test.jpg'
-            ], $headers)
-            ->seeStatusCode(403)
-            ->seeJsonContains([
-                "message" => "The replicas is exist"
-            ]);
+        $this->uploadFile($bucket, $token);
+        $this->post("api/v1/file/replicate?token={$token}", [
+            "bucket" => $bucket,
+            "file" => "test.jpg"
+        ], []);
+        $this->post("api/v1/file/replicate?token={$token}", [
+            "bucket" => $bucket,
+            "file" => "test.jpg"
+        ], [])
+        ->seeStatusCode(403)
+        ->seeJsonContains([
+            "message" => "The replicas is exist"
+        ]);
     }
 
     /**
@@ -81,20 +75,18 @@ class ReplicateFileTest extends TestCase
      */
     public function testReplicateFileSuccess()
     {
-        $user = $this->initUser();
+        $user = $this->initUser(str_random(5) . "@imac.com", str_random(10));
         $token = \JWTAuth::fromUser($user);
-        $headers = $this->headers;
-        $headers['HTTP_Authorization'] = "Bearer $token";
         $bucket = str_random(10);
         $this->createBucket($user, $bucket);
-        $this->uploadFile($bucket, $headers);
-        $this->post("api/v1/file/replicate/", [
-              'bucket' => $bucket,
-              'file' => 'test.jpg'
-            ], $headers)
-            ->seeStatusCode(200)
-            ->seeJsonContains([
-                "message" => "Replication is successfully"
-            ]);
+        $this->uploadFile($bucket, $token);
+        $this->post("api/v1/file/replicate?token={$token}", [
+            "bucket" => $bucket,
+            "file" => "test.jpg"
+        ], [])
+        ->seeStatusCode(200)
+        ->seeJsonContains([
+            "message" => "Replication is successfully"
+        ]);
     }
 }

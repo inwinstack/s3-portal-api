@@ -9,11 +9,9 @@ class DeleteFileTest extends TestCase
       */
       public function testDeleteFileButBucketIsNotExist()
       {
-          $user = $this->initUser();
+          $user = $this->initUser(str_random(5) . "@imac.com", str_random(10));
           $token = \JWTAuth::fromUser($user);
-          $headers = $this->headers;
-          $headers['HTTP_Authorization'] = "Bearer $token";
-          $this->delete("api/v1/file/delete/{str_random(10)}/{str_random(10)}", [], $headers)
+          $this->delete("api/v1/file/delete/{str_random(10)}/{str_random(10)}?token={$token}", [], [])
               ->seeStatusCode(403)
               ->seeJsonContains([
                   "message" => "The bucket is not exist"
@@ -27,13 +25,11 @@ class DeleteFileTest extends TestCase
       */
       public function testDeleteFileButFileIsNotExist()
       {
-          $user = $this->initUser();
+          $user = $this->initUser(str_random(5) . "@imac.com", str_random(10));
           $token = \JWTAuth::fromUser($user);
-          $headers = $this->headers;
-          $headers['HTTP_Authorization'] = "Bearer $token";
           $bucket = str_random(10);
           $this->createBucket($user, $bucket);
-          $this->delete("api/v1/file/delete/{$bucket}/{str_random(10)}", [], $headers)
+          $this->delete("api/v1/file/delete/{$bucket}/{str_random(10)}?token={$token}", [], [])
               ->seeStatusCode(403)
               ->seeJsonContains([
                   "message" => "The file is not exist"
@@ -47,14 +43,12 @@ class DeleteFileTest extends TestCase
        */
        public function testDeleteFileSuccess()
        {
-           $user = $this->initUser();
+           $user = $this->initUser(str_random(5) . "@imac.com", str_random(10));
            $token = \JWTAuth::fromUser($user);
-           $headers = $this->headers;
-           $headers['HTTP_Authorization'] = "Bearer $token";
            $bucket = str_random(10);
            $this->createBucket($user, $bucket);
-           $this->uploadFile($bucket, $headers);
-           $this->delete("api/v1/file/delete/{$bucket}/test.jpg", [], $headers)
+           $this->uploadFile($bucket, $token);
+           $this->delete("api/v1/file/delete/{$bucket}/test.jpg?token={$token}", [], [])
                ->seeStatusCode(200)
                ->seeJsonContains([
                    "message" => "Delete file is successfully"

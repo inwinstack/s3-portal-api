@@ -9,11 +9,9 @@ class CreateBucketTest extends TestCase
      */
     public function testCreateBucketFailed()
     {
-        $user = $this->initUser();
+        $user = $this->initUser(str_random(5) . "@imac.com", str_random(10));
         $token = \JWTAuth::fromUser($user);
-        $headers = $this->headers;
-        $headers['HTTP_Authorization'] = "Bearer $token";
-        $this->post('/api/v1/bucket/create', ['bucket' => 'D'], $headers)
+        $this->post("/api/v1/bucket/create?token={$token}", ["bucket" => "D"], [])
             ->seeStatusCode(403)
             ->seeJsonContains([
                 "message" => "Create bucket is failed"
@@ -27,11 +25,9 @@ class CreateBucketTest extends TestCase
      */
     public function testCreateBucketButNameIsInvaid()
     {
-        $user = $this->initUser();
+        $user = $this->initUser(str_random(5) . "@imac.com", str_random(10));
         $token = \JWTAuth::fromUser($user);
-        $headers = $this->headers;
-        $headers['HTTP_Authorization'] = "Bearer $token";
-        $this->post('/api/v1/bucket/create', ['bucket' => '1'], $headers)
+        $this->post("/api/v1/bucket/create?token={$token}", ["bucket" => "1"], [])
             ->seeStatusCode(403)
             ->seeJsonContains([
                 "message" => "The bucket name is invalid"
@@ -45,15 +41,11 @@ class CreateBucketTest extends TestCase
      */
     public function testCreateBucketButNameIsExist()
     {
-        $user = $this->initUser();
+        $user = $this->initUser(str_random(5) . "@imac.com", str_random(10));
         $token = \JWTAuth::fromUser($user);
-        $headers = $this->headers;
-        $headers['HTTP_Authorization'] = "Bearer $token";
-        $bucket = [
-            'bucket' => str_random(10)
-        ];
-        $this->post('/api/v1/bucket/create', $bucket, $headers);
-        $this->post('/api/v1/bucket/create', $bucket, $headers)
+        $bucket = str_random(10);
+        $this->post("/api/v1/bucket/create?token={$token}", ["bucket" => $bucket], []);
+        $this->post("/api/v1/bucket/create?token={$token}", ["bucket" => $bucket], [])
             ->seeStatusCode(403)
             ->seeJsonContains([
                 "message" => "The bucket name is exist"
@@ -67,12 +59,10 @@ class CreateBucketTest extends TestCase
      */
     public function testCreateBucketSuccess()
     {
-        $user = $this->initUser();
+        $user = $this->initUser(str_random(5) . "@imac.com", str_random(10));
         $token = \JWTAuth::fromUser($user);
-        $headers = $this->headers;
-        $headers['HTTP_Authorization'] = "Bearer $token";
-        $this->post('/api/v1/bucket/create', ['bucket' => str_random(10)], $headers)
+        $this->post("/api/v1/bucket/create?token={$token}", ["bucket" => str_random(10)], [])
             ->seeStatusCode(200)
-            ->seeJsonStructure(['Buckets' => ['*' => ['Name', 'CreationDate']]]);
+            ->seeJsonStructure(["Buckets" => ["*" => ["Name", "CreationDate"]]]);
     }
 }
