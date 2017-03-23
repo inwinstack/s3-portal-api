@@ -112,7 +112,7 @@ class FileController extends Controller
         if ($this->fileService->check($request->goalBucket, $request->goalFile)) {
             return response()->json(['message' => 'The file of goal is exist in goal bucket'], 403);
         }
-        if ($this->fileService->moveFile($request->sourceBucket, $request->sourceFile, $request->goalBucket, $request->goalFile)) {
+        if ($this->fileService->move($request->sourceBucket, $request->sourceFile, $request->goalBucket, $request->goalFile)) {
             return response()->json(['message' => 'Move file is successfully'], 200);
         } else {
             return response()->json(['message' => 'Move file is failed'], 403);
