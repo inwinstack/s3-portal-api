@@ -1,9 +1,47 @@
 <?php
 
-use Symfony\Component\HttpFoundation\File\UploadedFile;
-
 class CreateFolderTest extends TestCase
 {
+    /**
+     * Testing the user create folder but the bucket is not exist.
+     *
+     * @return void
+     */
+    public function testCreateFolderButBucketIsNotExist()
+    {
+        $user = $this->initUser(str_random(5) . "@imac.com", str_random(10));
+        $token = \JWTAuth::fromUser($user);
+        $this->post("/api/v1/folder/create?token={$token}", [
+            "bucket" => str_random(10),
+            "prefix" => str_random(10)], [])
+            ->seeStatusCode(403)
+            ->seeJsonContains([
+                "message" => "The bucket is not exist"
+            ]);
+    }
+
+    /**
+     * Testing the user create folder but the folder is exist.
+     *
+     * @return void
+     */
+    public function testCreateFolderButFolderIsExist()
+    {
+        $user = $this->initUser(str_random(5) . "@imac.com", str_random(10));
+        $token = \JWTAuth::fromUser($user);
+        $bucket = str_random(10);
+        $folder = str_random(10);
+        $this->createBucket($user, $bucket);
+        $this->createFolder($user, $bucket, $folder);
+        $this->post("/api/v1/folder/create?token={$token}", [
+            "bucket" => $bucket,
+            "prefix" => $folder], [])
+            ->seeStatusCode(403)
+            ->seeJsonContains([
+                "message" => "The folder is exist"
+            ]);
+    }
+
     /**
      * Testing the user create folder is successfully.
      *
@@ -11,40 +49,17 @@ class CreateFolderTest extends TestCase
      */
     public function testCreateFolderSuccess()
     {
-        $init = $this->initBucket();
-        $headers = $this->headers;
-        $headers['HTTP_Authorization'] = "Bearer {$init['token']}";
-        $bucketName = $init['bucketName'];
-        $bucket = [
-            'bucket' => $bucketName,
-            'prefix' => str_random(10)
-        ];
-        $this->post('/api/v1/folder/create', $bucket, $headers)
+        $user = $this->initUser(str_random(5) . "@imac.com", str_random(10));
+        $token = \JWTAuth::fromUser($user);
+        $bucket = str_random(10);
+        $folder = str_random(10);
+        $this->createBucket($user, $bucket);
+        $this->post("/api/v1/folder/create?token={$token}", [
+            "bucket" => $bucket,
+            "prefix" => $folder], [])
             ->seeStatusCode(200)
             ->seeJsonContains([
-                "message" => "Create Folder Success"
-            ]);
-    }
-
-    /**
-     * Testing the user create folder is failed.
-     *
-     * @return void
-     */
-    public function testCreateFolderFailed()
-    {
-        $init = $this->initBucket();
-        $headers = $this->headers;
-        $headers['HTTP_Authorization'] = "Bearer {$init['token']}";
-        $bucketName = str_random(15);
-        $userData = [
-            'bucket' => $bucketName,
-            'prefix' => str_random(15)
-        ];
-        $this->post('/api/v1/folder/create', $userData, $headers)
-            ->seeStatusCode(403)
-            ->seeJsonContains([
-                "message" => "Bucket not Exist"
+                "message" => "Create folder is Successfully"
             ]);
     }
 }
