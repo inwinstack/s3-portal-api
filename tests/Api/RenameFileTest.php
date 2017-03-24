@@ -1,76 +1,92 @@
 <?php
 
-use Symfony\Component\HttpFoundation\File\UploadedFile;
-
 class RenameFileTest extends TestCase
 {
     /**
-     * Testing the user check the file is not exist.
+     * Testing the user rename the file but the bucket is not exist.
      *
      * @return void
      */
-    public function testFileNotExist()
+    public function testRenameFileButBucketIsNotExist()
     {
-        $init = $this->initBucket();
-        $headers = $this->headers;
-        $headers['HTTP_Authorization'] = "Bearer {$init['token']}";
-        $userData = [
-            'bucket' => $init['bucketName'],
-            'old' => str_random(10)
-        ];
-        $this->post('/api/v1/file/rename', $userData, $headers)->seeStatusCode(403)->seeJsonContains([
-            "message" => "File Non-exist"
+        $user = $this->initUser(str_random(5) . "@imac.com", str_random(10));
+        $token = \JWTAuth::fromUser($user);
+        $this->post("api/v1/file/rename?token={$token}", [
+            "bucket" => str_random(10),
+            "old" => "old",
+            "new" => "new"
+        ], [])
+        ->seeStatusCode(403)
+        ->seeJsonContains([
+            "message" => "The bucket is not exist"
         ]);
     }
 
     /**
-     * Testing the user check the file name is not used.
+     * Testing the user rename the file but the file of old is not exist.
      *
      * @return void
      */
-    public function testFileNameIsExist()
+    public function testRenameFileButOldFileIsNotExist()
     {
-        $init = $this->initBucket();
-        $headers = $this->headers;
-        $headers['HTTP_Authorization'] = "Bearer {$init['token']}";
-        $bucketName = $init['bucketName'];
-        $local_file = __DIR__ . '/../test-files/test.jpg';
-        $uploadedFile = new UploadedFile($local_file, 'test.jpg', 'image/jpeg', filesize($local_file), true);
-        $userData = [
-            'bucket' => $init['bucketName'],
-            'old' => 'test.jpg',
-            'new' => 'test.jpg'
-        ];
-        $response = $this->call('post', 'api/v1/file/create', $userData, [], ['file' => $uploadedFile], $headers);
-        $this->seeStatusCode(200);
-        $s3Service = new  \App\Services\FileService($init['user']['access_key'], $init['user']['secret_key']);
-        $this->post('/api/v1/file/rename', $userData, $headers)->seeStatusCode(403)->seeJsonContains([
-            "message" => "File name has exist"
+        $user = $this->initUser(str_random(5) . "@imac.com", str_random(10));
+        $token = \JWTAuth::fromUser($user);
+        $bucket = str_random(10);
+        $this->createBucket($user, $bucket);
+        $this->post("api/v1/file/rename?token={$token}", [
+            "bucket" => $bucket,
+            "old" => "old",
+            "new" => "new"
+        ], [])
+        ->seeStatusCode(403)
+        ->seeJsonContains([
+            "message" => "The file of old name is not exist"
         ]);
     }
 
     /**
-     * Testing the user rename file is successfully.
+     * Testing the user rename the file but the file of new is exist.
      *
      * @return void
      */
-    public function testFileRenameSuccess()
+    public function testRenameFileButNewFileIsExist()
     {
-        $init = $this->initBucket();
-        $headers = $this->headers;
-        $headers['HTTP_Authorization'] = "Bearer {$init['token']}";
-        $local_file = __DIR__ . '/../test-files/test.jpg';
-        $uploadedFile = new UploadedFile($local_file, 'test.jpg', 'image/jpeg', filesize($local_file), true);
-        $userData = [
-            'bucket' => $init['bucketName'],
-            'old' => 'test.jpg',
-            'new' => str_random(10)
-        ];
-        $response = $this->call('post', 'api/v1/file/create', $userData, [], ['file' => $uploadedFile], $headers);
-        $this->seeStatusCode(200);
-        $s3Service = new  \App\Services\FileService($init['user']['access_key'], $init['user']['secret_key']);
-        $this->post('/api/v1/file/rename', $userData, $headers)->seeStatusCode(200)->seeJsonContains([
-            "message" => "Rename File Success"
+        $user = $this->initUser(str_random(5) . "@imac.com", str_random(10));
+        $token = \JWTAuth::fromUser($user);
+        $bucket = str_random(10);
+        $this->createBucket($user, $bucket);
+        $this->uploadFile($bucket, $token);
+        $this->post("api/v1/file/rename?token={$token}", [
+            "bucket" => $bucket,
+            "old" => "test.jpg",
+            "new" => "test.jpg"
+        ], [])
+        ->seeStatusCode(403)
+        ->seeJsonContains([
+            "message" => "The file of new name is exist"
+        ]);
+    }
+
+    /**
+     * Testing the user rename the file is successfully.
+     *
+     * @return void
+     */
+    public function testRenameFileSuccess()
+    {
+        $user = $this->initUser(str_random(5) . "@imac.com", str_random(10));
+        $token = \JWTAuth::fromUser($user);
+        $bucket = str_random(10);
+        $this->createBucket($user, $bucket);
+        $this->uploadFile($bucket, $token);
+        $this->post("api/v1/file/rename?token={$token}", [
+            "bucket" => $bucket,
+            "old" => "test.jpg",
+            "new" => "test2.jpg"
+        ], [])
+        ->seeStatusCode(200)
+        ->seeJsonContains([
+            "message" => "Rename file is Successfully"
         ]);
     }
 }

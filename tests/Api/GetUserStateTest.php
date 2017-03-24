@@ -3,17 +3,16 @@
 class GetUserStateTest extends TestCase
 {
     /**
-     * Testing the admin set quota is successfully.
+     * Testing the user get state is successfully
      *
      * @return void
      */
-     public function testGetUserState()
-     {
-         $init = $this->initBucket();
-         $headers = $this->headers;
-         $headers['HTTP_Authorization'] = "Bearer {$init['token']}";
-         $this->get('/api/v1/user/state/' . $this->userData['email'], $headers)
-             ->seeStatusCode(200)
-             ->seeJsonStructure(['total_size_kb',  'max_size_kb', 'total_objects',  'max_objects']);
-     }
+    public function testGetStateSuccess()
+    {
+        $user = $this->initUser(str_random(5) . "@imac.com", str_random(10));
+        $token = \JWTAuth::fromUser($user);
+        $this->get("/api/v1/user/state?token={$token}", [], [])
+           ->seeStatusCode(200)
+           ->seeJsonStructure(["total_size_kb", "max_size_kb", "total_objects", "max_objects"]);
+    }
 }
