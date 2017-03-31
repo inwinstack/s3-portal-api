@@ -12,59 +12,49 @@ use Aws\S3\S3Client;
 
 class BucketController extends Controller
 {
-    protected $s3Service;
+    protected $bucketService;
     protected $user;
 
     public function __construct()
     {
         $this->user = JWTAuth::parseToken()->authenticate();
-        $this->s3Service = new BucketService($this->user['access_key'], $this->user['secret_key']);
-    }
-
-    public function checkBucket($userBucket)
-    {
-        return $this->s3Service->checkBucket($userBucket);
+        $this->bucketService = new BucketService($this->user['access_key'], $this->user['secret_key']);
     }
 
     public function index()
     {
-        $listResponse = $this->s3Service->listBucket();
-        return response()->json(['Buckets' => $listResponse->get('Buckets')], 200);
+        $response = $this->bucketService->get();
+        if ($response) {
+            return response()->json(['Buckets' => $response->get('Buckets')], 200);
+        } else {
+            return response()->json(['message' => 'List bucket is failed'], 403);
+        }
     }
 
     public function store(BucketRequest $request)
     {
         if (!preg_match("/[A-Z]/", $request->bucket)) {
-            return response()->json(['message' => 'Invalid Name'], 403);
+            return response()->json(['message' => 'The bucket name is invalid'], 403);
         }
-	
-	$checkBucket = $this->checkBucket($request->bucket);
-
-        if ($checkBucket) {
-            return response()->json(['message' => 'Has Bucket'], 403);
+        if ($this->bucketService->exist($request->bucket)) {
+            return response()->json(['message' => 'The bucket name is exist'], 403);
         }
-
-        $bucketResponse = $this->s3Service->createBucket($request->bucket);
-
-        if ($bucketResponse) {
+        if ($this->bucketService->create($request->bucket)) {
             return $this->index();
+        } else {
+            return response()->json(['message' => 'Create bucket is failed'], 403);
         }
-
-        return response()->json(['message' => 'Create Bucket Error'], 403);
     }
 
     public function destroy($bucket)
     {
-        $checkBucket = $this->checkBucket($bucket);
-
-        if (!$checkBucket) {
-            return response()->json(['message' => 'Bucket Non-exist'], 403);
+        if (!$this->bucketService->check($bucket)) {
+            return response()->json(['message' => 'The Bucket is not exist'], 403);
         }
-
-        $bucketResponse = $this->s3Service->deleteBucket($bucket);
-        if ($bucketResponse) {
-            return response()->json(['message' => 'Delete Bucket Success'], 200);
+        if ($this->bucketService->delete($bucket)) {
+            return response()->json(['message' => 'Delete bucket is successfully'], 200);
+        } else {
+            return response()->json(['message' => 'Delete bucket is failed'], 403);
         }
-        return response()->json(['message' => 'Delete Bucket Error'], 403);
     }
 }

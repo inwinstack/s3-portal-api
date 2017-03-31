@@ -1,20 +1,19 @@
 <?php
 
-class RenameFolderTest extends TestCase
+class ReplicateFileTest extends TestCase
 {
     /**
-     * Testing the user rename folder but the bucket is not exist.
+     * Testing the user replicate the file but the bucket is not exist.
      *
      * @return void
      */
-    public function testRenameFolderButBucketIsNotExist()
+    public function testReplicateFileButBucketIsNotExist()
     {
         $user = $this->initUser(str_random(5) . "@imac.com", str_random(10));
         $token = \JWTAuth::fromUser($user);
-        $this->post("/api/v1/folder/rename?token={$token}", [
+        $this->post("api/v1/file/replicate?token={$token}", [
             "bucket" => str_random(10),
-            "oldName" => str_random(10),
-            "newName"=> str_random(10)
+            "file" => str_random(10)
         ], [])
         ->seeStatusCode(403)
         ->seeJsonContains([
@@ -23,72 +22,71 @@ class RenameFolderTest extends TestCase
     }
 
     /**
-     * Testing the user rename folder but the folder of old name is not exist.
+     * Testing the user replicate the file but the file is not exist.
      *
      * @return void
      */
-    public function testRenameFolderButOldNameFolderIsNotExist()
+    public function testReplicateFileButFileIsNotExist()
     {
         $user = $this->initUser(str_random(5) . "@imac.com", str_random(10));
         $token = \JWTAuth::fromUser($user);
         $bucket = str_random(10);
         $this->createBucket($user, $bucket);
-        $this->post("/api/v1/folder/rename?token={$token}", [
+        $this->post("api/v1/file/replicate?token={$token}", [
             "bucket" => $bucket,
-            "oldName" => str_random(10),
-            "newName"=> str_random(10)
+            "file" => str_random(10)
         ], [])
         ->seeStatusCode(403)
         ->seeJsonContains([
-            "message" => "The old name is not exist"
+            "message" => "The file is not exist"
         ]);
     }
 
     /**
-     * Testing the user rename folder but the folder of new name is exist.
+     * Testing the user replicate the file but the replicas is exist.
      *
      * @return void
      */
-    public function testRenameFolderButNewNameFolderIsExist()
+    public function testReplicateFileButReplicasIsExist()
     {
         $user = $this->initUser(str_random(5) . "@imac.com", str_random(10));
         $token = \JWTAuth::fromUser($user);
         $bucket = str_random(10);
-        $folder = str_random(10);
         $this->createBucket($user, $bucket);
-        $this->createFolder($user, $bucket, $folder);
-        $this->post("/api/v1/folder/rename?token={$token}", [
+        $this->uploadFile($bucket, $token);
+        $this->post("api/v1/file/replicate?token={$token}", [
             "bucket" => $bucket,
-            "oldName" => $folder,
-            "newName"=> $folder
+            "file" => "test.jpg"
+        ], []);
+        $this->post("api/v1/file/replicate?token={$token}", [
+            "bucket" => $bucket,
+            "file" => "test.jpg"
         ], [])
         ->seeStatusCode(403)
         ->seeJsonContains([
-            "message" => "The new name is exist"
+            "message" => "The replicas is exist"
         ]);
     }
 
     /**
-     * Testing the user rename folder is successfully.
+     * Testing the user replicate is successfully.
      *
      * @return void
      */
-    public function testRenameFolderSuccess()
+    public function testReplicateFileSuccess()
     {
         $user = $this->initUser(str_random(5) . "@imac.com", str_random(10));
         $token = \JWTAuth::fromUser($user);
         $bucket = str_random(10);
-        $folder = str_random(10);
         $this->createBucket($user, $bucket);
-        $this->createFolder($user, $bucket, $folder);
-        $this->post("/api/v1/folder/rename?token={$token}", [
+        $this->uploadFile($bucket, $token);
+        $this->post("api/v1/file/replicate?token={$token}", [
             "bucket" => $bucket,
-            "oldName" => $folder,
-            "newName"=> str_random(10)
+            "file" => "test.jpg"
         ], [])
         ->seeStatusCode(200)
         ->seeJsonContains([
-            "message" => "The renamed is successfully"
+            "message" => "Replication is successfully"
         ]);
     }
 }

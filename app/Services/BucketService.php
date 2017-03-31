@@ -15,16 +15,19 @@ class BucketService extends S3Service
         $this->s3 = $this->connect($accessKey, $secretKey);
     }
 
-    public function listBucket()
-    {
-        $listResponse = $this->s3->listBuckets([]);
-        return $listResponse;
-    }
-
-    public function createBucket($Bucket)
+    public function get()
     {
         try {
-            $bucketResponse = $this->s3->createBucket([
+            return $this->s3->listBuckets([]);
+        } catch (S3Exception $e) {
+            return false;
+        }
+    }
+
+    public function create($Bucket)
+    {
+        try {
+            $this->s3->createBucket([
                 'Bucket' => $Bucket,
             ]);
             return true;
@@ -33,9 +36,13 @@ class BucketService extends S3Service
         }
     }
 
-    public function checkBucket($bucket)
+    public function exist($bucket)
     {
-        return $this->s3->doesBucketExist($bucket);
+        try {
+            return $this->s3->doesBucketExist($bucket);
+        } catch (S3Exception $e) {
+            return true;
+        }
     }
 
     public function check($bucket)
@@ -48,11 +55,10 @@ class BucketService extends S3Service
         }
     }
 
-    public function deleteBucket($bucket)
+    public function delete($bucket)
     {
         $clear = new ClearBucket($this->s3, $bucket);
         $clear->clear();
-
         try {
             $bucketResponse = $this->s3->deleteBucket([
                 'Bucket' => $bucket
