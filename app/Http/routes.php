@@ -28,7 +28,7 @@ Route::group(['prefix' => 'api', 'middleware' => ['cors', 'api']], function () {
         Route::group(['middleware' => ['jwt.auth']], function () {
             Route::group(['prefix' => 'bucket', 'namespace' => 'Bucket'], function () {
                 Route::post('create', 'BucketController@store');
-                Route::post('list', 'BucketController@index');
+                Route::get('list', 'BucketController@index');
                 Route::delete('delete/{bucket}', 'BucketController@destroy');
             });
             Route::group(['prefix' => 'file', 'namespace' => 'File'], function () {
@@ -48,7 +48,7 @@ Route::group(['prefix' => 'api', 'middleware' => ['cors', 'api']], function () {
             });
             Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function () {
                 Route::post('create', 'AdminController@create');
-                Route::get('list/{page}', 'AdminController@index');
+                Route::get('list/{page}/{count}', 'AdminController@index');
                 Route::post('reset', 'AdminController@reset');
                 Route::post('role', 'AdminController@update');
                 Route::delete('delete/{email}', 'AdminController@destroy');

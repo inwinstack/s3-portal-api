@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Aws\S3\S3Client;
 use Aws\S3\Exception\S3Exception as S3Exception;
+
 class S3Service
 {
     public function connect($accessKey, $secretKey)
@@ -13,7 +14,7 @@ class S3Service
                 'key'    => $accessKey,
                 'secret' => $secretKey,
             ],
-            'endpoint' => 'http://'. env('ServerURL') .'/',
+            'endpoint' => 'http://'. env('ServerURL') .':7480/',
         ]);
         return $s3;
     }

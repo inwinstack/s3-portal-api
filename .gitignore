@@ -6,4 +6,4 @@ Homestead.json
 .env
 .env.swp
 /.idea
-/storage/tmpfile
+./storage/tmpfile

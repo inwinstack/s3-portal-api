@@ -15,7 +15,7 @@ use JWTAuth;
 
 class FolderController extends Controller
 {
-    protected $s3Service;
+    protected $folderService;
     protected $user;
 
     public function __construct()
@@ -23,19 +23,18 @@ class FolderController extends Controller
         $this->user = JWTAuth::parseToken()->authenticate();
         $this->fileService = new FileService($this->user['access_key'], $this->user['secret_key']);
         $this->bucketService = new BucketService($this->user['access_key'], $this->user['secret_key']);
-        $this->s3Service = new FolderService($this->user['access_key'], $this->user['secret_key']);
+        $this->folderService = new FolderService($this->user['access_key'], $this->user['secret_key']);
     }
 
     public function store(StoreFolderRequest $request)
     {
-        if (!$this->bucketService->checkBucket($request->bucket)) {
+        if (!$this->bucketService->check($request->bucket)) {
             return response()->json(['message' => 'The bucket is not exist'], 403);
         }
-        if ($this->s3Service->checkFolder($request->bucket, $request->prefix)) {
+        if ($this->folderService->check($request->bucket, $request->prefix)) {
             return response()->json(['message' => 'The folder is exist'], 403);
         }
-        $storeResponse = $this->s3Service->store($request->bucket, $request->prefix);
-        if ($storeResponse) {
+        if ($this->folderService->store($request->bucket, $request->prefix)) {
             return response()->json(['message' => 'Create folder is Successfully'], 200);
         } else {
             return response()->json(['message' => 'Create folder is failed'], 403);
@@ -44,14 +43,13 @@ class FolderController extends Controller
 
     public function destroy($bucket, $key)
     {
-        if (!$this->bucketService->checkBucket($bucket)) {
+        if (!$this->bucketService->check($bucket)) {
             return response()->json(['message' => 'The bucket is not exist'], 403);
         }
-        if (!$this->s3Service->checkFolder($bucket, $key)) {
+        if (!$this->folderService->check($bucket, $key)) {
             return response()->json(['message' => 'The folder is not exist'], 403);
         }
-        $deleteFolder = $this->s3Service->delete($bucket, $key, $this->fileService);
-        if ($deleteFolder) {
+        if ($this->folderService->delete($bucket, $key, $this->fileService)) {
             return response()->json(['message' => 'Delete folder is successfully'], 200);
         } else {
             return response()->json(['message' => 'Delete folder is failed'], 403);
@@ -60,16 +58,16 @@ class FolderController extends Controller
 
     public function rename(Request $request)
     {
-        if (!$this->bucketService->checkBucket($request->bucket)) {
+        if (!$this->bucketService->check($request->bucket)) {
             return response()->json(['message' => 'The bucket is not exist'], 403);
         }
-        if (!$this->s3Service->checkFolder($request->bucket, $request->oldName)) {
+        if (!$this->folderService->check($request->bucket, $request->oldName)) {
             return response()->json(['message' => 'The old name is not exist'], 403);
         }
-        if ($this->s3Service->checkFolder($request->bucket, $request->newName)) {
+        if ($this->folderService->check($request->bucket, $request->newName)) {
             return response()->json(['message' => 'The new name is exist'], 403);
         }
-        $renameFolderResponse = $this->s3Service->rename($request->bucket, $request->oldName, $request->newName, $this->fileService);
+        $renameFolderResponse = $this->folderService->rename($request->bucket, $request->oldName, $request->newName, $this->fileService);
         if ($renameFolderResponse) {
             return response()->json(['message' => 'The renamed is successfully'], 200);
         } else {
@@ -79,14 +77,19 @@ class FolderController extends Controller
 
     public function move(Request $request)
     {
-        if (!$this->s3Service->checkFolder($request->sourceBucket, $request->sourceFolder)) {
+        if (!$this->bucketService->check($request->sourceBucket)) {
+            return response()->json(['message' => 'The bucket of source is not exist'], 403);
+        }
+        if (!$this->bucketService->check($request->goalBucket)) {
+            return response()->json(['message' => 'The bucket of goal is not exist'], 403);
+        }
+        if (!$this->folderService->check($request->sourceBucket, $request->sourceFolder)) {
             return response()->json(['message' => 'The folder of source is not exist'], 403);
         }
-        if ($this->s3Service->checkFolder($request->goalBucket, $request->goalFolder)) {
+        if ($this->folderService->check($request->goalBucket, $request->goalFolder)) {
             return response()->json(['message' => 'The folder of goal is exist'], 403);
         }
-        $moveFolderResponse = $this->s3Service->move($request->sourceBucket, $request->sourceFolder, $request->goalBucket, $request->goalFolder, $this->fileService);
-        if ($moveFolderResponse) {
+        if ($this->folderService->move($request->sourceBucket, $request->sourceFolder, $request->goalBucket, $request->goalFolder, $this->fileService)) {
             return response()->json(['message' => 'The move is complete'], 200);
         } else {
             return response()->json(['message' => 'The move is failed'], 403);

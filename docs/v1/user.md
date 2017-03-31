@@ -19,7 +19,7 @@
 17. [Create Folder](#CreateFolder)
 18. [Delete Folder](#DeleteFolder)
 19. [Rename Folder](#RenameFolder)
-20. [Move Folder](#MoveFolder) 
+20. [Move Folder](#MoveFolder)
 
 ## 1.<a name="CreateAccount">Create a Account</a>
 
@@ -308,11 +308,10 @@ status code:403
         <td style="width:400px">URI</td>
     </tr>
     <tr>
-        <td style="width:50px">POST</td>
+        <td style="width:50px">GET</td>
         <td style="width:400px">/api/v1/bucket/list</td>
     </tr>
 </table>
-
 
 ### JSON Response
 #### Success
@@ -324,7 +323,16 @@ status code:200
       "Name": "BucketName",
       "CreationDate": "2016-04-08T14:46:28.000Z"
     }
+    ...
   ]
+}
+```
+
+#### Error
+```
+status code:403
+{
+  "message": "List bucket is failed"
 }
 ```
 
@@ -368,6 +376,7 @@ status code:200
       "Name": "BucketName",
       "CreationDate": "2016-04-08T14:46:28.000Z"
     }
+    ...
   ]
 }
 ```
@@ -376,17 +385,17 @@ status code:200
 ```
 status code:403
 {
-  "message": "Has Bucket"
+  "message": "The bucket name is invalid"
 }
 - or -
 status code:403
 {
-  "message": "Create Bucket Error"
+  "message": "The bucket name is exist"
 }
 - or -
 status code:403
 {
-  "message": "Invalid Name"
+  "message": "Create bucket is failed"
 }
 ```
 
@@ -425,7 +434,7 @@ status code:403
 ```
 status code:200
 {
-  "message": "Delete Bucket Success"
+  "message": "Delete bucket is successfully"
 }
 ```
 
@@ -433,12 +442,12 @@ status code:200
 ```
 status code:403
 {
-  "message": "Delete Bucket Error"
+  "message": "The Bucket is not exist"
 }
 - or -
 status code:403
 {
-  "message": "Bucket Non-exist"
+  "message": "Delete bucket is failed"
 }
 ```
 
@@ -1110,10 +1119,3 @@ status code:403
 }
 
 ```
-
-
-
-
-
-
-
