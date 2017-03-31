@@ -28,7 +28,6 @@ class AuthController extends Controller
     public function __construct(UserRepository $users)
     {
         $this->users = $users;
-        $this->ceph = new CephService(env('ServerIP'), env('Username'), env('Port'), env('PublicKeyPath'), env('PrivateKeyPath'));
         $this->middleware('guest', ['except' => 'logout']);
     }
 

@@ -6,20 +6,22 @@ use App\Repositories\UserRepository;
 
 class CephService
 {
-    protected $ssh;
-
-    public function __construct($ip, $username, $port, $publicKeyPath, $privateKeyPath)
+    public function __construct()
     {
-        $this->ssh = ssh2_connect($ip, $port, array('hostkey'=>'ssh-rsa'));
-        ssh2_auth_pubkey_file($this->ssh, $username, $publicKeyPath, $privateKeyPath);
     }
 
     public function listStatus($users, $requestApiService)
     {
-        $stream = ssh2_exec($this->ssh, 'ceph df -f json');
-        stream_set_blocking($stream, true);
-        $contents = json_decode(stream_get_contents($stream));
-        fclose($stream);
+        $host = env('ServerURL');
+        $ch = curl_init();
+        $header[] = "Accept: application/json";
+        curl_setopt($ch, CURLOPT_URL, "$host:5000/api/v0.1/status");
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
+        $result = curl_exec($ch);
+        curl_close($ch);
+        $contents = json_decode($result);
         for ($userCount = 0; $userCount < count($users); $userCount++) {
             $sizeKB = 0;
             $userState[$userCount] = $users[$userCount];
@@ -36,7 +38,7 @@ class CephService
             }
             $userState[$userCount]['used_size_kb'] = $sizeKB;
             if ($userQuota->max_size_kb == -1) {
-                $userState[$userCount]['total_size_kb'] = $contents->stats->total_avail_bytes;
+                $userState[$userCount]['total_size_kb'] = round(($contents->output->pgmap->bytes_avail) / 1024);
             } else {
                 $userState[$userCount]['total_size_kb'] = $userQuota->max_size_kb;
             }
@@ -46,10 +48,16 @@ class CephService
 
     public function totalCapacity()
     {
-        $stream = ssh2_exec($this->ssh, 'ceph df -f json');
-        stream_set_blocking($stream, true);
-        $contents = json_decode(stream_get_contents($stream));
-        fclose($stream);
-        return $contents->stats->total_avail_bytes;
+        $host = env('ServerURL');
+        $ch = curl_init();
+        $header[] = "Accept: application/json";
+        curl_setopt($ch, CURLOPT_URL, "$host:5000/api/v0.1/status");
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
+        $result = curl_exec($ch);
+        curl_close($ch);
+        $contents = json_decode($result);
+        return $contents->output->pgmap->bytes_avail;
     }
 }
