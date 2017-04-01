@@ -3,68 +3,111 @@
 class SetQuotaTest extends TestCase
 {
     /**
-     * Testing the admin set quota is successfully.
+     * Testing the user set quota but the user do not have permission
      *
      * @return void
      */
-     public function testSetQuota()
-     {
-         $init = $this->initBucket();
-         $headers = $this->headers;
-         $headers['HTTP_Authorization'] = "Bearer {$init['token']}";
-         $quotaData = [
-             'maxSizeKB' => 50000,
-             'email' => $this->userData['email'],
-             'enabled' => true
-         ];
-         $this->post('/api/v1/auth/setUserQuota', $quotaData, $headers)
-             ->seeStatusCode(200)
-             ->seeJsonContains([
-                 'message' => 'Setting is successful'
-             ]);
-     }
+    public function testSetQuotaButNotHavePermission()
+    {
+        $user = $this->initUser(str_random(5) . "@imac.com", str_random(10));
+        $token = \JWTAuth::fromUser($user);
+        $this->post("/api/v1/admin/setQuota?token={$token}", [
+            "email" => str_random(5) . "@imac.com",
+            "maxSizeKB" => 10,
+            "enabled" => true
+        ], [])
+        ->seeStatusCode(403)
+        ->seeJsonContains([
+            "message" => "Permission denied"
+        ]);
+    }
 
-     /**
-      * Testing the admin set quota but the user is not exist.
-      *
-      * @return void
-      */
-      public function testSetQuotaButUserIsNotExist()
-      {
-          $init = $this->initBucket();
-          $headers = $this->headers;
-          $headers['HTTP_Authorization'] = "Bearer {$init['token']}";
-          $quotaData = [
-              'maxSizeKB' => 50000,
-              'email' => $this->userData['email'] . 'not',
-              'enabled' => true
-          ];
-          $this->post('/api/v1/auth/setUserQuota', $quotaData, $headers)
-              ->seeStatusCode(403)
-              ->seeJsonContains([
-                  'message' => 'The user is not exist'
-              ]);
-      }
+    /**
+     * Testing the user set quota but the user is not exist
+     *
+     * @return void
+     */
+    public function testSetQuotaButUserIsNotExist()
+    {
+        $user = $this->initAdmin(str_random(5) . "@imac.com", str_random(10));
+        $token = \JWTAuth::fromUser($user);
+        $this->post("/api/v1/admin/setQuota?token={$token}", [
+            "email" => str_random(5) . "@imac.com",
+            "maxSizeKB" => 10,
+            "enabled" => true
+        ], [])
+        ->seeStatusCode(403)
+        ->seeJsonContains([
+            "message" => "The user is not exist"
+        ]);
+    }
 
-      /**
-       * Testing the admin set quota but max objects or max size are not allowed.
-       *
-       * @return void
-       */
-       public function testSetQuotaButMaxSizeAreNotAllowed()
-       {
-           $init = $this->initBucket();
-           $headers = $this->headers;
-           $headers['HTTP_Authorization'] = "Bearer {$init['token']}";
-           $quotaData = [
-               'maxSizeKB' => -3,
-               'email' => $this->userData['email'],
-               'enabled' => true
-           ];
-           $this->post('/api/v1/auth/setUserQuota', $quotaData, $headers)
-               ->seeStatusCode(403)
-               ->seeJsonContains([
-                   'message' => 'Max Size are not allowed'
-               ]);
-       }
+    /**
+     * Testing the user set quota but the max size is not allowed
+     *
+     * @return void
+     */
+    public function testSetQuotaButSizeIsNotAllowed()
+    {
+        $user = $this->initAdmin(str_random(5) . "@imac.com", str_random(10));
+        $token = \JWTAuth::fromUser($user);
+        $email = str_random(5) . "@imac.com";
+        $password = str_random(10);
+        $this->initUser($email, $password);
+        $this->post("/api/v1/admin/setQuota?token={$token}", [
+            "email" => $email,
+            "maxSizeKB" => -2,
+            "enabled" => true
+        ], [])
+        ->seeStatusCode(403)
+        ->seeJsonContains([
+            "message" => "Max Size are not allowed"
+        ]);
+    }
+
+    /**
+     * Testing the user set quota but the max size is bigger than variable capacity
+     *
+     * @return void
+     */
+    public function testSetQuotaButSizeIsBiggerThanVariable()
+    {
+        $user = $this->initAdmin(str_random(5) . "@imac.com", str_random(10));
+        $token = \JWTAuth::fromUser($user);
+        $email = str_random(5) . "@imac.com";
+        $password = str_random(10);
+        $this->initUser($email, $password);
+        $this->post("/api/v1/admin/setQuota?token={$token}", [
+            "email" => $email,
+            "maxSizeKB" => 99999999999999999999999999999999999999999,
+            "enabled" => true
+        ], [])
+        ->seeStatusCode(403)
+        ->seeJsonContains([
+            "message" => "Max size is bigger than variable capacity"
+        ]);
+    }
+
+    /**
+     * Testing the user set quota is successfully
+     *
+     * @return void
+     */
+    public function testSetQuotaIsSuccess()
+    {
+        $user = $this->initAdmin(str_random(5) . "@imac.com", str_random(10));
+        $token = \JWTAuth::fromUser($user);
+        $email = str_random(5) . "@imac.com";
+        $password = str_random(10);
+        $this->initUser($email, $password);
+        $this->post("/api/v1/admin/setQuota?token={$token}", [
+            "email" => $email,
+            "maxSizeKB" => 10,
+            "enabled" => true
+        ], [])
+        ->seeStatusCode(200)
+        ->seeJsonContains([
+            "message" => "The setting is successfully"
+        ]);
+    }
 }

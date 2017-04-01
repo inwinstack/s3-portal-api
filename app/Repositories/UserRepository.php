@@ -17,7 +17,7 @@ class UserRepository
 
     public function getUser($page, $count)
     {
-        $skip = ($page - 1) * 10;
+        $skip = ($page - 1) * $count;
         return User::skip($skip)->take($count)->get();
     }
 
@@ -48,16 +48,33 @@ class UserRepository
         return User::where('email', $email)->first();
     }
 
-    public function resetPassword($userData)
+    public function resetPassword($user)
     {
-        User::where('email', $userData['email'])->update(['password' => bcrypt($userData['password'])]);
-        return User::where('email', $userData['email'])->first();
+        $password = bcrypt($user['password']);
+        User::where('email', $user['email'])
+            ->update(['password' => $password]);
+        $result = User::where('email', $user['email'])
+                      ->where('password', $password)
+                      ->first();
+        if ($result) {
+            return $result;
+        } else {
+            return false;
+        }
     }
 
-    public function updateRole($userData)
+    public function updateRole($user)
     {
-        User::where('email', $userData['email'])->update(['role' => $userData['role']]);
-        return User::where('email', $userData['email'])->first();
+        User::where('email', $user['email'])
+            ->update(['role' => $user['role']]);
+        $result = User::where('email', $user['email'])
+                      ->where(['role' => $user['role']])
+                      ->first();
+        if ($result) {
+            return $result;
+        } else {
+            return false;
+        }
     }
 
     public function removeUser($email)
