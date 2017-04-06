@@ -15,7 +15,7 @@ class CephService
         $host = env('ServerURL');
         $ch = curl_init();
         $header[] = "Accept: application/json";
-        curl_setopt($ch, CURLOPT_URL, "$host:5000/api/v0.1/status");
+        curl_setopt($ch, CURLOPT_URL, "$host:5000/api/v0.1/df");
         curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
@@ -38,7 +38,7 @@ class CephService
             }
             $userState[$userCount]['used_size_kb'] = $sizeKB;
             if ($userQuota->max_size_kb == -1) {
-                $userState[$userCount]['total_size_kb'] = round(($contents->output->pgmap->bytes_avail) / 1024);
+                $userState[$userCount]['total_size_kb'] = round(($contents->output->stats->total_used_bytes) / 1024);
             } else {
                 $userState[$userCount]['total_size_kb'] = $userQuota->max_size_kb;
             }
