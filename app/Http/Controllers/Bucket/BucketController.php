@@ -39,7 +39,7 @@ class BucketController extends Controller
         if ($this->bucketService->exist($request->bucket)) {
             return response()->json(['message' => 'The bucket name is exist'], 403);
         }
-        if ($this->bucketService->create($request->bucket)) {
+        if ($this->bucketService->create($request->bucket) && $this->bucketService->cors($request->bucket)) {
             return $this->index();
         } else {
             return response()->json(['message' => 'Create bucket is failed'], 403);
