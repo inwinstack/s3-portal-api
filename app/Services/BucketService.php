@@ -44,7 +44,8 @@ class BucketService extends S3Service
                 'CORSRules' => array(array(
                     'AllowedHeaders' => array('*'),
                     'AllowedMethods' => array('HEAD', 'GET', 'PUT', 'POST', 'DELETE'),
-                    'AllowedOrigins' => array('*')
+                    'AllowedOrigins' => array('*'),
+                    'ExposeHeaders' => array('ETag')
                 ))
             ]);
             return true;
