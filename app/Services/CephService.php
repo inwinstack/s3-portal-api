@@ -13,9 +13,10 @@ class CephService
     public function listStatus($users, $requestApiService)
     {
         $host = env('ServerURL');
+        $port = env('CephRestAdminServerPort');
         $ch = curl_init();
         $header[] = "Accept: application/json";
-        curl_setopt($ch, CURLOPT_URL, "$host:5000/api/v0.1/df");
+        curl_setopt($ch, CURLOPT_URL, "$host:$port/api/v0.1/df");
         curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
@@ -25,8 +26,9 @@ class CephService
         for ($userCount = 0; $userCount < count($users); $userCount++) {
             $sizeKB = 0;
             $userState[$userCount] = $users[$userCount];
-            $userQuota = json_decode($requestApiService->request('GET', 'user', "?quota&uid=" . $users[$userCount]->uid . "&quota-type=user"));
-            $bucketList = json_decode($requestApiService->request('GET', 'bucket', '?format=json&uid=' . $users[$userCount]->uid));
+            $uid = $users[$userCount]->uid;
+            $userQuota = json_decode($requestApiService->request('GET', 'user', "?quota&uid=$uid&quota-type=user"));
+            $bucketList = json_decode($requestApiService->request('GET', 'bucket', "?format=json&uid=$uid"));
             for ($bucketCount = 0; $bucketCount < count($bucketList); $bucketCount++) {
                 $httpQuery = http_build_query([
                     'bucket' => $bucketList[$bucketCount]
@@ -38,7 +40,7 @@ class CephService
             }
             $userState[$userCount]['used_size_kb'] = $sizeKB;
             if ($userQuota->max_size_kb == -1) {
-                $userState[$userCount]['total_size_kb'] = round(($contents->output->stats->total_used_bytes) / 1024);
+                $userState[$userCount]['total_size_kb'] = round(($contents->output->stats->total_avail_bytes) / 1024);
             } else {
                 $userState[$userCount]['total_size_kb'] = $userQuota->max_size_kb;
             }
@@ -49,9 +51,10 @@ class CephService
     public function totalCapacity()
     {
         $host = env('ServerURL');
+        $port = env('CephRestAdminServerPort');
         $ch = curl_init();
         $header[] = "Accept: application/json";
-        curl_setopt($ch, CURLOPT_URL, "$host:5000/api/v0.1/status");
+        curl_setopt($ch, CURLOPT_URL, "$host:$port/api/v0.1/status");
         curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");

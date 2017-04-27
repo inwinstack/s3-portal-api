@@ -19,7 +19,7 @@ class UserService extends S3Service
             $sizeKB = 0;
             $objectCount = 0;
             $num = 0;
-            $userQuota = json_decode($requestApiService->request('GET', 'user', "?quota&uid=" . $user . "&quota-type=user"));
+            $userQuota = json_decode($requestApiService->request('GET', 'user', "?quota&uid=$user&quota-type=user"));
             while ($num < count($buckets)) {
                 $httpQuery = http_build_query([
                     'bucket' => $buckets[$num]['Name']
