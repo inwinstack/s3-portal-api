@@ -86,4 +86,20 @@ class BucketService extends S3Service
             return false;
         }
     }
+
+    public function logs($bucket, $start, $end)
+    {
+        $host = env('ServerURL');
+        $port = env('CephRestAdminServerPort');
+        $ch = curl_init();
+        $header[] = "Accept: application/json";
+        curl_setopt($ch, CURLOPT_URL, "$host:$port/admin/usage?format=json&uid=root@inwinstack.com&categories=put_obj");
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
+        $result = curl_exec($ch);
+        curl_close($ch);
+        $contents = json_decode($result);
+        return $contents;
+    }
 }

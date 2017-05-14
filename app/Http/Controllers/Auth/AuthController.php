@@ -48,10 +48,10 @@ class AuthController extends Controller
             return response()->json(['message' => 'The user is exist'], 403);
         }
         $httpQuery = http_build_query([
-          'uid' => $data['uid'],
-          'display-name' => $data['email'],
-          'email' => $data['email'],
-          'user-caps' => 'usage=read, write; users=read'
+            'uid' => $data['uid'],
+            'display-name' => $data['email'],
+            'email' => $data['email'],
+            'user-caps' => 'usage=read, write; users=read'
         ]);
         $result = json_decode($requestApiService->request('PUT', 'user', "?format=json&$httpQuery"));
         $httpQuery = http_build_query([

@@ -56,6 +56,7 @@ Route::group(['prefix' => 'api', 'middleware' => ['cors', 'api']], function () {
             });
             Route::group(['prefix' => 'user', 'namespace' => 'User'], function () {
                 Route::get('state', 'UserController@state');
+                Route::get('traffic/{start}/{end}', 'UserController@traffic');
             });
         });
     });

@@ -44,4 +44,19 @@ class UserService extends S3Service
             return false;
         }
     }
+
+    public function traffic($uid, $start, $end, $requestApiService)
+    {
+        try {
+            $result = json_decode($requestApiService->request('GET', 'usage', "?format=json&uid=$uid&start=$start&end=$end"));
+            $total = $result->summary[0]->total->bytes_sent + $result->summary[0]->total->bytes_received;
+            if ($total > 1024 * 1024 * 1024) $result = round($total / (1024 * 1024 * 1024), 2) . 'GB';
+            elseif ($total > 1024 * 1024) $result = round($total / (1024 * 1024), 2) . 'MB';
+            elseif ($total > 1024 ) $result = round($total / 1024, 2) . 'KB';
+            else $result = round($total, 2) . 'Bytes';
+            return $result;
+        } catch (S3Exception $e) {
+            return false;
+        }
+    }
 }
