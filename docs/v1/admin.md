@@ -78,7 +78,7 @@ status code:403
     </tr>
     <tr>
         <td style="width:50px">GET</td>
-        <td style="width:400px">/api/v1/admin/list/{page}</td>
+        <td style="width:400px">/api/v1/admin/list/{page}/{count}</td>
     </tr>
 </table>
 

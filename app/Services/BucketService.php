@@ -39,7 +39,7 @@ class BucketService extends S3Service
     public function exist($bucket)
     {
         try {
-            return $this->s3->doesBucketExist($bucket)
+            return $this->s3->doesBucketExist($bucket);
         } catch (S3Exception $e) {
             return true;
         }

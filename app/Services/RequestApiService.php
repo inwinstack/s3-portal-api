@@ -13,7 +13,7 @@ class RequestApiService
         $region = env('Region');
         $host = env('ServerURL');
         $adminEntryPoint = env('AdminEntryPoint');
-        $requestUrl = "http://$host/$adminEntryPoint/$path$query";
+        $requestUrl = "http://$host:7480/$adminEntryPoint/$path$query";
 
         $dateLong = gmdate('D, d M Y H:i:s T', time());
         $canonical = "$apiMethod\n\n\n$dateLong\n/$adminEntryPoint/$path";

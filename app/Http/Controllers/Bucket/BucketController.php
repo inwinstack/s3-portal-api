@@ -18,7 +18,7 @@ class BucketController extends Controller
     public function __construct()
     {
         $this->user = JWTAuth::parseToken()->authenticate();
-        $this->$bucketService = new BucketService($this->user['access_key'], $this->user['secret_key']);
+        $this->bucketService = new BucketService($this->user['access_key'], $this->user['secret_key']);
     }
 
     public function index()

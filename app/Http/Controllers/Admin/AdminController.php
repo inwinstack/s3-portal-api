@@ -23,7 +23,7 @@ class AdminController extends Controller
         $this->users = $users;
         $this->user = JWTAuth::parseToken()->authenticate();
         $this->admin = new AdminService($this->user['access_key'], $this->user['secret_key']);
-        $this->ceph = new CephService(env('ServerIP'), env('Username'), env('Port'), env('PublicKeyPath'), env('PrivateKeyPath'));
+        $this->ceph = new CephService();
     }
 
     public function index($page, $count, RequestApiService $requestApiService)

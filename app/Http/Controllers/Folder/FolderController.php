@@ -31,7 +31,7 @@ class FolderController extends Controller
         if (!$this->bucketService->check($request->bucket)) {
             return response()->json(['message' => 'The bucket is not exist'], 403);
         }
-        if ($this->folderService->checkFolder($request->bucket, $request->prefix)) {
+        if ($this->folderService->check($request->bucket, $request->prefix)) {
             return response()->json(['message' => 'The folder is exist'], 403);
         }
         if ($this->folderService->store($request->bucket, $request->prefix)) {
