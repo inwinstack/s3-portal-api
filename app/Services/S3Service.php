@@ -9,12 +9,14 @@ class S3Service
 {
     public function connect($accessKey, $secretKey)
     {
+        $host = env('ServerURL');
+        $port = env('RGWPort');
         $s3 = S3Client::factory([
             'credentials' => [
                 'key'    => $accessKey,
                 'secret' => $secretKey,
             ],
-            'endpoint' => 'http://'. env('ServerURL') .':7480/',
+            'endpoint' => "http://$host:$port/",
         ]);
         return $s3;
     }

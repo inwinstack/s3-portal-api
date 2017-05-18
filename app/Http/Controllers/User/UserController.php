@@ -34,4 +34,14 @@ class UserController extends Controller
             return response()->json(['message' => 'Getting user state is failed'], 403);
         }
     }
+
+    public function traffic($start, $end, RequestApiService $requestApiService)
+    {
+        $result = $this->userService->traffic($this->user->uid, $start, $end, $requestApiService);
+        if ($result) {
+            return response()->json(['traffic' => $result], 200);
+        } else {
+            return response()->json(['message' => 'Getting user traffic id failed'], 403);
+        }
+    }
 }
