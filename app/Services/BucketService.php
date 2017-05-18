@@ -36,6 +36,24 @@ class BucketService extends S3Service
         }
     }
 
+    public function cors($bucket)
+    {
+        try {
+            $this->s3->putBucketCors([
+                'Bucket' => $bucket,
+                'CORSRules' => array(array(
+                    'AllowedHeaders' => array('*'),
+                    'AllowedMethods' => array('HEAD', 'GET', 'PUT', 'POST', 'DELETE'),
+                    'AllowedOrigins' => array('*'),
+                    'ExposeHeaders' => array('ETag')
+                ))
+            ]);
+            return true;
+        } catch (S3Exception $e) {
+            return false;
+        }
+    }
+
     public function exist($bucket)
     {
         try {
