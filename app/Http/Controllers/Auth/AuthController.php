@@ -57,7 +57,7 @@ class AuthController extends Controller
         $httpQuery = http_build_query([
           'bucket' => '-1',
           'max-objects' => '-1',
-          'max-size-kb' => env('UserDefaultCapacityKB'),
+          'max-size-kb' => env('USER_DEFAULT_CAPACITY_KB'),
           'quota-scope' => 'user',
           'enabled' => true
         ]);
@@ -77,9 +77,6 @@ class AuthController extends Controller
     public function login(LoginRequest $request, RequestApiService $requestApiService)
     {
         $result = json_decode($requestApiService->request('GET', 'bucket', "?format=json"));
-        if (is_array($result) && sizeof($result) == 0) {
-            return response()->json(['message' => 'Connection to Ceph failed'], 403);
-        }
         $data = $this->users->verify($request->all());
         if ($data) {
             $data['token'] = JWTAuth::fromUser($data);

@@ -9,8 +9,8 @@ class S3Service
 {
     public function connect($accessKey, $secretKey)
     {
-        $host = env('ServerURL');
-        $port = env('RGWPort');
+        $host = env('S3_URL');
+        $port = env('S3_PORT');
         $s3 = S3Client::factory([
             'credentials' => [
                 'key'    => $accessKey,
