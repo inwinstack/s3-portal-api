@@ -61,18 +61,17 @@ class AuthController extends Controller
           'quota-scope' => 'user',
           'enabled' => true
         ]);
-        // if ($result) {
-        //     $data['access_key'] = $result->keys[0]->access_key;
-        //     $data['secret_key'] = $result->keys[0]->secret_key;
-        //     $resultData = $this->users->createUser($data);
-        // }
-        // $updateQuotaResponse = json_decode($requestApiService->request('PUT', 'user', "?quota&uid=" . $data['email'] . "&quota-type=user&$httpQuery"));
-        // if ($result) {
-        //     return response()->json($result, 200);
-        // } else {
-        //     return response()->json(['message' => 'curl_has_error'], 401);
-        // }
-        return response()->json($result);
+        if ($result) {
+            $data['access_key'] = $result->keys[0]->access_key;
+            $data['secret_key'] = $result->keys[0]->secret_key;
+            $resultData = $this->users->createUser($data);
+        }
+        $updateQuotaResponse = json_decode($requestApiService->request('PUT', 'user', "?quota&uid=" . $data['email'] . "&quota-type=user&$httpQuery"));
+        if ($result) {
+            return response()->json($result, 200);
+        } else {
+            return response()->json(['message' => 'curl_has_error'], 401);
+        }
     }
 
     public function login(LoginRequest $request, RequestApiService $requestApiService)
