@@ -15,6 +15,10 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('docs', function () {
+    return view('api.doc');
+});
+
 Route::group(['prefix' => 'api', 'middleware' => ['cors', 'api']], function () {
     Route::group(['prefix' => 'v1'], function () {
         Route::group(['prefix' => 'auth', 'namespace' => 'Auth'], function () {
