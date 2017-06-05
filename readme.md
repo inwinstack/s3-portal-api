@@ -69,4 +69,4 @@ S3 Portal API provider the API documentation of online version, we use swagger t
 
 You can input `http://localhost/document` in browser if your S3 Portal API is use 80 port. 
 
-![Documentation]("images/documentation.png")
+![Documentation](images/documentation.png)
