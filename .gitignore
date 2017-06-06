@@ -7,3 +7,4 @@ Homestead.json
 .env.swp
 /.idea
 ./storage/tmpfile
+.DS_Store

@@ -1,0 +1,211 @@
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: S3 Portal API Reference Guide
+  description: >-
+    This docs is tell you how to use s3 portal api and help you quickly to
+    develop.
+schemes:
+  - http
+host: 'localhost:80'
+basePath: /api/v1
+tags:
+  - name: admin
+    description: ''
+  - name: ''
+paths:
+  /admin/create:
+    post:
+      tags:
+        - admin
+      summary: Create a user
+      description: ''
+      operationId: createUser
+      consumes:
+        - multipart/form-data
+      produces:
+        - application/json
+      parameters:
+        - name: email
+          in: formData
+          description: Email of user will be used
+          required: true
+          type: string
+        - name: password
+          in: formData
+          description: Password of user will be used
+          required: true
+          type: string
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/User'
+        '401':
+          description: Permission denied
+        '409':
+          description: User already exists
+      security:
+        - Admin: []
+  '/admin/list/{page}/{count}':
+    get:
+      tags:
+        - admin
+      summary: List all users
+      description: ''
+      operationId: listUsers
+      produces:
+        - application/json
+      parameters:
+        - name: page
+          in: path
+          description: The page of start page
+          required: true
+          type: integer
+          format: int64
+        - name: count
+          in: path
+          description: The count of one page display
+          required: true
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            type: object
+            properties:
+              users:
+                type: array
+                items:
+                  $ref: '#/definitions/State'
+        '400':
+          description: Invalid page/count supplied
+        '401':
+          description: Permission denied
+      security:
+        - Admin: []
+  /admin/reset:
+    post:
+      tags:
+        - admin
+      summary: Reset user's password
+      description: ''
+      operationId: resetPassword
+      consumes:
+        - multipart/form-data
+      produces:
+        - application/json
+      parameters:
+        - name: email
+          in: formData
+          description: Email of user who want to reset passord
+          required: true
+          type: string
+        - name: password
+          in: formData
+          description: Password of new
+          required: true
+          type: string
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/User'
+        '401':
+          description: Permission denied
+        '404':
+          description: User not founded
+        '500':
+          description: Reset password failed
+      security:
+        - Admin: []
+securityDefinitions:
+  Admin:
+    name: Authorization
+    description: Use JWT token to authentication
+    type: apiKey
+    in: header
+definitions:
+  User:
+    type: object
+    required:
+      - id
+      - uid
+      - email
+      - name
+      - access_key
+      - secret_key
+      - role
+      - updated_at
+      - created_at
+    properties:
+      id:
+        type: integer
+        format: int64
+        example: 1
+      uid:
+        type: string
+        example: root@inwinstack.com
+      email:
+        type: string
+        example: root@inwinstack.com
+      name:
+        type: string
+        example: root@inwinstack.com
+      access_key:
+        type: string
+        example: SH3LH03NVLQPU5MB00WL
+      secret_key:
+        type: string
+        example: A7HrEyTKoY2OBCHxx4Me0m8Lea9wGM4gvCZP2M3Y
+      role:
+        type: string
+        example: user
+      updated_at:
+        type: string
+        example: '2017-06-02 08:46:13'
+      created_at:
+        type: string
+        example: '2017-06-02 08:46:13'
+  State:
+    type: object
+    required:
+      - id
+      - uid
+      - email
+      - name
+      - role
+      - created_at
+      - updated_at
+      - used_size_kb
+      - total_size_kb
+    properties:
+      id:
+        type: integer
+        format: int64
+        example: 1
+      uid:
+        type: string
+        example: root@inwinstack.com
+      email:
+        type: string
+        example: root@inwinstack.com
+      name:
+        type: string
+        example: root@inwinstack.com
+      role:
+        type: string
+        example: user
+      created_at:
+        type: string
+        example: '2017-06-02 08:46:13'
+      updated_at:
+        type: string
+        example: '2017-06-02 08:46:13'
+      used_size_kb:
+        type: string
+        example: '1000'
+      total_size_kb:
+        type: string
+        example: '10000'
