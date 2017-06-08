@@ -43,6 +43,7 @@ class AdminController extends Controller
         } else {
             $userState['users'] = $this->ceph->listStatus($listUser, $requestApiService);
         }
+        $userState['count'] = $this->users->getUserCount();
         return response()->json($userState, 200);
     }
 
