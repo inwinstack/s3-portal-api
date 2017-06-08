@@ -12,7 +12,7 @@ class CephService
 
     public function listStatus($users, $requestApiService)
     {
-        $host = env('S3_URL');
+        $host = env('CEPH_REST_API_URL');
         $port = env('CEPH_REST_API_PORT');
         $ch = curl_init();
         $header[] = "Accept: application/json";
@@ -50,7 +50,7 @@ class CephService
 
     public function totalCapacity()
     {
-        $host = env('S3_URL');
+        $host = env('CEPH_REST_API_URL');
         $port = env('CEPH_REST_API_PORT');
         $ch = curl_init();
         $header[] = "Accept: application/json";
