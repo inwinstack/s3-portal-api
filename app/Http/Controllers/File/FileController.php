@@ -32,7 +32,7 @@ class FileController extends Controller
         }
         $response = $this->fileService->get($bucket, $request->input('prefix', ''));
         if ($response) {
-            return response()->json(['files' => $response->get('Contents')], 200);
+            return response()->json(['files' => $response->get('Contents'), 'total' => count($response->get('Contents'))], 200);
         } else {
             return response()->json(['message' => 'List files is failed'], 403);
         }
