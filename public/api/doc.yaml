@@ -120,6 +120,102 @@ paths:
           description: Reset password failed
       security:
         - Admin: []
+  /admin/role:
+    post:
+      tags:
+        - admin
+      summary: Update user's role
+      description: ''
+      operationId: updateRole
+      consumes:
+        - multipart/form-data
+      produces:
+        - application/json
+      parameters:
+        - name: email
+          in: formData
+          description: Email of user who want to update role
+          required: true
+          type: string
+        - name: role
+          in: formData
+          description: Role of new
+          required: true
+          type: string
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/User'
+        '401':
+          description: Permission denied
+        '404':
+          description: User not founded
+        '500':
+          description: Update role failed
+      security:
+        - Admin: []
+  '/admin/delete/{email}':
+    delete:
+      tags:
+        - admin
+      summary: Delete a user
+      description: ''
+      parameters:
+        - name: email
+          in: path
+          description: Email of user who will be deleted
+          required: true
+          type: string
+      responses:
+        '200':
+          description: successful operation
+        '401':
+          description: Permission denied
+        '403':
+          description: Root is not allowed to be deleted
+        '404':
+          description: User not founded
+        '500':
+          description: Delete user failed
+  /admin/setQuota:
+    post:
+      tags:
+        - admin
+      summary: Set user's quota
+      description: ''
+      operationId: seuQuota
+      consumes:
+        - multipart/form-data
+      produces:
+        - application/json
+      parameters:
+        - name: email
+          in: formData
+          description: Email of user who will be set quota
+          required: true
+          type: string
+        - name: maxSizeKB
+          in: formData
+          description: Quota of user can use
+          required: true
+          type: integer
+        - name: enabled
+          in: formData
+          description: Enable the quota configuration
+          required: true
+          type: boolean
+      responses:
+        '200':
+          description: successful operation
+        '400':
+          description: Invalid maxSizeKB supplied
+        '401':
+          description: Permission denied
+        '404':
+          description: User not founded
+        '500':
+          description: Set quota failed
 securityDefinitions:
   Admin:
     name: Authorization
