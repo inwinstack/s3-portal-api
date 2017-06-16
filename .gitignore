@@ -4,4 +4,7 @@
 Homestead.yaml
 Homestead.json
 .env
+.env.swp
 /.idea
+./storage/tmpfile
+.DS_Store
