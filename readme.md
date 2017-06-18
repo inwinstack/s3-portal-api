@@ -1,4 +1,5 @@
 # S3 Portal API
+[![Build Status](https://travis-ci.org/Ci-Jie/s3-portal-api.svg?branch=feature/add-travis-ci)](https://travis-ci.org/Ci-Jie/s3-portal-api)
 
 S3 Portal API is an open source system for providing basic on Ceph radosgw and Amazon AWS SDK APIs.
 
@@ -52,7 +53,7 @@ Finally, install according to dependency packages :
 $ composer install
 ```
 
-In order for the system to perform and enhance security, use below command to generate Application Key : 
+In order for the system to perform and enhance security, use below command to generate Application Key :
 
 ```sh
 $ php artisan key:generate
@@ -68,6 +69,6 @@ $ php artisan jwt:generate
 
 S3 Portal API provider the API documentation of online version, we use swagger to develop, but it is in alpha that not include all, so not recommend to watch in currently.
 
-You can input `http://localhost/document` in browser if your S3 Portal API is use 80 port. 
+You can input `http://localhost/document` in browser if your S3 Portal API is use 80 port.
 
 ![Documentation](images/documentation.png)
