@@ -9,13 +9,13 @@ class DeleteFolderTest extends TestCase
      */
     public function testDeleteFolderButBucketIsNotExist()
     {
-        $user = $this->initUser(str_random(5) . "@imac.com", str_random(10));
-        $token = \JWTAuth::fromUser($user);
-        $this->delete("/api/v1/folder/delete/{str_random(10)}/{str_random(10)}?token={$token}", [], [])
-        ->seeStatusCode(403)
-        ->seeJsonContains([
-            "message" => "The bucket is not exist"
-        ]);
+        $admin = $this->post('/api/v1/auth/login', $this->admin)
+            ->response->getData();
+        $this->delete("/api/v1/folder/delete/{str_random(10)}/{str_random(10)}?token=$admin->token")
+            ->seeStatusCode(403)
+            ->seeJsonContains([
+                "message" => "The bucket is not exist"
+            ]);
     }
 
     /**
@@ -25,15 +25,15 @@ class DeleteFolderTest extends TestCase
      */
     public function testDeleteFolderButFolderIsNotExist()
     {
-        $user = $this->initUser(str_random(5) . "@imac.com", str_random(10));
-        $token = \JWTAuth::fromUser($user);
-        $bucket = str_random(10);
-        $this->createBucket($user, $bucket);
-        $this->delete("/api/v1/folder/delete/{$bucket}/{str_random(10)}?token={$token}", [], [])
+        $admin = $this->post('/api/v1/auth/login', $this->admin)
+            ->response->getData();
+        $this->post("/api/v1/bucket/create?token=$admin->token", ["bucket" => $this->bucket]);
+        $this->delete("/api/v1/folder/delete/{$this->bucket}/{str_random(10)}?token={$admin->token}")
         ->seeStatusCode(403)
         ->seeJsonContains([
             "message" => "The folder is not exist"
         ]);
+        $this->delete("/api/v1/bucket/delete/$this->bucket?token=$admin->token");
     }
 
     /**
@@ -43,16 +43,17 @@ class DeleteFolderTest extends TestCase
      */
     public function testDeleteFolderSuccess()
     {
-        $user = $this->initUser(str_random(5) . "@imac.com", str_random(10));
-        $token = \JWTAuth::fromUser($user);
-        $bucket = str_random(10);
-        $folder = str_random(10);
-        $this->createBucket($user, $bucket);
-        $this->createFolder($user, $bucket, $folder);
-        $this->delete("/api/v1/folder/delete/{$bucket}/{$folder}?token={$token}", [], [])
-        ->seeStatusCode(200)
-        ->seeJsonContains([
-            "message" => "Delete folder is successfully"
-        ]);
+        $admin = $this->post('/api/v1/auth/login', $this->admin)
+            ->response->getData();
+        $this->post("/api/v1/bucket/create?token=$admin->token", ["bucket" => $this->bucket]);
+        $this->post("/api/v1/folder/create?token=$admin->token", [
+            "bucket" => $this->bucket,
+            "prefix" => $this->folder]);
+        $this->delete("/api/v1/folder/delete/{$this->bucket}/{$this->folder}?token={$admin->token}")
+            ->seeStatusCode(200)
+            ->seeJsonContains([
+                "message" => "Delete folder is successfully"
+            ]);
+        $this->delete("/api/v1/bucket/delete/$this->bucket?token=$admin->token");
     }
 }

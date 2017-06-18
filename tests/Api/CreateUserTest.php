@@ -9,15 +9,13 @@ class CreateUserTest extends TestCase
      */
     public function testCreateUserButNotHavePermission()
     {
-        $user = $this->initUser(str_random(5) . "@imac.com", str_random(10));
-        $token = \JWTAuth::fromUser($user);
-        $this->post("/api/v1/admin/create?token={$token}", [
-          "email" => str_random(5) . "@imac.com",
-          "password" => str_random(10)], [])
-           ->seeStatusCode(403)
-           ->seeJsonContains([
-             "message" => "Permission denied"
-           ]);
+        $user = $this->post('/api/v1/auth/login', $this->user)
+            ->response->getData();
+        $this->post("/api/v1/admin/create?token=$user->token", $this->user)
+            ->seeStatusCode(403)
+            ->seeJsonContains([
+                "message" => "Permission denied"
+            ]);
     }
 
     /**
@@ -27,18 +25,13 @@ class CreateUserTest extends TestCase
      */
     public function testCreateUserButUserIsExist()
     {
-        $user = $this->initAdmin(str_random(5) . "@imac.com", str_random(5));
-        $token = \JWTAuth::fromUser($user);
-        $email = str_random(5) . "@imac.com";
-        $password = str_random(10);
-        $this->initUser($email, $password);
-        $this->post("/api/v1/admin/create?token={$token}", [
-          "email" => $email,
-          "password" => $password], [])
-           ->seeStatusCode(403)
-           ->seeJsonContains([
-             "message" => "The user is exist"
-           ]);
+        $admin = $this->post('/api/v1/auth/login', $this->admin)
+            ->response->getData();
+        $this->post("/api/v1/admin/create?token=$admin->token", $this->user)
+            ->seeStatusCode(403)
+            ->seeJsonContains([
+                "message" => "The user is exist"
+            ]);
     }
 
     /**
@@ -48,14 +41,11 @@ class CreateUserTest extends TestCase
      */
     public function testCreateUserSuccess()
     {
-        $user = $this->initAdmin(str_random(5) . "@imac.com", str_random(5));
-        $token = \JWTAuth::fromUser($user);
-        $email = str_random(5) . "@imac.com";
-        $password = str_random(10);
-        $this->post("/api/v1/admin/create?token={$token}", [
-          "email" => $email,
-          "password" => $password], [])
-           ->seeStatusCode(200)
-           ->seeJsonStructure(["uid", "name", "email", "access_key", "secret_key", "role", "updated_at", "created_at", "id"]);
+        $admin = $this->post('/api/v1/auth/login', $this->admin)
+            ->response->getData();
+        $this->post("/api/v1/admin/create?token=$admin->token", $this->testUser)
+            ->seeStatusCode(200)
+            ->seeJsonStructure(["uid", "name", "email", "access_key", "secret_key", "role", "updated_at", "created_at", "id"]);
+        $this->delete("/api/v1/admin/delete/{$this->testUser['email']}?token=$admin->token");
     }
 }

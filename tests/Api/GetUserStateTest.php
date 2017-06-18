@@ -9,10 +9,10 @@ class GetUserStateTest extends TestCase
      */
     public function testGetStateSuccess()
     {
-        $user = $this->initUser(str_random(5) . "@imac.com", str_random(10));
-        $token = \JWTAuth::fromUser($user);
-        $this->get("/api/v1/user/state?token={$token}", [], [])
-           ->seeStatusCode(200)
-           ->seeJsonStructure(["total_size_kb", "max_size_kb", "total_objects", "max_objects"]);
+        $admin = $this->post('/api/v1/auth/login', $this->admin)
+            ->response->getData();
+        $this->get("/api/v1/user/state?token=$admin->token")
+            ->seeStatusCode(200)
+            ->seeJsonStructure(["total_size_kb", "max_size_kb", "total_objects", "max_objects"]);
     }
 }

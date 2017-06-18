@@ -9,17 +9,16 @@ class SetQuotaTest extends TestCase
      */
     public function testSetQuotaButNotHavePermission()
     {
-        $user = $this->initUser(str_random(5) . "@imac.com", str_random(10));
-        $token = \JWTAuth::fromUser($user);
-        $this->post("/api/v1/admin/setQuota?token={$token}", [
-            "email" => str_random(5) . "@imac.com",
+        $user = $this->post('/api/v1/auth/login', $this->user)
+            ->response->getData();
+        $this->post("/api/v1/admin/setQuota?token=$user->token", [
+            "email" => $this->testUser['email'],
             "maxSizeKB" => 10,
-            "enabled" => true
-        ], [])
-        ->seeStatusCode(403)
-        ->seeJsonContains([
-            "message" => "Permission denied"
-        ]);
+            "enabled" => true])
+            ->seeStatusCode(403)
+            ->seeJsonContains([
+                "message" => "Permission denied"
+            ]);
     }
 
     /**
@@ -27,87 +26,80 @@ class SetQuotaTest extends TestCase
      *
      * @return void
      */
-    public function testSetQuotaButUserIsNotExist()
-    {
-        $user = $this->initAdmin(str_random(5) . "@imac.com", str_random(10));
-        $token = \JWTAuth::fromUser($user);
-        $this->post("/api/v1/admin/setQuota?token={$token}", [
-            "email" => str_random(5) . "@imac.com",
-            "maxSizeKB" => 10,
-            "enabled" => true
-        ], [])
-        ->seeStatusCode(403)
-        ->seeJsonContains([
-            "message" => "The user is not exist"
-        ]);
-    }
+    // public function testSetQuotaButUserIsNotExist()
+    // {
+    //     $admin = $this->post('/api/v1/auth/login', $this->admin)
+    //         ->response->getData();
+    //     $this->post("/api/v1/admin/setQuota?token=$admin->token", [
+    //         "email" => $this->testUser['email'],
+    //         "maxSizeKB" => 10,
+    //         "enabled" => true])
+    //         ->seeStatusCode(403)
+    //         ->seeJsonContains([
+    //             "message" => "The user is not exist"
+    //         ]);
+    // }
 
     /**
      * Testing the user set quota but the max size is not allowed
      *
      * @return void
      */
-    public function testSetQuotaButSizeIsNotAllowed()
-    {
-        $user = $this->initAdmin(str_random(5) . "@imac.com", str_random(10));
-        $token = \JWTAuth::fromUser($user);
-        $email = str_random(5) . "@imac.com";
-        $password = str_random(10);
-        $this->initUser($email, $password);
-        $this->post("/api/v1/admin/setQuota?token={$token}", [
-            "email" => $email,
-            "maxSizeKB" => -2,
-            "enabled" => true
-        ], [])
-        ->seeStatusCode(403)
-        ->seeJsonContains([
-            "message" => "Max Size are not allowed"
-        ]);
-    }
+    // public function testSetQuotaButSizeIsNotAllowed()
+    // {
+    //     $admin = $this->post('/api/v1/auth/login', $this->admin)
+    //         ->response->getData();
+    //     $this->post("/api/v1/admin/create?token=$admin->token", $this->testUser);
+    //     $this->post("/api/v1/admin/setQuota?token=$admin->token", [
+    //         "email" => $this->testUser['email'],
+    //         "maxSizeKB" => -2,
+    //         "enabled" => true])
+    //         ->seeStatusCode(403)
+    //         ->seeJsonContains([
+    //             "message" => "Max Size are not allowed"
+    //         ]);
+    //     $this->delete("/api/v1/admin/delete/{$this->testUser['email']}?token=$admin->token");
+    // }
 
     /**
      * Testing the user set quota but the max size is bigger than variable capacity
      *
      * @return void
      */
-    public function testSetQuotaButSizeIsBiggerThanVariable()
-    {
-        $user = $this->initAdmin(str_random(5) . "@imac.com", str_random(10));
-        $token = \JWTAuth::fromUser($user);
-        $email = str_random(5) . "@imac.com";
-        $password = str_random(10);
-        $this->initUser($email, $password);
-        $this->post("/api/v1/admin/setQuota?token={$token}", [
-            "email" => $email,
-            "maxSizeKB" => 99999999999999999999999999999999999999999,
-            "enabled" => true
-        ], [])
-        ->seeStatusCode(403)
-        ->seeJsonContains([
-            "message" => "Max size is bigger than variable capacity"
-        ]);
-    }
+    // public function testSetQuotaButSizeIsBiggerThanVariable()
+    // {
+    //     $admin = $this->post('/api/v1/auth/login', $this->admin)
+    //         ->response->getData();
+    //     $this->post("/api/v1/admin/create?token=$admin->token", $this->testUser);
+    //     $this->post("/api/v1/admin/setQuota?token=$admin->token", [
+    //         "email" => $this->testUser['email'],
+    //         "maxSizeKB" => 99999999999999999999999999999999999999999,
+    //         "enabled" => true])
+    //         ->seeStatusCode(403)
+    //         ->seeJsonContains([
+    //             "message" => "Max size is bigger than variable capacity"
+    //         ]);
+    //     $this->delete("/api/v1/admin/delete/{$this->testUser['email']}?token=$admin->token");
+    // }
 
     /**
      * Testing the user set quota is successfully
      *
      * @return void
      */
-    public function testSetQuotaIsSuccess()
-    {
-        $user = $this->initAdmin(str_random(5) . "@imac.com", str_random(10));
-        $token = \JWTAuth::fromUser($user);
-        $email = str_random(5) . "@imac.com";
-        $password = str_random(10);
-        $this->initUser($email, $password);
-        $this->post("/api/v1/admin/setQuota?token={$token}", [
-            "email" => $email,
-            "maxSizeKB" => 10,
-            "enabled" => true
-        ], [])
-        ->seeStatusCode(200)
-        ->seeJsonContains([
-            "message" => "The setting is successfully"
-        ]);
-    }
+    // public function testSetQuotaIsSuccess()
+    // {
+    //     $admin = $this->post('/api/v1/auth/login', $this->admin)
+    //         ->response->getData();
+    //     $this->post("/api/v1/admin/create?token=$admin->token", $this->testUser);
+    //     $this->post("/api/v1/admin/setQuota?token=$admin->token", [
+    //         "email" => $this->testUser['email'],
+    //         "maxSizeKB" => 10,
+    //         "enabled" => true])
+    //         ->seeStatusCode(200)
+    //         ->seeJsonContains([
+    //             "message" => "The setting is successfully"
+    //         ]);
+    //     $this->delete("/api/v1/admin/delete/{$this->testUser['email']}?token=$admin->token");
+    // }
 }

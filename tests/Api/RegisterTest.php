@@ -9,13 +9,14 @@ class RegisterTest extends TestCase
      */
     public function testRegisterSuccess()
     {
-        $password = str_random(10);
-        $this->post("api/v1/auth/register", [
-            "email" => str_random(5) . "@imac.com",
-            "password" => $password,
-            "password_confirmation" => $password
-        ], [])
-        ->seeStatusCode(200)
-        ->seeJsonStructure(["tenant", "user_id", "display_name", "email", "suspended", "max_buckets", "subusers", "keys", "swift_keys", "caps"]);
+        $this->post("/api/v1/auth/register", [
+            "email" => $this->testUser['email'],
+            "password" => $this->testUser['password'],
+            "password_confirmation" => $this->testUser['password']])
+            ->seeStatusCode(200)
+            ->seeJsonStructure(["tenant", "user_id", "display_name", "email", "suspended", "max_buckets", "subusers", "keys", "swift_keys", "caps"]);
+        $admin = $this->post('/api/v1/auth/login', $this->admin)
+            ->response->getData();
+        $this->delete("/api/v1/admin/delete/{$this->testUser['email']}?token=$admin->token");
     }
 }
