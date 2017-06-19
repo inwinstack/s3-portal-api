@@ -9,14 +9,13 @@ class DeleteUserTest extends TestCase
      */
     public function testDeleteUserButNotHavePermission()
     {
-        $user = $this->initUser(str_random(5) . "@imac.com", str_random(10));
-        $token = \JWTAuth::fromUser($user);
-        $email = str_random(5) . "@imac.com";
-        $this->delete("/api/v1/admin/delete/{$email}?token={$token}", [], [])
-           ->seeStatusCode(403)
-           ->seeJsonContains([
-             "message" => "Permission denied"
-           ]);
+        $user = $this->post('/api/v1/auth/login', $this->user)
+            ->response->getData();
+        $this->delete("/api/v1/admin/delete/{$this->testUser['email']}?token=$user->token")
+        ->seeStatusCode(403)
+        ->seeJsonContains([
+            "message" => "Permission denied"
+        ]);
     }
 
     /**
@@ -26,13 +25,13 @@ class DeleteUserTest extends TestCase
      */
     public function testDeleteUserButUserIsRoot()
     {
-        $user = $this->initAdmin(str_random(5) . "@imac.com", str_random(10));
-        $token = \JWTAuth::fromUser($user);
-        $this->delete("/api/v1/admin/delete/root@inwinstack.com?token={$token}", [], [])
-           ->seeStatusCode(405)
-           ->seeJsonContains([
-             "message" => "The root is not allowed to be operated"
-           ]);
+        $admin = $this->post('/api/v1/auth/login', $this->admin)
+            ->response->getData();
+        $this->delete("/api/v1/admin/delete/{$this->admin['email']}?token=$admin->token")
+        ->seeStatusCode(405)
+        ->seeJsonContains([
+            "message" => "The root is not allowed to be operated"
+        ]);
     }
 
     /**
@@ -42,14 +41,13 @@ class DeleteUserTest extends TestCase
      */
     public function testDeleteUserButUserIsNotExist()
     {
-        $user = $this->initAdmin(str_random(5) . "@imac.com", str_random(10));
-        $token = \JWTAuth::fromUser($user);
-        $email = str_random(5) . "@imac.com";
-        $this->delete("/api/v1/admin/delete/{$email}?token={$token}", [], [])
-           ->seeStatusCode(403)
-           ->seeJsonContains([
-             "message" => "The user is not exist"
-           ]);
+        $admin = $this->post('/api/v1/auth/login', $this->admin)
+            ->response->getData();
+        $this->delete("/api/v1/admin/delete/{$this->testUser['email']}?token=$admin->token")
+            ->seeStatusCode(403)
+            ->seeJsonContains([
+                "message" => "The user is not exist"
+            ]);
     }
 
     /**
@@ -59,14 +57,13 @@ class DeleteUserTest extends TestCase
      */
     public function testDeleteUserSuccess()
     {
-        $user = $this->initAdmin(str_random(5) . "@imac.com", str_random(10));
-        $token = \JWTAuth::fromUser($user);
-        $email = str_random(5) . "@imac.com";
-        $this->initUser($email, str_random(10));
-        $this->delete("/api/v1/admin/delete/{$email}?token={$token}", [], [])
-           ->seeStatusCode(200)
-           ->seeJsonContains([
-             "message" => "The delete is successfully"
-           ]);
+        $admin = $this->post('/api/v1/auth/login', $this->admin)
+            ->response->getData();
+        $this->post("/api/v1/admin/create?token=$admin->token", $this->testUser);
+        $this->delete("/api/v1/admin/delete/{$this->testUser['email']}?token=$admin->token")
+            ->seeStatusCode(200)
+            ->seeJsonContains([
+                "message" => "The delete is successfully"
+            ]);
     }
 }

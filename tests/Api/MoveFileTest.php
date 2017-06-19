@@ -9,18 +9,17 @@ class MoveFileTest extends TestCase
      */
     public function testMoveFileButSourceBucketIsNotExist()
     {
-        $user = $this->initUser(str_random(5) . "@imac.com", str_random(10));
-        $token = \JWTAuth::fromUser($user);
-        $this->post("api/v1/file/move?token={$token}", [
+        $admin = $this->post('/api/v1/auth/login', $this->admin)
+            ->response->getData();
+        $this->post("api/v1/file/move?token=$admin->token", [
             "sourceBucket" => str_random(10),
             "goalBucket" => str_random(10),
             "sourceFile" => "source",
-            "goalFile" => "goal"
-        ], [])
-        ->seeStatusCode(403)
-        ->seeJsonContains([
-            "message" => "The bucket of source is not exist"
-        ]);
+            "goalFile" => "goal"])
+            ->seeStatusCode(403)
+            ->seeJsonContains([
+                "message" => "The bucket of source is not exist"
+            ]);
     }
 
     /**
@@ -30,20 +29,19 @@ class MoveFileTest extends TestCase
      */
     public function testMoveFileButGoalBucketIsNotExist()
     {
-        $user = $this->initUser(str_random(5) . "@imac.com", str_random(10));
-        $token = \JWTAuth::fromUser($user);
-        $bucket = str_random(10);
-        $this->createBucket($user, $bucket);
-        $this->post("api/v1/file/move?token={$token}", [
-            "sourceBucket" => $bucket,
+        $admin = $this->post('/api/v1/auth/login', $this->admin)
+            ->response->getData();
+        $this->post("/api/v1/bucket/create?token=$admin->token", ["bucket" => $this->bucket]);
+        $this->post("api/v1/file/move?token=$admin->token", [
+            "sourceBucket" => $this->bucket,
             "goalBucket" => str_random(10),
             "sourceFile" => "source",
-            "goalFile" => "goal"
-        ], [])
-        ->seeStatusCode(403)
-        ->seeJsonContains([
-            "message" => "The bucket of goal is not exist"
-        ]);
+            "goalFile" => "goal"])
+            ->seeStatusCode(403)
+            ->seeJsonContains([
+                "message" => "The bucket of goal is not exist"
+            ]);
+        $this->delete("/api/v1/bucket/delete/$this->bucket?token=$admin->token");
     }
 
     /**
@@ -53,20 +51,19 @@ class MoveFileTest extends TestCase
      */
     public function testMoveFileButSourceFileIsNotExist()
     {
-        $user = $this->initUser(str_random(5) . "@imac.com", str_random(10));
-        $token = \JWTAuth::fromUser($user);
-        $bucket = str_random(10);
-        $this->createBucket($user, $bucket);
-        $this->post("api/v1/file/move?token={$token}", [
-            "sourceBucket" => $bucket,
-            "goalBucket" => $bucket,
+        $admin = $this->post('/api/v1/auth/login', $this->admin)
+            ->response->getData();
+        $this->post("/api/v1/bucket/create?token=$admin->token", ["bucket" => $this->bucket]);
+        $this->post("api/v1/file/move?token=$admin->token", [
+            "sourceBucket" => $this->bucket,
+            "goalBucket" => $this->bucket,
             "sourceFile" => "source",
-            "goalFile" => "goal"
-        ], [])
-        ->seeStatusCode(403)
-        ->seeJsonContains([
-            "message" => "The file of source is not exist in source bucket"
-        ]);
+            "goalFile" => "goal"])
+            ->seeStatusCode(403)
+            ->seeJsonContains([
+                "message" => "The file of source is not exist in source bucket"
+            ]);
+        $this->delete("/api/v1/bucket/delete/$this->bucket?token=$admin->token");
     }
 
     /**
@@ -76,21 +73,20 @@ class MoveFileTest extends TestCase
      */
     public function testMoveFileButGoalFileIsExist()
     {
-        $user = $this->initUser(str_random(5) . "@imac.com", str_random(10));
-        $token = \JWTAuth::fromUser($user);
-        $bucket = str_random(10);
-        $this->createBucket($user, $bucket);
-        $this->uploadFile($bucket, $token);
-        $this->post("api/v1/file/move?token={$token}", [
-            "sourceBucket" => $bucket,
-            "goalBucket" => $bucket,
+        $admin = $this->post('/api/v1/auth/login', $this->admin)
+            ->response->getData();
+        $this->post("/api/v1/bucket/create?token=$admin->token", ["bucket" => $this->bucket]);
+        $this->uploadFile($this->bucket,$admin->token);
+        $this->post("/api/v1/file/move?token=$admin->token", [
+            "sourceBucket" => $this->bucket,
+            "goalBucket" => $this->bucket,
             "sourceFile" => "test.jpg",
-            "goalFile" => "test.jpg"
-        ], [])
-        ->seeStatusCode(403)
-        ->seeJsonContains([
-            "message" => "The file of goal is exist in goal bucket"
-        ]);
+            "goalFile" => "test.jpg"])
+            ->seeStatusCode(403)
+            ->seeJsonContains([
+                "message" => "The file of goal is exist in goal bucket"
+            ]);
+        $this->delete("/api/v1/bucket/delete/$this->bucket?token=$admin->token");
     }
 
     /**
@@ -100,20 +96,19 @@ class MoveFileTest extends TestCase
      */
     public function testMoveFileSuccess()
     {
-        $user = $this->initUser(str_random(5) . "@imac.com", str_random(10));
-        $token = \JWTAuth::fromUser($user);
-        $bucket = str_random(10);
-        $this->createBucket($user, $bucket);
-        $this->uploadFile($bucket, $token);
-        $this->post("api/v1/file/move?token={$token}", [
-              "sourceBucket" => $bucket,
-              "goalBucket" => $bucket,
+        $admin = $this->post('/api/v1/auth/login', $this->admin)
+            ->response->getData();
+        $this->post("/api/v1/bucket/create?token=$admin->token", ["bucket" => $this->bucket]);
+        $this->uploadFile($this->bucket,$admin->token);
+        $this->post("api/v1/file/move?token=$admin->token", [
+              "sourceBucket" => $this->bucket,
+              "goalBucket" => $this->bucket,
               "sourceFile" => "test.jpg",
-              "goalFile" => "test2.jpg"
-            ], [])
-        ->seeStatusCode(200)
-        ->seeJsonContains([
-            "message" => "Move file is successfully"
-        ]);
+              "goalFile" => "test2.jpg"])
+              ->seeStatusCode(200)
+              ->seeJsonContains([
+                  "message" => "Move file is successfully"
+              ]);
+        $this->delete("/api/v1/bucket/delete/$this->bucket?token=$admin->token");
     }
 }

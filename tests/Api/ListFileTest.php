@@ -9,9 +9,9 @@ class ListFileTest extends TestCase
      */
     public function testListFileButBucketIsNotExist()
     {
-        $user = $this->initUser(str_random(5) . "@imac.com", str_random(10));
-        $token = \JWTAuth::fromUser($user);
-        $this->get("api/v1/file/list/{str_random(10)}?token={$token}", [])
+        $admin = $this->post('/api/v1/auth/login', $this->admin)
+            ->response->getData();
+        $this->get("api/v1/file/list/$this->bucket?token=$admin->token")
             ->seeStatusCode(403)
             ->seeJsonContains([
                 "message" => "The bucket is not exist"
@@ -25,12 +25,12 @@ class ListFileTest extends TestCase
      */
     public function testListFileSuccess()
     {
-        $user = $this->initUser(str_random(5) . "@imac.com", str_random(10));
-        $token = \JWTAuth::fromUser($user);
-        $bucket = str_random(10);
-        $this->createBucket($user, $bucket);
-        $this->get("api/v1/file/list/{$bucket}?token={$token}", [])
+        $admin = $this->post('/api/v1/auth/login', $this->admin)
+            ->response->getData();
+        $this->post("/api/v1/bucket/create?token=$admin->token", ["bucket" => $this->bucket]);
+        $this->get("api/v1/file/list/$this->bucket?token=$admin->token")
             ->seeStatusCode(200)
             ->seeJsonStructure(["files"]);
+        $this->delete("/api/v1/bucket/delete/$this->bucket?token=$admin->token");
     }
 }

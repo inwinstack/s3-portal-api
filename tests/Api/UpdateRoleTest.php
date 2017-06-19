@@ -9,16 +9,15 @@ class UpdateRoleTest extends TestCase
      */
     public function testUpdateRoleButNotHavePermission()
     {
-        $user = $this->initUser(str_random(5) . "@imac.com", str_random(10));
-        $token = \JWTAuth::fromUser($user);
-        $this->post("/api/v1/admin/role?token={$token}", [
-            "email" => str_random(5) . "@imac.com",
-            "role" => "admin"
-        ], [])
-        ->seeStatusCode(403)
-        ->seeJsonContains([
-            "message" => "Permission denied"
-        ]);
+        $user = $this->post('/api/v1/auth/login', $this->user)
+            ->response->getData();
+        $this->post("/api/v1/admin/role?token=$user->token", [
+            "email" => $this->testUser['email'],
+            "role" => "admin"])
+            ->seeStatusCode(403)
+            ->seeJsonContains([
+                "message" => "Permission denied"
+            ]);
     }
 
     /**
@@ -28,16 +27,15 @@ class UpdateRoleTest extends TestCase
      */
     public function testUpdateRoleButUserIsRoot()
     {
-        $user = $this->initAdmin(str_random(5) . "@imac.com", str_random(10));
-        $token = \JWTAuth::fromUser($user);
-        $this->post("/api/v1/admin/role?token={$token}", [
+        $admin = $this->post('/api/v1/auth/login', $this->admin)
+            ->response->getData();
+        $this->post("/api/v1/admin/role?token=$admin->token", [
             "email" => "root@inwinstack.com",
-            "role" => "user"
-        ], [])
-        ->seeStatusCode(405)
-        ->seeJsonContains([
-            "message" => "The root is not allowed to be operated"
-        ]);
+            "role" => "user"])
+            ->seeStatusCode(405)
+            ->seeJsonContains([
+                "message" => "The root is not allowed to be operated"
+            ]);
     }
 
     /**
@@ -47,16 +45,16 @@ class UpdateRoleTest extends TestCase
      */
     public function testUpdateRoleButUserIsNotExist()
     {
-        $user = $this->initAdmin(str_random(5) . "@imac.com", str_random(10));
-        $token = \JWTAuth::fromUser($user);
-        $this->post("/api/v1/admin/role?token={$token}", [
-            "email" => str_random(5) . "@imac.com",
-            "role" => "admin"
-        ], [])
-        ->seeStatusCode(403)
-        ->seeJsonContains([
-            "message" => "The user is not exist"
-        ]);
+        $admin = $this->post('/api/v1/auth/login', $this->admin)
+            ->response->getData();
+        $this->post("/api/v1/admin/role?token=$admin->token", [
+            "email" => $this->testUser['email'],
+            "role" => "admin"])
+            ->seeStatusCode(403)
+            ->seeJsonContains([
+                "message" => "The user is not exist"
+            ]);
+        $this->delete("/api/v1/admin/delete/{$this->testUser['email']}?token=$admin->token");
     }
 
     /**
@@ -66,16 +64,14 @@ class UpdateRoleTest extends TestCase
      */
     public function testUpdateRoleSuccess()
     {
-        $user = $this->initAdmin(str_random(5) . "@imac.com", str_random(10));
-        $token = \JWTAuth::fromUser($user);
-        $email = str_random(5) . "@imac.com";
-        $password = str_random(10);
-        $this->initUser($email, $password);
-        $this->post("/api/v1/admin/role?token={$token}", [
-            "email" => $email,
-            "role" => "admin"
-        ], [])
-        ->seeStatusCode(200)
-        ->seeJsonStructure(["access_key", "created_at", "email", "id", "name", "role", "secret_key", "uid", "updated_at"]);
+        $admin = $this->post('/api/v1/auth/login', $this->admin)
+            ->response->getData();
+        $this->post("/api/v1/admin/create?token=$admin->token", $this->testUser);
+        $this->post("/api/v1/admin/role?token=$admin->token", [
+            "email" => $this->testUser['email'],
+            "role" => "admin"])
+            ->seeStatusCode(200)
+            ->seeJsonStructure(["access_key", "created_at", "email", "id", "name", "role", "secret_key", "uid", "updated_at"]);
+        $this->delete("/api/v1/admin/delete/{$this->testUser['email']}?token=$admin->token");
     }
 }

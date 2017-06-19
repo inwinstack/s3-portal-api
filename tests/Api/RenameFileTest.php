@@ -9,17 +9,16 @@ class RenameFileTest extends TestCase
      */
     public function testRenameFileButBucketIsNotExist()
     {
-        $user = $this->initUser(str_random(5) . "@imac.com", str_random(10));
-        $token = \JWTAuth::fromUser($user);
-        $this->post("api/v1/file/rename?token={$token}", [
+        $admin = $this->post('/api/v1/auth/login', $this->admin)
+            ->response->getData();
+        $this->post("api/v1/file/rename?token=$admin->token", [
             "bucket" => str_random(10),
-            "old" => "old",
-            "new" => "new"
-        ], [])
-        ->seeStatusCode(403)
-        ->seeJsonContains([
-            "message" => "The bucket is not exist"
-        ]);
+            "old" => str_random(10),
+            "new" => str_random(10)])
+            ->seeStatusCode(403)
+            ->seeJsonContains([
+                "message" => "The bucket is not exist"
+            ]);
     }
 
     /**
@@ -29,19 +28,18 @@ class RenameFileTest extends TestCase
      */
     public function testRenameFileButOldFileIsNotExist()
     {
-        $user = $this->initUser(str_random(5) . "@imac.com", str_random(10));
-        $token = \JWTAuth::fromUser($user);
-        $bucket = str_random(10);
-        $this->createBucket($user, $bucket);
-        $this->post("api/v1/file/rename?token={$token}", [
-            "bucket" => $bucket,
-            "old" => "old",
-            "new" => "new"
-        ], [])
-        ->seeStatusCode(403)
-        ->seeJsonContains([
-            "message" => "The file of old name is not exist"
-        ]);
+        $admin = $this->post('/api/v1/auth/login', $this->admin)
+            ->response->getData();
+        $this->post("/api/v1/bucket/create?token=$admin->token", ["bucket" => $this->bucket]);
+        $this->post("api/v1/file/rename?token=$admin->token", [
+            "bucket" => $this->bucket,
+            "old" => str_random(10),
+            "new" => str_random(10)])
+            ->seeStatusCode(403)
+            ->seeJsonContains([
+                "message" => "The file of old name is not exist"
+            ]);
+        $this->delete("/api/v1/bucket/delete/$this->bucket?token=$admin->token");
     }
 
     /**
@@ -51,20 +49,19 @@ class RenameFileTest extends TestCase
      */
     public function testRenameFileButNewFileIsExist()
     {
-        $user = $this->initUser(str_random(5) . "@imac.com", str_random(10));
-        $token = \JWTAuth::fromUser($user);
-        $bucket = str_random(10);
-        $this->createBucket($user, $bucket);
-        $this->uploadFile($bucket, $token);
-        $this->post("api/v1/file/rename?token={$token}", [
-            "bucket" => $bucket,
+        $admin = $this->post('/api/v1/auth/login', $this->admin)
+            ->response->getData();
+        $this->post("/api/v1/bucket/create?token=$admin->token", ["bucket" => $this->bucket]);
+        $this->uploadFile($this->bucket, $admin->token);
+        $this->post("api/v1/file/rename?token=$admin->token", [
+            "bucket" => $this->bucket,
             "old" => "test.jpg",
-            "new" => "test.jpg"
-        ], [])
-        ->seeStatusCode(403)
-        ->seeJsonContains([
-            "message" => "The file of new name is exist"
-        ]);
+            "new" => "test.jpg"])
+            ->seeStatusCode(403)
+            ->seeJsonContains([
+                "message" => "The file of new name is exist"
+            ]);
+        $this->delete("/api/v1/bucket/delete/$this->bucket?token=$admin->token");
     }
 
     /**
@@ -74,19 +71,18 @@ class RenameFileTest extends TestCase
      */
     public function testRenameFileSuccess()
     {
-        $user = $this->initUser(str_random(5) . "@imac.com", str_random(10));
-        $token = \JWTAuth::fromUser($user);
-        $bucket = str_random(10);
-        $this->createBucket($user, $bucket);
-        $this->uploadFile($bucket, $token);
-        $this->post("api/v1/file/rename?token={$token}", [
-            "bucket" => $bucket,
+        $admin = $this->post('/api/v1/auth/login', $this->admin)
+            ->response->getData();
+        $this->post("/api/v1/bucket/create?token=$admin->token", ["bucket" => $this->bucket]);
+        $this->uploadFile($this->bucket, $admin->token);
+        $this->post("api/v1/file/rename?token=$admin->token", [
+            "bucket" => $this->bucket,
             "old" => "test.jpg",
-            "new" => "test2.jpg"
-        ], [])
-        ->seeStatusCode(200)
-        ->seeJsonContains([
-            "message" => "Rename file is Successfully"
-        ]);
+            "new" => "test2.jpg"])
+            ->seeStatusCode(200)
+            ->seeJsonContains([
+                "message" => "Rename file is Successfully"
+            ]);
+        $this->delete("/api/v1/bucket/delete/$this->bucket?token=$admin->token");
     }
 }

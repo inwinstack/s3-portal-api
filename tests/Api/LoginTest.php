@@ -9,14 +9,11 @@ class LoginTest extends TestCase
      */
     public function testLoginFailed()
     {
-        $this->post('api/v1/auth/login', [
-            'email' => str_random(5) . "@imac.com",
-            'password' => str_random(10)
-        ], $this->headers)
-        ->seeStatusCode(401)
-        ->seeJsonContains([
-          "message" => "The email is not exist"
-        ]);
+        $this->post("api/v1/auth/login", $this->testUser)
+            ->seeStatusCode(401)
+            ->seeJsonContains([
+                "message" => "The email is not exist"
+            ]);
     }
 
     /**
@@ -26,14 +23,10 @@ class LoginTest extends TestCase
      */
     public function testLoginSuccess()
     {
-        $email = str_random(5) . "@imac.com";
-        $password = str_random(10);
-        $user = $this->initUser($email, $password);
-        $this->post('api/v1/auth/login', [
-            'email' => $email,
-            'password' => $password
-        ], $this->headers)
-        ->seeStatusCode(200)
-        ->seeJsonStructure(['id', 'uid', 'name', 'role', 'email', 'access_key', 'secret_key', 'created_at', 'updated_at', 'token']);
+        $this->post("api/v1/auth/login", $this->admin)
+            ->seeStatusCode(200)
+            ->seeJsonStructure(
+                ['id', 'uid', 'name', 'role', 'email', 'access_key', 'secret_key', 'created_at', 'updated_at', 'token']
+            );
     }
 }

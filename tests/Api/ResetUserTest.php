@@ -9,16 +9,13 @@ class ResetUserTest extends TestCase
      */
     public function testResetUserButNotHavePermission()
     {
-        $user = $this->initUser(str_random(5) . "@imac.com", str_random(10));
-        $token = \JWTAuth::fromUser($user);
-        $this->post("/api/v1/admin/reset?token={$token}", [
-            "email" => str_random(5) . "@imac.com",
-            "password" => str_random(10)
-        ], [])
-        ->seeStatusCode(403)
-        ->seeJsonContains([
-            "message" => "Permission denied"
-        ]);
+        $user = $this->post('/api/v1/auth/login', $this->user)
+            ->response->getData();
+        $this->post("/api/v1/admin/reset?token=$user->token", $this->testUser)
+            ->seeStatusCode(403)
+            ->seeJsonContains([
+                "message" => "Permission denied"
+            ]);
     }
 
     /**
@@ -28,16 +25,13 @@ class ResetUserTest extends TestCase
      */
     public function testResetUserButUserIsNotExist()
     {
-        $user = $this->initAdmin(str_random(5) . "@imac.com", str_random(10));
-        $token = \JWTAuth::fromUser($user);
-        $this->post("/api/v1/admin/reset?token={$token}", [
-            "email" => str_random(5) . "@imac.com",
-            "password" => str_random(10)
-        ], [])
-        ->seeStatusCode(403)
-        ->seeJsonContains([
-            "message" => "The user is not exist"
-        ]);
+        $admin = $this->post('/api/v1/auth/login', $this->admin)
+            ->response->getData();
+        $this->post("/api/v1/admin/reset?token=$admin->token", $this->testUser)
+            ->seeStatusCode(403)
+            ->seeJsonContains([
+                "message" => "The user is not exist"
+            ]);
     }
 
     /**
@@ -47,16 +41,14 @@ class ResetUserTest extends TestCase
      */
     public function testResetUserSuccess()
     {
-        $user = $this->initAdmin(str_random(5) . "@imac.com", str_random(10));
-        $token = \JWTAuth::fromUser($user);
-        $email = str_random(5) . "@imac.com";
-        $password = str_random(10);
-        $this->initUser($email, $password);
-        $this->post("/api/v1/admin/reset?token={$token}", [
-            "email" => $email,
-            "password" => str_random(10)
-        ], [])
-        ->seeStatusCode(200)
-        ->seeJsonStructure(["access_key", "created_at", "email", "id", "name", "role", "secret_key", "uid", "updated_at"]);
+        $admin = $this->post('/api/v1/auth/login', $this->admin)
+            ->response->getData();
+        $this->post("/api/v1/admin/create?token=$admin->token", $this->testUser);
+        $this->post("/api/v1/admin/reset?token=$admin->token", [
+            "email" => $this->testUser['email'],
+            "password" => str_random(10)])
+            ->seeStatusCode(200)
+            ->seeJsonStructure(["access_key", "created_at", "email", "id", "name", "role", "secret_key", "uid", "updated_at"]);
+        $this->delete("/api/v1/admin/delete/{$this->testUser['email']}?token=$admin->token");
     }
 }

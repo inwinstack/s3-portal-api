@@ -1,26 +1,19 @@
 <?php
-
 namespace App\Http\Controllers\Bucket;
-
 use App\Services\BucketService;
-
 use App\Http\Requests\Bucket\BucketRequest;
 use App\Http\Controllers\Controller;
-
 use JWTAuth;
 use Aws\S3\S3Client;
-
 class BucketController extends Controller
 {
     protected $bucketService;
     protected $user;
-
     public function __construct()
     {
         $this->user = JWTAuth::parseToken()->authenticate();
         $this->bucketService = new BucketService($this->user['access_key'], $this->user['secret_key']);
     }
-
     public function index()
     {
         $response = $this->bucketService->get();
@@ -30,7 +23,6 @@ class BucketController extends Controller
             return response()->json(['message' => 'List bucket is failed'], 403);
         }
     }
-
     public function store(BucketRequest $request)
     {
         if (!preg_match("/[A-Z]/", $request->bucket)) {
@@ -45,7 +37,6 @@ class BucketController extends Controller
             return response()->json(['message' => 'Create bucket is failed'], 403);
         }
     }
-
     public function destroy($bucket)
     {
         if (!$this->bucketService->check($bucket)) {

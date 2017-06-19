@@ -9,16 +9,15 @@ class ReplicateFileTest extends TestCase
      */
     public function testReplicateFileButBucketIsNotExist()
     {
-        $user = $this->initUser(str_random(5) . "@imac.com", str_random(10));
-        $token = \JWTAuth::fromUser($user);
-        $this->post("api/v1/file/replicate?token={$token}", [
+        $admin = $this->post('/api/v1/auth/login', $this->admin)
+            ->response->getData();
+        $this->post("api/v1/file/replicate?token=$admin->token", [
             "bucket" => str_random(10),
-            "file" => str_random(10)
-        ], [])
-        ->seeStatusCode(403)
-        ->seeJsonContains([
-            "message" => "The bucket is not exist"
-        ]);
+            "file" => str_random(10)])
+            ->seeStatusCode(403)
+            ->seeJsonContains([
+                "message" => "The bucket is not exist"
+            ]);
     }
 
     /**
@@ -28,18 +27,17 @@ class ReplicateFileTest extends TestCase
      */
     public function testReplicateFileButFileIsNotExist()
     {
-        $user = $this->initUser(str_random(5) . "@imac.com", str_random(10));
-        $token = \JWTAuth::fromUser($user);
-        $bucket = str_random(10);
-        $this->createBucket($user, $bucket);
-        $this->post("api/v1/file/replicate?token={$token}", [
-            "bucket" => $bucket,
-            "file" => str_random(10)
-        ], [])
-        ->seeStatusCode(403)
-        ->seeJsonContains([
-            "message" => "The file is not exist"
-        ]);
+        $admin = $this->post('/api/v1/auth/login', $this->admin)
+            ->response->getData();
+        $this->post("/api/v1/bucket/create?token=$admin->token", ["bucket" => $this->bucket]);
+        $this->post("api/v1/file/replicate?token=$admin->token", [
+            "bucket" => $this->bucket,
+            "file" => str_random(10)])
+            ->seeStatusCode(403)
+            ->seeJsonContains([
+                "message" => "The file is not exist"
+            ]);
+        $this->delete("/api/v1/bucket/delete/$this->bucket?token=$admin->token");
     }
 
     /**
@@ -49,23 +47,21 @@ class ReplicateFileTest extends TestCase
      */
     public function testReplicateFileButReplicasIsExist()
     {
-        $user = $this->initUser(str_random(5) . "@imac.com", str_random(10));
-        $token = \JWTAuth::fromUser($user);
-        $bucket = str_random(10);
-        $this->createBucket($user, $bucket);
-        $this->uploadFile($bucket, $token);
-        $this->post("api/v1/file/replicate?token={$token}", [
-            "bucket" => $bucket,
-            "file" => "test.jpg"
-        ], []);
-        $this->post("api/v1/file/replicate?token={$token}", [
-            "bucket" => $bucket,
-            "file" => "test.jpg"
-        ], [])
-        ->seeStatusCode(403)
-        ->seeJsonContains([
-            "message" => "The replicas is exist"
-        ]);
+        $admin = $this->post('/api/v1/auth/login', $this->admin)
+            ->response->getData();
+        $this->post("/api/v1/bucket/create?token=$admin->token", ["bucket" => $this->bucket]);
+        $this->uploadFile($this->bucket, $admin->token);
+        $this->post("api/v1/file/replicate?token=$admin->token", [
+            "bucket" => $this->bucket,
+            "file" => "test.jpg"]);
+        $this->post("api/v1/file/replicate?token=$admin->token", [
+            "bucket" => $this->bucket,
+            "file" => "test.jpg"])
+            ->seeStatusCode(403)
+            ->seeJsonContains([
+                "message" => "The replicas is exist"
+            ]);
+        $this->delete("/api/v1/bucket/delete/$this->bucket?token=$admin->token");
     }
 
     /**
@@ -75,18 +71,17 @@ class ReplicateFileTest extends TestCase
      */
     public function testReplicateFileSuccess()
     {
-        $user = $this->initUser(str_random(5) . "@imac.com", str_random(10));
-        $token = \JWTAuth::fromUser($user);
-        $bucket = str_random(10);
-        $this->createBucket($user, $bucket);
-        $this->uploadFile($bucket, $token);
-        $this->post("api/v1/file/replicate?token={$token}", [
-            "bucket" => $bucket,
-            "file" => "test.jpg"
-        ], [])
-        ->seeStatusCode(200)
-        ->seeJsonContains([
-            "message" => "Replication is successfully"
-        ]);
+        $admin = $this->post('/api/v1/auth/login', $this->admin)
+            ->response->getData();
+        $this->post("/api/v1/bucket/create?token=$admin->token", ["bucket" => $this->bucket]);
+        $this->uploadFile($this->bucket, $admin->token);
+        $this->post("api/v1/file/replicate?token=$admin->token", [
+            "bucket" => $this->bucket,
+            "file" => "test.jpg"])
+            ->seeStatusCode(200)
+            ->seeJsonContains([
+                "message" => "Replication is successfully"
+            ]);
+        $this->delete("/api/v1/bucket/delete/$this->bucket?token=$admin->token");
     }
 }

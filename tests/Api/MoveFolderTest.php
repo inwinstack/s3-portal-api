@@ -9,18 +9,17 @@ class MoveFolderTest extends TestCase
      */
     public function testMoveFolderButSourceBucketIsNotExist()
     {
-        $user = $this->initUser(str_random(5) . "@imac.com", str_random(10));
-        $token = \JWTAuth::fromUser($user);
-        $this->post("/api/v1/folder/move?token={$token}", [
-            "sourceBucket" => str_random(10),
-            "sourceFolder" => str_random(10),
-            "goalBucket" => str_random(10),
-            "goalFolder" => str_random(10)
-        ], [])
-        ->seeStatusCode(403)
-        ->seeJsonContains([
-            "message" => "The bucket of source is not exist"
-        ]);
+        $admin = $this->post('/api/v1/auth/login', $this->admin)
+            ->response->getData();
+        $this->post("/api/v1/folder/move?token=$admin->token", [
+            "sourceBucket" => $this->bucket,
+            "sourceFolder" => $this->folder,
+            "goalBucket" => $this->bucket,
+            "goalFolder" => $this->folder])
+            ->seeStatusCode(403)
+            ->seeJsonContains([
+                "message" => "The bucket of source is not exist"
+            ]);
     }
 
     /**
@@ -30,20 +29,19 @@ class MoveFolderTest extends TestCase
      */
     public function testMoveFolderButGoalBucketIsNotExist()
     {
-        $user = $this->initUser(str_random(5) . "@imac.com", str_random(10));
-        $token = \JWTAuth::fromUser($user);
-        $bucket = str_random(10);
-        $this->createBucket($user, $bucket);
-        $this->post("/api/v1/folder/move?token={$token}", [
-            "sourceBucket" => $bucket,
-            "sourceFolder" => str_random(10),
+        $admin = $this->post('/api/v1/auth/login', $this->admin)
+            ->response->getData();
+        $this->post("/api/v1/bucket/create?token=$admin->token", ["bucket" => $this->bucket]);
+        $this->post("/api/v1/folder/move?token=$admin->token", [
+            "sourceBucket" => $this->bucket,
+            "sourceFolder" => $this->folder,
             "goalBucket" => str_random(10),
-            "goalFolder" => str_random(10)
-        ], [])
-        ->seeStatusCode(403)
-        ->seeJsonContains([
-            "message" => "The bucket of goal is not exist"
-        ]);
+            "goalFolder" => $this->folder])
+            ->seeStatusCode(403)
+            ->seeJsonContains([
+                "message" => "The bucket of goal is not exist"
+            ]);
+        $this->delete("/api/v1/bucket/delete/$this->bucket?token=$admin->token");
     }
 
     /**
@@ -53,20 +51,19 @@ class MoveFolderTest extends TestCase
      */
     public function testMoveFolderButSourceFolderIsNotExist()
     {
-        $user = $this->initUser(str_random(5) . "@imac.com", str_random(10));
-        $token = \JWTAuth::fromUser($user);
-        $bucket = str_random(10);
-        $this->createBucket($user, $bucket);
-        $this->post("/api/v1/folder/move?token={$token}", [
-            "sourceBucket" => $bucket,
+        $admin = $this->post('/api/v1/auth/login', $this->admin)
+            ->response->getData();
+        $this->post("/api/v1/bucket/create?token=$admin->token", ["bucket" => $this->bucket]);
+        $this->post("/api/v1/folder/move?token=$admin->token", [
+            "sourceBucket" => $this->bucket,
             "sourceFolder" => str_random(10),
-            "goalBucket" => $bucket,
-            "goalFolder" => str_random(10)
-        ], [])
-        ->seeStatusCode(403)
-        ->seeJsonContains([
-            "message" => "The folder of source is not exist"
-        ]);
+            "goalBucket" => $this->bucket,
+            "goalFolder" => str_random(10)])
+            ->seeStatusCode(403)
+            ->seeJsonContains([
+                "message" => "The folder of source is not exist"
+            ]);
+        $this->delete("/api/v1/bucket/delete/$this->bucket?token=$admin->token");
     }
 
     /**
@@ -76,22 +73,22 @@ class MoveFolderTest extends TestCase
      */
     public function testMoveFolderButSourceFolderIsExist()
     {
-        $user = $this->initUser(str_random(5) . "@imac.com", str_random(10));
-        $token = \JWTAuth::fromUser($user);
-        $bucket = str_random(10);
-        $folder = str_random(10);
-        $this->createBucket($user, $bucket);
-        $this->createFolder($user, $bucket, $folder);
-        $this->post("/api/v1/folder/move?token={$token}", [
-            "sourceBucket" => $bucket,
-            "sourceFolder" => $folder,
-            "goalBucket" => $bucket,
-            "goalFolder" => $folder
-        ], [])
-        ->seeStatusCode(403)
-        ->seeJsonContains([
-            "message" => "The folder of goal is exist"
-        ]);
+        $admin = $this->post('/api/v1/auth/login', $this->admin)
+            ->response->getData();
+        $this->post("/api/v1/bucket/create?token=$admin->token", ["bucket" => $this->bucket]);
+        $this->post("/api/v1/folder/create?token=$admin->token", [
+            "bucket" => $this->bucket,
+            "prefix" => $this->folder]);
+        $this->post("/api/v1/folder/move?token=$admin->token", [
+            "sourceBucket" => $this->bucket,
+            "sourceFolder" => $this->folder,
+            "goalBucket" => $this->bucket,
+            "goalFolder" => $this->folder])
+            ->seeStatusCode(403)
+            ->seeJsonContains([
+                "message" => "The folder of goal is exist"
+            ]);
+        $this->delete("/api/v1/bucket/delete/$this->bucket?token=$admin->token");
     }
 
     /**
@@ -101,21 +98,21 @@ class MoveFolderTest extends TestCase
      */
     public function testMoveFolderSuccess()
     {
-        $user = $this->initUser(str_random(5) . "@imac.com", str_random(10));
-        $token = \JWTAuth::fromUser($user);
-        $bucket = str_random(10);
-        $folder = str_random(10);
-        $this->createBucket($user, $bucket);
-        $this->createFolder($user, $bucket, $folder);
-        $this->post("/api/v1/folder/move?token={$token}", [
-            "sourceBucket" => $bucket,
-            "sourceFolder" => $folder,
-            "goalBucket" => $bucket,
-            "goalFolder" => str_random(10)
-        ], [])
-        ->seeStatusCode(200)
-        ->seeJsonContains([
-            "message" => "The move is complete"
-        ]);
+        $admin = $this->post('/api/v1/auth/login', $this->admin)
+            ->response->getData();
+        $this->post("/api/v1/bucket/create?token=$admin->token", ["bucket" => $this->bucket]);
+        $this->post("/api/v1/folder/create?token=$admin->token", [
+            "bucket" => $this->bucket,
+            "prefix" => $this->folder]);
+        $this->post("/api/v1/folder/move?token=$admin->token", [
+            "sourceBucket" => $this->bucket,
+            "sourceFolder" => $this->folder,
+            "goalBucket" => $this->bucket,
+            "goalFolder" => str_random(10)])
+            ->seeStatusCode(200)
+            ->seeJsonContains([
+                "message" => "The move is complete"
+            ]);
+        $this->delete("/api/v1/bucket/delete/$this->bucket?token=$admin->token");
     }
 }
