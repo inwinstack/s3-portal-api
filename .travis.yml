@@ -1,0 +1,30 @@
+{
+  "language": "php",
+  "php": 5.6,
+  "services": [
+    "mysql"
+  ],
+  "before_script": [
+    "mysql -e 'CREATE DATABASE s3'",
+    "cp .env.example .env",
+    "sed -i 's/DB_HOST=<DB_HOST>/DB_HOST=127.0.0.1/g' .env",
+    "sed -i 's/DB_DATABASE=<DB_DATABASE>/DB_DATABASE=s3/g' .env",
+    "sed -i 's/DB_USERNAME=<DB_USERNAME>/DB_USERNAME=root/g' .env",
+    "sed -i 's/DB_PASSWORD=<DB_PASSWORD>/DB_PASSWORD=/g' .env",
+    "sed -i 's/S3_ACCESS_KEY=<S3_ACCESS_KEY>/S3_ACCESS_KEY=AGO3OZBBC7DHYU87S3ZE/g' .env",
+    "sed -i 's/S3_SECERT_KEY=<S3_SECERT_KEY>/S3_SECERT_KEY=AmBcj7iFCmBEkqV9Lx09hmA3JBmgG7HvzZJ2vOus/g' .env",
+    "sed -i 's/S3_URL=<S3_URL>/S3_URL=60.249.15.85/g' .env",
+    "sed -i 's/S3_ADMIN_ENRTYPOINT=<S3_ADMIN_ENRTYPOINT>/S3_ADMIN_ENRTYPOINT=admin/g' .env",
+    "sed -i 's/S3_PORT=7480/S3_PORT=7481/g' .env",
+    "sed -i 's/CEPH_REST_API_URL=<CEPH_REST_API_URL>/CEPH_REST_API_URL=60.249.15.85/g' .env",
+    "composer install",
+    "php artisan migrate",
+    "php artisan db:seed"
+  ],
+  "script": [
+    "./vendor/bin/phpunit"
+  ],
+  "group": "stable",
+  "dist": "precise",
+  "os": "linux"
+}
